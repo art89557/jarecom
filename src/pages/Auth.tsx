@@ -50,7 +50,7 @@ function AuthFrame({ children }: { children: ReactNode }) {
   )
 }
 
-function Field(p: { id: string; label: string; type?: string; value: string; set: (v: string) => void; err?: string; auto?: string; hint?: string; bad?: boolean }) {
+export function Field(p: { id: string; label: string; type?: string; value: string; set: (v: string) => void; err?: string; auto?: string; hint?: string; bad?: boolean }) {
   return (
     <div className="flex flex-col gap-1.5">
       <label htmlFor={p.id} className="text-sm font-semibold">{p.label}</label>
@@ -154,6 +154,64 @@ export function Forgot() {
           </form>
         </>
       )}
+    </AuthFrame>
+  )
+}
+
+export function NewPassword() {
+  const { ready, user, setUser } = useApp()
+  const nav = useNavigate()
+  const [pw, setPw] = useState('')
+  const [pw2, setPw2] = useState('')
+  const [errs, setErrs] = useState<Record<string, string>>({})
+  const [busy, setBusy] = useState(false)
+  const [done, setDone] = useState(false)
+  async function submit(e: FormEvent) {
+    e.preventDefault()
+    const x: Record<string, string> = {}
+    if (pw.length < 8) x.pw = 'Kata sandi minimal 8 karakter'
+    if (pw2 !== pw) x.pw2 = 'Kata sandi tidak sama'
+    setErrs(x)
+    const firstBad = (['pw', 'pw2'] as const).find((k) => x[k])
+    if (firstBad) { setTimeout(() => document.getElementById(firstBad)?.focus(), 0); return }
+    setBusy(true)
+    try { await repo.updatePassword(pw); setDone(true); if (user) setUser(user) } catch (z) { setErrs({ pw: (z as Error).message }) } finally { setBusy(false) }
+  }
+  if (!ready) return <AuthFrame><p role="status" className="help text-center">Memuat…</p></AuthFrame>
+  if (done) {
+    return (
+      <AuthFrame>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <Netty pose="senang" size={160} label="Netty senang" />
+          <h1 className="text-[28px] font-bold">Kata sandi diperbarui</h1>
+          <p className="max-w-[320px] text-ink-soft">Mulai sekarang masuk dengan kata sandi yang baru.</p>
+          <button type="button" className="btn" onClick={() => nav('/beranda')}>Ke beranda</button>
+        </div>
+      </AuthFrame>
+    )
+  }
+  if (!user) {
+    return (
+      <AuthFrame>
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
+          <Netty pose="sedih" size={140} label="Netty sedih" />
+          <h1 className="text-[28px] font-bold">Tautan tidak berlaku</h1>
+          <p className="max-w-[320px] text-ink-soft">Tautan atur ulang kata sandi sudah dipakai atau kedaluwarsa. Minta tautan baru.</p>
+          <Link to="/lupa" className="btn">Minta tautan baru</Link>
+          <Link to="/masuk" className="link min-h-[44px] leading-[44px]">Kembali ke masuk</Link>
+        </div>
+      </AuthFrame>
+    )
+  }
+  return (
+    <AuthFrame>
+      <h1 className="text-[30px] font-bold tracking-tight">Atur kata sandi baru</h1>
+      <p className="text-ink-soft">Untuk akun {user.email}. Pilih kata sandi yang belum pernah kamu pakai.</p>
+      <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+        <Field id="pw" label="Kata sandi baru" type="password" value={pw} set={setPw} auto="new-password" err={errs.pw} hint="Minimal 8 karakter" />
+        <Field id="pw2" label="Ulangi kata sandi baru" type="password" value={pw2} set={setPw2} auto="new-password" err={errs.pw2} />
+        <button className="btn" disabled={busy}>{busy ? 'Memproses…' : 'Simpan kata sandi'}</button>
+      </form>
     </AuthFrame>
   )
 }

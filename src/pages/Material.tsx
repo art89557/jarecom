@@ -41,7 +41,9 @@ export default function Material() {
   async function next() {
     if (!user) return
     if (!last) {
-      setDoneSubtopics(user.id, n, Math.max(getDoneSubtopics(user.id, n), idx + 1))
+      const v = Math.max(getDoneSubtopics(user.id, n), idx + 1)
+      setDoneSubtopics(user.id, n, v)
+      void repo.savePosition(n, v).catch(() => { /* tetap tersimpan di perangkat */ })
       setIdx(idx + 1); setPicked(null); window.scrollTo(0, 0)
       return
     }

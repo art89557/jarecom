@@ -17,6 +17,12 @@ export interface Repo {
   /** Tandai tur panduan sudah dilihat (disimpan di akun pada mode Supabase). */
   markTourSeen(): Promise<void>
   resetPassword(email: string): Promise<void>
+  /** Ganti nama tampilan; mengembalikan pengguna yang sudah diperbarui. */
+  updateName(name: string): Promise<User>
+  /** Atur kata sandi baru. Jika `current` diberikan, kata sandi saat ini diperiksa dulu. */
+  updatePassword(next: string, current?: string): Promise<void>
+  /** Simpan posisi baca (jumlah sub-topik yang sudah lolos cek) untuk satu level. */
+  savePosition(level: number, done: number): Promise<void>
   getProgress(): Promise<Progress>
   completeMaterial(level: number): Promise<{ xpGained: number }>
   getQuiz(level: number): Promise<QuizQuestion[]>

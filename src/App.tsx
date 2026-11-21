@@ -1,7 +1,7 @@
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import Shell from './components/Shell'
 import { Netty } from './components/ui'
-import { Forgot, Login, Register, Splash } from './pages/Auth'
+import { Forgot, Login, NewPassword, Register, Splash } from './pages/Auth'
 import Help from './pages/Help'
 import Home from './pages/Home'
 import MapPage from './pages/MapPage'
@@ -42,6 +42,7 @@ export default function App() {
         <Route path="/masuk" element={<Login />} />
         <Route path="/daftar" element={<Register />} />
         <Route path="/lupa" element={<Forgot />} />
+        <Route path="/sandi-baru" element={<NewPassword />} />
         <Route element={<Protected />}>
           <Route path="/beranda" element={<Home />} />
           <Route path="/materi" element={<MapPage />} />

@@ -9,6 +9,7 @@ import { LEVELS } from '../content'
 import { useApp } from '../state'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
 import { LevelPill, Netty, XpBadge } from '../components/ui'
+import { NameDialog, PasswordDialog } from '../components/AccountDialogs'
 
 const chipIc = (i: IconName, soon = false) => (
   <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${soon ? 'bg-[#E4E9F2] text-[#4A5568]' : 'bg-primary-soft text-[#1B46D1]'}`}><Icon name={i} size={22} sw={2.2} /></span>
@@ -42,11 +43,13 @@ const Group = ({ title, children }: { title: string; children: ReactNode }) => (
 )
 
 export default function Profile() {
-  const { user, progress, signOut, setTour } = useApp()
+  const { user, progress, signOut, setTour, setUser } = useApp()
   const nav = useNavigate()
   const [snd, setSnd] = useState(soundOn())
   const [red, setRed] = useState(reduceOn())
   const [msg, setMsg] = useState('')
+  const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null)
+  const [note, setNote] = useState('')
   const [bip, setBip] = useState<{ prompt: () => Promise<void> } | null>(null)
   useEffect(() => {
     const h = (e: Event) => { e.preventDefault(); setBip(e as unknown as { prompt: () => Promise<void> }) }
@@ -124,13 +127,20 @@ export default function Profile() {
             <Row icon="book" title="Bantuan" desc="Baca langkah-langkahnya sebagai teks" to="/bantuan" />
           </Group>
           <Group title="Akun">
-            <Row icon="edit" title="Ubah nama" desc="Ganti nama yang tampil di profil" soon />
-            <Row icon="key" title="Ubah kata sandi" desc="Perbarui kata sandi akunmu" soon />
+            <button type="button" onClick={() => { setNote(''); setDlg('nama') }} className="flex min-h-[72px] w-full items-center gap-3.5 px-4 py-3 text-left hover:bg-bg [&+&]:border-t [&+&]:border-[#E6EAF1]">
+              {chipIc('edit')}<span className="flex flex-1 flex-col gap-0.5"><span className="text-base font-semibold">Ubah nama</span><span className="help leading-snug">Ganti nama yang tampil di profil</span></span><Icon name="arrow" size={20} sw={2.2} className="text-ink-soft" />
+            </button>
+            <button type="button" onClick={() => { setNote(''); setDlg('sandi') }} className="flex min-h-[72px] w-full items-center gap-3.5 border-t border-[#E6EAF1] px-4 py-3 text-left hover:bg-bg">
+              {chipIc('key')}<span className="flex flex-1 flex-col gap-0.5"><span className="text-base font-semibold">Ubah kata sandi</span><span className="help leading-snug">Perbarui kata sandi akunmu</span></span><Icon name="arrow" size={20} sw={2.2} className="text-ink-soft" />
+            </button>
           </Group>
+          {note && <p role="status" className="help">{note}</p>}
           <p className="help">Mode data: {repo.mode === 'supabase' ? 'Supabase (tersimpan di server)' : 'lokal (tersimpan di browser ini)'}</p>
           <button type="button" onClick={async () => { await signOut(); nav('/masuk') }} className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border-2 border-[#C0262D] font-semibold text-[#8E1B21] transition hover:bg-fail-soft"><Icon name="logout" size={20} sw={2.2} />Keluar</button>
         </div>
       </div>
+      {dlg === 'nama' && <NameDialog current={name} onClose={() => setDlg(null)} onSaved={(u) => { setUser(u); setDlg(null); setNote('Nama diperbarui.') }} />}
+      {dlg === 'sandi' && <PasswordDialog onClose={() => setDlg(null)} onSaved={() => { setDlg(null); setNote('Kata sandi diperbarui.') }} />}
     </div>
   )
 }

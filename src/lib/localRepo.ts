@@ -56,6 +56,24 @@ export const localRepo: Repo = {
     db.session = null
     save(db)
   },
+  async updateName(name) {
+    const db = load()
+    const u = db.session ? db.users[db.session] : null
+    if (!db.session || !u) throw new AppError('Belum masuk')
+    u.name = name.trim()
+    save(db)
+    return { id: u.id, name: u.name, email: db.session }
+  },
+  async updatePassword(next, current) {
+    const db = load()
+    const u = db.session ? db.users[db.session] : null
+    if (!u) throw new AppError('Belum masuk')
+    if (current !== undefined && u.password !== current) throw new AppError('Kata sandi saat ini salah')
+    if (u.password === next) throw new AppError('Kata sandi baru harus berbeda dari yang lama')
+    u.password = next
+    save(db)
+  },
+  async savePosition() { /* mode lokal: posisi sudah tersimpan di perangkat oleh lib/position.ts */ },
   async resetPassword(email) {
     if (!email.includes('@')) throw new AppError('Masukkan email yang valid')
   },

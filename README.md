@@ -18,7 +18,8 @@ Tanpa konfigurasi, aplikasi berjalan di **mode lokal**: akun dan progres disimpa
 1. Buat proyek di supabase.com. Di Authentication, pakai Email (kata sandi minimal 8 karakter).
 2. SQL Editor: jalankan `supabase/schema.sql`, lalu `supabase/seed.sql`.
 3. Salin `.env.example` menjadi `.env`, isi `VITE_SUPABASE_URL` dan `VITE_SUPABASE_ANON_KEY` (Project Settings, API).
-4. `npm run dev` lagi. Halaman Profil menampilkan "Mode data: Supabase".
+4. Authentication > URL Configuration: isi Site URL dengan alamat aplikasi dan tambahkan `<alamat>/sandi-baru` ke Redirect URLs (halaman atur kata sandi baru).
+5. `npm run dev` lagi. Halaman Profil menampilkan "Mode data: Supabase".
 
 Skor kuis, XP, dan unlock dihitung oleh fungsi Postgres (`complete_material`, `submit_quiz`, `get_state`). Tabel progres tidak punya policy tulis, dan tabel `quiz_questions` (kunci jawaban) tidak bisa dibaca klien.
 Mengubah soal: edit `src/content/level-N.json`, lalu `npm run seed:sql` dan jalankan ulang `supabase/seed.sql`.
