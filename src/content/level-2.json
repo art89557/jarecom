@@ -1,0 +1,214 @@
+{
+ "level": 2,
+ "judul": "IP Address",
+ "sumber": "P-02 IP ADDRESS.pptx (Drive). Slide hanya berisi teks ringkas dan dua video; bagian prefix dan subnet mask dilengkapi dari pengetahuan umum, perlu diperiksa.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Pengertian dan fungsi IP Address",
+   "uraian": "IP Address (Internet Protocol Address) adalah serangkaian angka unik yang menjadi identitas perangkat di jaringan internet maupun lokal (LAN). Cara kerjanya mirip alamat rumah pada sistem pos: data dikirim ke alamat yang tepat.",
+   "poin": [
+    "Mengidentifikasi perangkat di jaringan",
+    "Membantu routing data ke tujuan yang benar"
+   ],
+   "cek": {
+    "pertanyaan": "Apa fungsi utama IP Address?",
+    "opsi": [
+     "Mempercepat prosesor",
+     "Mengidentifikasi perangkat dan membantu routing data ke tujuan",
+     "Menyimpan berkas pengguna"
+    ],
+    "benar": 1,
+    "penjelasan": "IP Address menjadi identitas perangkat dan dipakai untuk mengarahkan data."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "IPv4 dan IPv6",
+   "uraian": "IPv4 terdiri dari 32 bit, ditulis sebagai empat bagian angka seperti 192.168.0.1. Jumlah alamatnya terbatas. IPv6 terdiri dari 128 bit dan ditulis dalam heksadesimal, dikembangkan untuk mengatasi keterbatasan IPv4.",
+   "poin": [
+    "IPv4: 32 bit, contoh 192.168.0.1",
+    "IPv6: 128 bit, format heksadesimal"
+   ],
+   "cek": {
+    "pertanyaan": "Berapa bit panjang alamat IPv4?",
+    "opsi": [
+     "16 bit",
+     "32 bit",
+     "64 bit"
+    ],
+    "benar": 1,
+    "penjelasan": "IPv4 terdiri dari 32 bit."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "IP publik dan IP privat",
+   "uraian": "IP publik bisa diakses langsung dari internet, contohnya alamat server web. IP privat hanya dipakai di dalam jaringan lokal (LAN) dan tidak bisa diakses langsung dari internet.",
+   "poin": [
+    "Publik: dapat diakses lewat internet",
+    "Privat: hanya di dalam LAN"
+   ],
+   "cek": {
+    "pertanyaan": "IP yang hanya dipakai di dalam jaringan lokal disebut?",
+    "opsi": [
+     "IP publik",
+     "IP privat",
+     "IP global"
+    ],
+    "benar": 1,
+    "penjelasan": "IP privat tidak dapat diakses langsung dari internet."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "IP statis dan IP dinamis",
+   "uraian": "IP statis adalah alamat yang tidak berubah. IP dinamis berubah secara berkala, biasanya diatur oleh ISP.",
+   "poin": [
+    "Statis: tetap",
+    "Dinamis: berubah berkala oleh ISP"
+   ],
+   "cek": {
+    "pertanyaan": "Alamat IP yang berubah secara berkala disebut?",
+    "opsi": [
+     "Statis",
+     "Dinamis",
+     "Loopback"
+    ],
+    "benar": 1,
+    "penjelasan": "IP dinamis diberikan dan diganti secara berkala."
+   }
+  },
+  {
+   "id": 5,
+   "judul": "Prefix dan subnet mask",
+   "uraian": "Prefix menunjukkan berapa bit pertama dari alamat yang menjadi bagian jaringan. Subnet mask menuliskan hal yang sama dalam bentuk empat angka. Contoh: /24 sama dengan 255.255.255.0.",
+   "poin": [
+    "/24 = 255.255.255.0",
+    "Bagian jaringan menentukan perangkat berada di jaringan mana"
+   ],
+   "cek": {
+    "pertanyaan": "Subnet mask untuk prefix /24 adalah…",
+    "opsi": [
+     "255.255.0.0",
+     "255.255.255.0",
+     "255.0.0.0"
+    ],
+    "benar": 1,
+    "penjelasan": "24 bit pertama bernilai 1, sehingga 255.255.255.0."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "IP Address berfungsi sebagai…",
+   "opsi": [
+    "Kata sandi jaringan",
+    "Identitas dan alamat perangkat di jaringan",
+    "Ukuran kabel",
+    "Nama pengguna email"
+   ],
+   "benar": 1,
+   "penjelasan": "IP Address mengidentifikasi perangkat dan mengarahkan data."
+  },
+  {
+   "pertanyaan": "IP Address dapat dianalogikan dengan…",
+   "opsi": [
+    "Nomor rekening",
+    "Alamat rumah pada sistem pos",
+    "Plat nomor kendaraan di jalan tol",
+    "Nama panggilan"
+   ],
+   "benar": 1,
+   "penjelasan": "Data dikirim ke alamat yang tepat seperti paket pos."
+  },
+  {
+   "pertanyaan": "IPv4 terdiri dari berapa bit?",
+   "opsi": [
+    "8",
+    "32",
+    "64",
+    "128"
+   ],
+   "benar": 1,
+   "penjelasan": "IPv4 memakai 32 bit."
+  },
+  {
+   "pertanyaan": "IPv6 dikembangkan karena…",
+   "opsi": [
+    "IPv4 terlalu cepat",
+    "Jumlah alamat IPv4 terbatas",
+    "IPv4 tidak bisa dipakai di LAN",
+    "IPv6 memakai kabel khusus"
+   ],
+   "benar": 1,
+   "penjelasan": "IPv6 (128 bit) menyediakan alamat jauh lebih banyak."
+  },
+  {
+   "pertanyaan": "Contoh penulisan IPv4 yang benar adalah…",
+   "opsi": [
+    "192.168.0.1",
+    "192.168.0",
+    "300.1.1.1.1",
+    "2001:db8"
+   ],
+   "benar": 0,
+   "penjelasan": "IPv4 ditulis empat bagian angka dipisah titik."
+  },
+  {
+   "pertanyaan": "Alamat web server yang bisa diakses lewat internet termasuk…",
+   "opsi": [
+    "IP privat",
+    "IP publik",
+    "IP loopback",
+    "IP broadcast"
+   ],
+   "benar": 1,
+   "penjelasan": "IP publik dapat diakses langsung dari internet."
+  },
+  {
+   "pertanyaan": "IP privat dipakai…",
+   "opsi": [
+    "Hanya di dalam jaringan lokal",
+    "Langsung di internet",
+    "Hanya di satelit",
+    "Hanya di server cloud"
+   ],
+   "benar": 0,
+   "penjelasan": "IP privat tidak bisa diakses langsung dari internet."
+  },
+  {
+   "pertanyaan": "IP yang tidak berubah disebut…",
+   "opsi": [
+    "IP dinamis",
+    "IP statis",
+    "IP sementara",
+    "IP acak"
+   ],
+   "benar": 1,
+   "penjelasan": "IP statis tetap."
+  },
+  {
+   "pertanyaan": "IP yang diganti secara berkala oleh ISP adalah…",
+   "opsi": [
+    "IP statis",
+    "IP dinamis",
+    "IP privat",
+    "IP manual"
+   ],
+   "benar": 1,
+   "penjelasan": "IP dinamis berubah berkala."
+  },
+  {
+   "pertanyaan": "Prefix /24 setara dengan subnet mask…",
+   "opsi": [
+    "255.0.0.0",
+    "255.255.0.0",
+    "255.255.255.0",
+    "255.255.255.255"
+   ],
+   "benar": 2,
+   "penjelasan": "24 bit pertama bernilai 1 sehingga 255.255.255.0."
+  }
+ ]
+}

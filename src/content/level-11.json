@@ -1,0 +1,239 @@
+{
+ "level": 11,
+ "judul": "Desain Keamanan Jaringan Komputer",
+ "sumber": "P-11 Desain Keamanan Jaringan Komputer.pptx (Drive). Isi diambil dari teks slide; contoh angka RSA disederhanakan.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Strategi dasar merancang keamanan",
+   "uraian": "Tujuan keamanan jaringan adalah memaksimalkan sumber daya untuk mengamankan sistem pada titik yang tepat agar lebih efisien, karena ancaman semakin beragam (hacker, virus, malware).",
+   "poin": [
+    "Hak akses: hanya user yang berhak",
+    "Lapisan sekuriti: network, host/server, dan manusia",
+    "Satu jalur masuk dengan pengawasan terpusat"
+   ],
+   "cek": {
+    "pertanyaan": "Tiga lapisan sekuriti pada slide adalah network, host/server, dan…",
+    "opsi": [
+     "Kabel",
+     "Warna",
+     "Manusia"
+    ],
+    "benar": 2,
+    "penjelasan": "Human security."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Enkripsi dan digital signature",
+   "uraian": "Enkripsi dan tanda tangan digital mengamankan data. Slide menyebut RSA, MD5, IDEA, SAFER, Skipjack, dan Blowfish. RSA dibuat dari dua bilangan prima yang sangat besar.",
+   "poin": [
+    "Contoh ilustrasi: p = 673 dan q = 24971",
+    "Implementasi nyata memakai bilangan ratusan digit, mis. kunci 2.048-bit"
+   ],
+   "cek": {
+    "pertanyaan": "RSA dibentuk dari…",
+    "opsi": [
+     "Dua bilangan prima besar",
+     "Dua kabel",
+     "Dua router"
+    ],
+    "benar": 0,
+    "penjelasan": "RSA memakai pasangan bilangan prima besar."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Stub sub-network dan cari titik lemah",
+   "uraian": "Stub sub-network hanya punya satu jalur keluar-masuk untuk melindungi bagian jaringan yang paling perlu. Administrator mencari titik lemah dengan penetration testing dan vulnerability assessment.",
+   "poin": [
+    "Penetration testing: simulasi serangan untuk menemukan dan mengeksploitasi celah",
+    "Vulnerability assessment: mengidentifikasi, mengevaluasi, dan mengklasifikasikan kerentanan"
+   ],
+   "cek": {
+    "pertanyaan": "Simulasi serangan untuk menemukan celah disebut…",
+    "opsi": [
+     "Vulnerability scoring",
+     "Penetration testing",
+     "Subnetting"
+    ],
+    "benar": 1,
+    "penjelasan": "Penetration testing."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Sikap prohibitive dan permissive",
+   "uraian": "Ada dua sikap umum. Prohibitive menolak secara umum dan hanya mengizinkan layanan tertentu. Permissive menerima secara umum dan menolak yang tertentu.",
+   "poin": [
+    "Prohibitive: keamanan lebih tinggi, kontrol lebih rinci",
+    "Kekurangan prohibitive: pengguna bisa terhambat, konfigurasi rinci",
+    "Permissive: dianggap kurang aman dan lebih berisiko"
+   ],
+   "cek": {
+    "pertanyaan": "Sikap yang hanya mengizinkan layanan tertentu adalah…",
+    "opsi": [
+     "Permissive",
+     "Dynamic",
+     "Prohibitive"
+    ],
+    "benar": 2,
+    "penjelasan": "Prohibitive menolak secara umum."
+   }
+  },
+  {
+   "id": 5,
+   "judul": "Firewall dan istilahnya",
+   "uraian": "Firewall mengatur akses antara jaringan internal dan eksternal atau antarbagian jaringan lokal, bisa berupa hardware atau software.",
+   "poin": [
+    "Bastion host: sistem dengan sekuritas tinggi yang terekspos ke internet",
+    "Packet filtering: meloloskan atau memblok paket (IP asal/tujuan, protokol, port)",
+    "Perimeter network (DMZ): jaringan tambahan antara jaringan terlindungi dan eksternal",
+    "Proxy services: perantara internal dan eksternal, lebih aman dari screening router"
+   ],
+   "cek": {
+    "pertanyaan": "Jaringan perantara antara jaringan internal dan eksternal sering disebut…",
+    "opsi": [
+     "DMZ",
+     "VLAN",
+     "WAN"
+    ],
+    "benar": 0,
+    "penjelasan": "Perimeter network atau DMZ."
+   }
+  },
+  {
+   "id": 6,
+   "judul": "Variasi arsitektur dan software firewall",
+   "uraian": "Berbagai firewall dapat dikombinasikan sesuai kebijakan sekuriti.",
+   "poin": [
+    "Dua atau lebih bastion host",
+    "Menggabungkan exterior dan interior router",
+    "Menggabungkan bastion host dengan exterior atau interior router",
+    "Software firewall bekerja berdasarkan rule-list dan umumnya punya GUI sederhana"
+   ],
+   "cek": {
+    "pertanyaan": "Software firewall bekerja berdasarkan…",
+    "opsi": [
+     "Warna",
+     "Rule-list",
+     "Panjang kabel"
+    ],
+    "benar": 1,
+    "penjelasan": "Aturan (rule-list) menentukan paket diizinkan atau diblok."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Tujuan sekuriti jaringan menurut slide adalah…",
+   "opsi": [
+    "Menghapus semua akses",
+    "Mempercepat kabel",
+    "Menambah user",
+    "Memaksimalkan sumber daya untuk mengamankan titik yang tepat"
+   ],
+   "benar": 3,
+   "penjelasan": "Efisien dan tepat sasaran."
+  },
+  {
+   "pertanyaan": "Contoh ancaman pada jaringan adalah…",
+   "opsi": [
+    "Hacker, virus, malware",
+    "Kabel UTP",
+    "Switch",
+    "Konektor RJ45"
+   ],
+   "benar": 0,
+   "penjelasan": "Itu ancaman yang disebut."
+  },
+  {
+   "pertanyaan": "Stub sub-network memiliki…",
+   "opsi": [
+    "Banyak jalur",
+    "Tanpa jalur",
+    "Satu jalur keluar-masuk",
+    "Hanya nirkabel"
+   ],
+   "benar": 2,
+   "penjelasan": "Dipakai untuk perlindungan maksimal."
+  },
+  {
+   "pertanyaan": "Vulnerability assessment adalah…",
+   "opsi": [
+    "Simulasi serangan",
+    "Mengganti kabel",
+    "Proses mengidentifikasi dan mengevaluasi kerentanan",
+    "Membuat IP"
+   ],
+   "benar": 2,
+   "penjelasan": "Pemeriksaan kerentanan secara sistematis."
+  },
+  {
+   "pertanyaan": "Sikap prohibitive berarti…",
+   "opsi": [
+    "Menolak secara umum, mengizinkan tertentu",
+    "Menerima secara umum",
+    "Tanpa aturan",
+    "Hanya enkripsi"
+   ],
+   "benar": 0,
+   "penjelasan": "Menolak secara umum."
+  },
+  {
+   "pertanyaan": "Kekurangan prohibitive adalah…",
+   "opsi": [
+    "Kurang aman",
+    "Terlalu murah",
+    "Tanpa log",
+    "Pengguna bisa mengalami hambatan dan konfigurasi rinci"
+   ],
+   "benar": 3,
+   "penjelasan": "Akses dibatasi dan konfigurasi teliti."
+  },
+  {
+   "pertanyaan": "Firewall adalah komponen yang…",
+   "opsi": [
+    "Menyimpan film",
+    "Mengatur akses antara jaringan internal dan eksternal",
+    "Menambah baterai",
+    "Mencetak"
+   ],
+   "benar": 1,
+   "penjelasan": "Definisi dasar firewall."
+  },
+  {
+   "pertanyaan": "Bastion host adalah…",
+   "opsi": [
+    "Sistem dengan sekuritas tinggi yang terekspos ke internet",
+    "Printer",
+    "Kabel",
+    "Monitor"
+   ],
+   "benar": 0,
+   "penjelasan": "Rawan serangan sehingga diperkuat."
+  },
+  {
+   "pertanyaan": "Packet filtering menimbang informasi seperti…",
+   "opsi": [
+    "Warna kabel",
+    "Nama komputer",
+    "IP asal, IP tujuan, protokol, dan port",
+    "Ukuran layar"
+   ],
+   "benar": 2,
+   "penjelasan": "Itu atribut yang diperiksa."
+  },
+  {
+   "pertanyaan": "Proxy services dibanding screening router…",
+   "opsi": [
+    "Lebih rendah",
+    "Tingkat sekuritasnya lebih tinggi",
+    "Sama persis",
+    "Tanpa perantara"
+   ],
+   "benar": 1,
+   "penjelasan": "Sesuai slide."
+  }
+ ]
+}

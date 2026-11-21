@@ -1,0 +1,237 @@
+{
+ "level": 1,
+ "judul": "Jaringan Komputer Terkini",
+ "sumber": "P-01 Jaringan Komputer Terkini.pptx (Drive)",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Teknologi jaringan masa kini",
+   "uraian": "Hampir semua aktivitas, dari bekerja, belajar, sampai bersosialisasi, bergantung pada jaringan komputer. Teknologi utamanya adalah 5G, Wi-Fi 6 dan 6E, Software-Defined Networking (SDN), Network Function Virtualization (NFV), edge computing, dan quantum networking. Teknologi ini mendukung rumah pintar (IoT), mobil otonom, dan cloud computing.",
+   "poin": [
+    "5G: unduh sampai 20 kali lebih cepat dari 4G, latensi sangat rendah, stabil untuk perangkat IoT",
+    "Wi-Fi 6 dan 6E: lebih cepat, kapasitas lebih besar untuk banyak perangkat, lebih hemat energi",
+    "NFV: fungsi perangkat keras seperti router dan firewall dijalankan sebagai perangkat lunak",
+    "Quantum networking: masih dikembangkan untuk keamanan dan kecepatan transfer data yang ekstrem"
+   ],
+   "cek": {
+    "pertanyaan": "Apa keunggulan utama Wi-Fi 6 dan 6E?",
+    "opsi": [
+     "Hanya bisa dipakai lewat kabel",
+     "Kecepatan lebih tinggi dan kapasitas lebih besar untuk banyak perangkat",
+     "Tidak memerlukan router"
+    ],
+    "benar": 1,
+    "penjelasan": "Wi-Fi 6 dan 6E memberi kecepatan lebih tinggi, kapasitas lebih besar untuk banyak perangkat, dan efisiensi energi lebih baik."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "SDN dan edge computing",
+   "uraian": "SDN memisahkan control plane (penentu jalur data) dari data plane (perangkat fisik seperti router dan switch). Seluruh jaringan dikelola lewat satu controller terpusat. Edge computing memproses data di dekat sumbernya, seperti sensor, kamera CCTV pintar, atau mobil otonom, bukan di pusat data yang jauh.",
+   "poin": [
+    "SDN: pengaturan terpusat dan terprogram, lebih fleksibel, mudah diotomatisasi, kebijakan keamanan konsisten",
+    "Edge computing: latensi rendah, respons instan, hemat bandwidth"
+   ],
+   "cek": {
+    "pertanyaan": "Apa yang dipisahkan oleh SDN?",
+    "opsi": [
+     "Control plane dan data plane",
+     "Kabel dan nirkabel",
+     "Server dan klien"
+    ],
+    "benar": 0,
+    "penjelasan": "SDN memisahkan control plane dari data plane sehingga jaringan bisa diatur terpusat lewat software controller."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Internet, intranet, dan ekstranet",
+   "uraian": "Internet adalah jaringan global publik yang menghubungkan komputer di seluruh dunia. Intranet adalah jaringan privat internal untuk anggota organisasi. Ekstranet adalah jaringan privat terbatas yang menghubungkan intranet perusahaan dengan mitra atau pelanggan tepercaya. Ketiganya memakai TCP/IP, teknologi web, dan browser.",
+   "poin": [
+    "Internet: publik, cakupan global",
+    "Intranet: privat, untuk karyawan, keamanan tinggi",
+    "Ekstranet: privat terbatas, untuk mitra (B2B)"
+   ],
+   "cek": {
+    "pertanyaan": "Jaringan privat perusahaan yang juga boleh diakses mitra tepercaya disebut?",
+    "opsi": [
+     "Internet",
+     "Intranet",
+     "Ekstranet"
+    ],
+    "benar": 2,
+    "penjelasan": "Ekstranet menghubungkan intranet perusahaan dengan pihak eksternal tepercaya."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Jaringan kabel bawah laut",
+   "uraian": "Kabel serat optik di dasar laut menghubungkan benua dan pulau, dan membawa lebih dari 99% lalu lintas data internet antarbenua. Di Indonesia ada Palapa Ring, Jasuka (Jawa-Sumatera-Kalimantan), dan Biznet Nusantara Cable System. Risikonya: jangkar kapal, gempa bumi, dan sabotase.",
+   "poin": [
+    "Menghubungkan pusat data dunia dan mendukung transaksi keuangan",
+    "Lebih cepat dan latensinya lebih rendah dari satelit"
+   ],
+   "cek": {
+    "pertanyaan": "Berapa porsi lalu lintas internet antarbenua yang lewat kabel bawah laut?",
+    "opsi": [
+     "Kurang dari 10%",
+     "Sekitar 50%",
+     "Lebih dari 99%"
+    ],
+    "benar": 2,
+    "penjelasan": "Lebih dari 99% lalu lintas data antarbenua memakai kabel bawah laut."
+   }
+  },
+  {
+   "id": 5,
+   "judul": "RFID dan NFC",
+   "uraian": "RFID (Radio Frequency Identification) dan NFC (Near-Field Communication) sama-sama komunikasi nirkabel berbasis gelombang radio. RFID dipakai untuk pelacakan aset dari jarak jauh, sedangkan NFC adalah turunan RFID frekuensi tinggi (13,56 MHz) untuk interaksi aman jarak sangat dekat.",
+   "poin": [
+    "RFID: jangkauan sampai puluhan meter, umumnya satu arah, contoh pelacakan logistik dan e-KTP",
+    "NFC: kurang dari 10 cm, dua arah, contoh pembayaran cashless dan kartu akses"
+   ],
+   "cek": {
+    "pertanyaan": "Berapa jangkauan maksimum NFC?",
+    "opsi": [
+     "Sekitar 10 cm",
+     "Sekitar 100 meter",
+     "Sekitar 1 km"
+    ],
+    "benar": 0,
+    "penjelasan": "NFC dirancang untuk jarak sangat dekat, kurang dari 10 cm."
+   }
+  },
+  {
+   "id": 6,
+   "judul": "Cloud computing",
+   "uraian": "Cloud computing menyediakan server, penyimpanan, database, jaringan, dan perangkat lunak lewat internet sesuai permintaan. Pengguna bisa mengakses data dari mana saja dan membayar sesuai pemakaian (pay-as-you-go). Contohnya Google Drive, Dropbox, AWS, dan Microsoft Azure.",
+   "poin": [
+    "IaaS: menyewa server dan infrastruktur dasar",
+    "PaaS: lingkungan untuk membangun aplikasi",
+    "SaaS: aplikasi siap pakai, misalnya email dan penyimpanan awan"
+   ],
+   "cek": {
+    "pertanyaan": "Google Drive termasuk model layanan apa?",
+    "opsi": [
+     "IaaS",
+     "PaaS",
+     "SaaS"
+    ],
+    "benar": 2,
+    "penjelasan": "SaaS adalah aplikasi siap pakai lewat internet, seperti penyimpanan awan."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Teknologi mana yang menawarkan kecepatan unduh hingga 20 kali lebih cepat dari 4G?",
+   "opsi": [
+    "Wi-Fi 5",
+    "5G",
+    "Bluetooth",
+    "NFC"
+   ],
+   "benar": 1,
+   "penjelasan": "Slide menyebut 5G hingga 20 kali lebih cepat dari 4G dengan latensi sangat rendah."
+  },
+  {
+   "pertanyaan": "Standar Wi-Fi terbaru yang kapasitasnya besar untuk banyak perangkat adalah…",
+   "opsi": [
+    "Wi-Fi 6 dan 6E",
+    "Wi-Fi 3",
+    "Ethernet",
+    "Infrared"
+   ],
+   "benar": 0,
+   "penjelasan": "Wi-Fi 6 dan 6E dirancang untuk kecepatan tinggi dan banyak perangkat sekaligus."
+  },
+  {
+   "pertanyaan": "SDN memisahkan…",
+   "opsi": [
+    "Kabel dari nirkabel",
+    "Control plane dari data plane",
+    "Klien dari server",
+    "Router dari switch"
+   ],
+   "benar": 1,
+   "penjelasan": "Pemisahan ini membuat jaringan bisa dikelola terpusat lewat controller."
+  },
+  {
+   "pertanyaan": "Apa yang dilakukan Network Function Virtualization (NFV)?",
+   "opsi": [
+    "Mengganti kabel tembaga dengan serat optik",
+    "Mengubah fungsi perangkat keras menjadi perangkat lunak",
+    "Memisahkan control plane dari data plane",
+    "Memproses data di dekat sumbernya"
+   ],
+   "benar": 1,
+   "penjelasan": "NFV memvirtualisasikan fungsi perangkat keras menjadi perangkat lunak."
+  },
+  {
+   "pertanyaan": "Keunggulan utama edge computing adalah…",
+   "opsi": [
+    "Latensi rendah dan respons instan",
+    "Memperbesar penggunaan bandwidth",
+    "Menghapus kebutuhan sensor",
+    "Menyimpan semua data di satu pusat"
+   ],
+   "benar": 0,
+   "penjelasan": "Data diproses dekat sumbernya sehingga respons lebih cepat dan bandwidth lebih hemat."
+  },
+  {
+   "pertanyaan": "Model cloud yang menyediakan lingkungan untuk membangun aplikasi adalah…",
+   "opsi": [
+    "IaaS",
+    "PaaS",
+    "SaaS",
+    "DaaS"
+   ],
+   "benar": 1,
+   "penjelasan": "PaaS (Platform as a Service) menyediakan platform pengembangan aplikasi."
+  },
+  {
+   "pertanyaan": "Jaringan privat internal yang hanya untuk anggota organisasi disebut…",
+   "opsi": [
+    "Internet",
+    "Intranet",
+    "Ekstranet",
+    "Hotspot publik"
+   ],
+   "benar": 1,
+   "penjelasan": "Intranet bersifat privat dan internal."
+  },
+  {
+   "pertanyaan": "Persamaan internet, intranet, dan ekstranet adalah…",
+   "opsi": [
+    "Sama-sama terbuka untuk umum",
+    "Sama-sama memakai TCP/IP dan teknologi web",
+    "Sama-sama tanpa login",
+    "Sama-sama hanya di dalam satu gedung"
+   ],
+   "benar": 1,
+   "penjelasan": "Ketiganya memakai TCP/IP, HTTP, email, dan browser."
+  },
+  {
+   "pertanyaan": "Kabel bawah laut membawa lebih dari berapa persen lalu lintas internet antarbenua?",
+   "opsi": [
+    "10%",
+    "50%",
+    "75%",
+    "99%"
+   ],
+   "benar": 3,
+   "penjelasan": "Lebih dari 99% lalu lintas antarbenua lewat kabel serat optik di dasar laut."
+  },
+  {
+   "pertanyaan": "Perbedaan NFC dengan RFID adalah…",
+   "opsi": [
+    "NFC jarak sangat dekat dan bisa dua arah",
+    "NFC jarak 100 meter",
+    "NFC hanya satu arah",
+    "NFC tidak memakai gelombang radio"
+   ],
+   "benar": 0,
+   "penjelasan": "NFC kurang dari 10 cm dan mendukung komunikasi dua arah."
+  }
+ ]
+}

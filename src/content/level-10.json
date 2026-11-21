@@ -1,0 +1,201 @@
+{
+ "level": 10,
+ "judul": "Manajemen Jaringan Komputer",
+ "sumber": "P-10 Manajemen Jaringan Komputer.pptx (Drive). Slide tidak memuat teks yang bisa dibaca, jadi isi Level ini disusun dari pengetahuan umum dan perlu dicocokkan dengan slide asli.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Tujuan manajemen jaringan",
+   "uraian": "Manajemen jaringan memastikan jaringan tetap tersedia, aman, dan berkinerja baik lewat pemantauan, konfigurasi, dan perbaikan.",
+   "poin": [
+    "Ketersediaan layanan",
+    "Kinerja yang terjaga",
+    "Keamanan dan dokumentasi"
+   ],
+   "cek": {
+    "pertanyaan": "Tujuan manajemen jaringan adalah menjaga jaringan…",
+    "opsi": [
+     "Selalu mati",
+     "Tersedia, aman, dan berkinerja baik",
+     "Tanpa pengguna"
+    ],
+    "benar": 1,
+    "penjelasan": "Itu inti manajemen jaringan."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Area fungsional FCAPS",
+   "uraian": "FCAPS adalah kerangka lima area manajemen.",
+   "poin": [
+    "Fault: gangguan",
+    "Configuration: pengaturan perangkat",
+    "Accounting: pemakaian",
+    "Performance: kinerja",
+    "Security: keamanan"
+   ],
+   "cek": {
+    "pertanyaan": "Huruf F pada FCAPS adalah…",
+    "opsi": [
+     "Firewall",
+     "Frame",
+     "Fault"
+    ],
+    "benar": 2,
+    "penjelasan": "F = Fault management."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Pemantauan dan SNMP",
+   "uraian": "Pemantauan memakai protokol dan alat untuk melihat status perangkat dan trafik. SNMP adalah protokol umum untuk memantau dan mengelola perangkat jaringan.",
+   "poin": [
+    "SNMP: mengambil status dari router dan switch",
+    "Pantau penggunaan bandwidth, CPU, dan ketersediaan"
+   ],
+   "cek": {
+    "pertanyaan": "Protokol umum untuk memantau perangkat jaringan adalah…",
+    "opsi": [
+     "SNMP",
+     "HTTP",
+     "FTP"
+    ],
+    "benar": 0,
+    "penjelasan": "SNMP (Simple Network Management Protocol)."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Troubleshooting dan pemeliharaan",
+   "uraian": "Pemecahan masalah dilakukan sistematis, misalnya per lapisan OSI, disertai dokumentasi dan cadangan konfigurasi.",
+   "poin": [
+    "Cek dari lapisan bawah ke atas",
+    "Dokumentasikan topologi dan perubahan",
+    "Cadangkan konfigurasi perangkat",
+    "Perbarui perangkat lunak secara berkala"
+   ],
+   "cek": {
+    "pertanyaan": "Langkah yang baik sebelum mengubah konfigurasi perangkat adalah…",
+    "opsi": [
+     "Menghapus log",
+     "Mencadangkan konfigurasi",
+     "Mematikan semua alat"
+    ],
+    "benar": 1,
+    "penjelasan": "Cadangan memungkinkan pemulihan."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Manajemen jaringan bertujuan…",
+   "opsi": [
+    "Menghapus jaringan",
+    "Menjaga ketersediaan, kinerja, dan keamanan",
+    "Menambah virus",
+    "Mengurangi pengguna"
+   ],
+   "benar": 1,
+   "penjelasan": "Tujuan utamanya."
+  },
+  {
+   "pertanyaan": "FCAPS terdiri dari berapa area?",
+   "opsi": [
+    "3",
+    "4",
+    "6",
+    "5"
+   ],
+   "benar": 3,
+   "penjelasan": "Fault, Configuration, Accounting, Performance, Security."
+  },
+  {
+   "pertanyaan": "Configuration management mengurus…",
+   "opsi": [
+    "Pengaturan perangkat",
+    "Tagihan",
+    "Gangguan saja",
+    "Enkripsi saja"
+   ],
+   "benar": 0,
+   "penjelasan": "C = Configuration."
+  },
+  {
+   "pertanyaan": "Performance management memantau…",
+   "opsi": [
+    "Warna kabel",
+    "Nama pengguna",
+    "Kinerja jaringan",
+    "Tagihan listrik"
+   ],
+   "benar": 2,
+   "penjelasan": "P = Performance."
+  },
+  {
+   "pertanyaan": "Security management berkaitan dengan…",
+   "opsi": [
+    "Kecepatan CPU saja",
+    "Jumlah kabel",
+    "Perlindungan akses dan data",
+    "Tagihan"
+   ],
+   "benar": 2,
+   "penjelasan": "S = Security."
+  },
+  {
+   "pertanyaan": "SNMP dipakai untuk…",
+   "opsi": [
+    "Memantau dan mengelola perangkat jaringan",
+    "Mengirim email",
+    "Mengunduh film",
+    "Mengenkripsi disk"
+   ],
+   "benar": 0,
+   "penjelasan": "Simple Network Management Protocol."
+  },
+  {
+   "pertanyaan": "Alat pemantauan biasanya memantau…",
+   "opsi": [
+    "Warna wallpaper",
+    "Isi email",
+    "Harga kabel",
+    "Bandwidth dan ketersediaan perangkat"
+   ],
+   "benar": 3,
+   "penjelasan": "Bandwidth, CPU, uptime."
+  },
+  {
+   "pertanyaan": "Troubleshooting sistematis dapat dilakukan…",
+   "opsi": [
+    "Acak",
+    "Per lapisan OSI",
+    "Dengan mematikan listrik",
+    "Dengan mengganti semua alat"
+   ],
+   "benar": 1,
+   "penjelasan": "Pendekatan per lapisan."
+  },
+  {
+   "pertanyaan": "Dokumentasi topologi berguna untuk…",
+   "opsi": [
+    "Mempermudah perbaikan dan perubahan",
+    "Menambah kecepatan",
+    "Menghapus log",
+    "Membuat kabel"
+   ],
+   "benar": 0,
+   "penjelasan": "Dokumentasi mempercepat penanganan."
+  },
+  {
+   "pertanyaan": "Mencadangkan konfigurasi perangkat penting karena…",
+   "opsi": [
+    "Menambah noise",
+    "Mengganti ISP",
+    "Bisa dipulihkan saat gagal",
+    "Menghapus firewall"
+   ],
+   "benar": 2,
+   "penjelasan": "Cadangan untuk pemulihan."
+  }
+ ]
+}

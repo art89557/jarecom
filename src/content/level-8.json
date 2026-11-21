@@ -1,0 +1,177 @@
+{
+ "level": 8,
+ "judul": "Protokol Routing",
+ "sumber": "P-08 Protokol Routing.pptx (Drive). Slide hanya satu halaman ringkas; Level ini singkat.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Pengertian dan fungsi routing",
+   "uraian": "Routing adalah proses memilih jalur terbaik untuk meneruskan paket data dari satu jaringan ke jaringan lain atau antarsubnet. Perangkatnya adalah router (lapisan 3 OSI).",
+   "poin": [
+    "Menghubungkan jaringan berbeda",
+    "Mengarahkan traffic agar tidak macet",
+    "Router memeriksa tabel routing untuk menentukan rute tercepat dan paling efisien"
+   ],
+   "cek": {
+    "pertanyaan": "Router bekerja di lapisan OSI nomor…",
+    "opsi": [
+     "2",
+     "7",
+     "3"
+    ],
+    "benar": 2,
+    "penjelasan": "Router bekerja di Network layer (3)."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Static dan dynamic routing",
+   "uraian": "Ada dua jenis routing.",
+   "poin": [
+    "Static: jalur dikonfigurasi manual; aman dan efisien untuk jaringan kecil, sulit dikelola pada jaringan besar",
+    "Dynamic: router memperbarui tabel otomatis dengan algoritma saat topologi berubah; cocok untuk jaringan besar"
+   ],
+   "cek": {
+    "pertanyaan": "Routing yang memperbarui tabel otomatis disebut…",
+    "opsi": [
+     "Dynamic",
+     "Static",
+     "Manual"
+    ],
+    "benar": 0,
+    "penjelasan": "Dynamic routing memperbarui tabel otomatis."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Routing dan switching",
+   "uraian": "Tanpa routing, perangkat di jaringan berbeda tidak bisa berkomunikasi.",
+   "poin": [
+    "Routing: mencari jalur antar jaringan berbeda",
+    "Switching: mengirim data dalam satu jaringan lokal (LAN)"
+   ],
+   "cek": {
+    "pertanyaan": "Switching mengirim data…",
+    "opsi": [
+     "Antar jaringan berbeda",
+     "Dalam satu LAN",
+     "Lewat satelit"
+    ],
+    "benar": 1,
+    "penjelasan": "Switching bekerja di dalam satu jaringan lokal."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Routing adalah…",
+   "opsi": [
+    "Memilih jalur terbaik untuk paket data",
+    "Mengenkripsi data",
+    "Menyalin berkas",
+    "Mengatur warna layar"
+   ],
+   "benar": 0,
+   "penjelasan": "Pemilihan best path."
+  },
+  {
+   "pertanyaan": "Perangkat yang melakukan routing adalah…",
+   "opsi": [
+    "Hub",
+    "Repeater",
+    "Router",
+    "NIC"
+   ],
+   "benar": 2,
+   "penjelasan": "Router."
+  },
+  {
+   "pertanyaan": "Router menentukan rute dengan melihat…",
+   "opsi": [
+    "Kabel",
+    "Tabel routing",
+    "Warna LED",
+    "Nama pengguna"
+   ],
+   "benar": 1,
+   "penjelasan": "Tabel routing berisi daftar jalur."
+  },
+  {
+   "pertanyaan": "Static routing dikonfigurasi oleh…",
+   "opsi": [
+    "Router otomatis",
+    "ISP",
+    "Pengguna akhir",
+    "Administrator secara manual"
+   ],
+   "benar": 3,
+   "penjelasan": "Static dikonfigurasi manual."
+  },
+  {
+   "pertanyaan": "Static routing cocok untuk…",
+   "opsi": [
+    "Jaringan kecil",
+    "Jaringan global",
+    "Jaringan yang sering berubah",
+    "Tidak ada"
+   ],
+   "benar": 0,
+   "penjelasan": "Lebih aman dan efisien untuk jaringan kecil."
+  },
+  {
+   "pertanyaan": "Dynamic routing cocok untuk…",
+   "opsi": [
+    "Satu komputer",
+    "Kabel tunggal",
+    "Jaringan skala besar",
+    "Printer"
+   ],
+   "benar": 2,
+   "penjelasan": "Fleksibel untuk jaringan besar."
+  },
+  {
+   "pertanyaan": "Kelemahan static routing adalah…",
+   "opsi": [
+    "Terlalu aman",
+    "Terlalu cepat",
+    "Sulit dikelola pada jaringan besar",
+    "Tidak memakai router"
+   ],
+   "benar": 2,
+   "penjelasan": "Jaringan besar sulit dikonfigurasi manual."
+  },
+  {
+   "pertanyaan": "Tanpa routing…",
+   "opsi": [
+    "Perangkat di jaringan berbeda tidak bisa berkomunikasi",
+    "Semua jaringan jadi lebih cepat",
+    "Switch tidak berfungsi",
+    "Kabel putus"
+   ],
+   "benar": 0,
+   "penjelasan": "Routing menghubungkan jaringan berbeda."
+  },
+  {
+   "pertanyaan": "Perbedaan routing dan switching adalah…",
+   "opsi": [
+    "Keduanya sama",
+    "Switching antar negara",
+    "Routing hanya untuk kabel",
+    "Routing antar jaringan, switching dalam satu LAN"
+   ],
+   "benar": 3,
+   "penjelasan": "Itu perbedaan utamanya."
+  },
+  {
+   "pertanyaan": "Dynamic routing memperbarui tabel saat…",
+   "opsi": [
+    "Komputer dimatikan",
+    "Topologi berubah",
+    "Layar dikunci",
+    "Pengguna login"
+   ],
+   "benar": 1,
+   "penjelasan": "Algoritma mengikuti perubahan topologi."
+  }
+ ]
+}

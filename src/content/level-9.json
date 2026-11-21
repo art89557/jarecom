@@ -1,0 +1,198 @@
+{
+ "level": 9,
+ "judul": "VPN (Virtual Private Network)",
+ "sumber": "P-09 VPN (Virtual Privat Network).ppt (Drive). File .ppt tidak bisa dibaca di sini, jadi seluruh isi Level ini disusun dari pengetahuan umum dan perlu dicocokkan dengan slide asli.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Konsep VPN",
+   "uraian": "VPN membuat koneksi privat yang terenkripsi di atas jaringan publik seperti internet, sehingga data seolah lewat jaringan pribadi.",
+   "poin": [
+    "Enkripsi melindungi data di jalur publik",
+    "Menyembunyikan IP asli pengguna",
+    "Memberi akses aman ke jaringan kantor dari jauh"
+   ],
+   "cek": {
+    "pertanyaan": "VPN membuat koneksi yang…",
+    "opsi": [
+     "Privat dan terenkripsi di jaringan publik",
+     "Hanya lewat kabel LAN",
+     "Tanpa internet"
+    ],
+    "benar": 0,
+    "penjelasan": "VPN membangun terowongan terenkripsi di atas jaringan publik."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Jenis VPN",
+   "uraian": "VPN dibedakan menurut cara menghubungkan.",
+   "poin": [
+    "Remote access: pengguna individu ke jaringan kantor",
+    "Site-to-site: dua jaringan kantor saling terhubung"
+   ],
+   "cek": {
+    "pertanyaan": "Menghubungkan kantor pusat dan kantor cabang termasuk VPN…",
+    "opsi": [
+     "Remote access",
+     "Site-to-site",
+     "Hotspot"
+    ],
+    "benar": 1,
+    "penjelasan": "Site-to-site menghubungkan dua jaringan."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Protokol VPN",
+   "uraian": "Beberapa protokol umum dipakai untuk membangun VPN.",
+   "poin": [
+    "IPsec: enkripsi di lapisan jaringan",
+    "OpenVPN dan WireGuard: terowongan modern",
+    "L2TP/IPsec dan PPTP: protokol lama",
+    "SSL/TLS VPN: lewat browser"
+   ],
+   "cek": {
+    "pertanyaan": "Protokol yang bekerja dengan enkripsi di lapisan jaringan adalah…",
+    "opsi": [
+     "HTTP",
+     "DHCP",
+     "IPsec"
+    ],
+    "benar": 2,
+    "penjelasan": "IPsec mengenkripsi paket IP."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Manfaat dan batasan",
+   "uraian": "VPN meningkatkan keamanan tetapi punya batasan.",
+   "poin": [
+    "Manfaat: keamanan, akses jarak jauh, menghemat biaya dibanding jalur sewa",
+    "Batasan: menambah latensi dan bergantung pada konfigurasi serta penyedia"
+   ],
+   "cek": {
+    "pertanyaan": "Batasan VPN adalah…",
+    "opsi": [
+     "Menambah latensi",
+     "Menghilangkan enkripsi",
+     "Memutus internet"
+    ],
+    "benar": 0,
+    "penjelasan": "Enkripsi dan terowongan menambah latensi."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "VPN singkatan dari…",
+   "opsi": [
+    "Very Public Network",
+    "Visual Packet Node",
+    "Virtual Private Network",
+    "Virtual Protocol Number"
+   ],
+   "benar": 2,
+   "penjelasan": "Virtual Private Network."
+  },
+  {
+   "pertanyaan": "Tujuan utama VPN adalah…",
+   "opsi": [
+    "Menambah RAM",
+    "Mengamankan komunikasi di jaringan publik",
+    "Mengganti IP printer",
+    "Mematikan firewall"
+   ],
+   "benar": 1,
+   "penjelasan": "VPN mengamankan jalur komunikasi."
+  },
+  {
+   "pertanyaan": "VPN memakai teknik…",
+   "opsi": [
+    "Hanya kompresi",
+    "Hanya caching",
+    "Hanya routing statis",
+    "Enkripsi dan tunneling"
+   ],
+   "benar": 3,
+   "penjelasan": "Terowongan terenkripsi."
+  },
+  {
+   "pertanyaan": "Pegawai bekerja dari rumah mengakses jaringan kantor memakai VPN…",
+   "opsi": [
+    "Remote access",
+    "Site-to-site",
+    "Broadcast",
+    "Ad hoc"
+   ],
+   "benar": 0,
+   "penjelasan": "Pengguna individu ke jaringan kantor."
+  },
+  {
+   "pertanyaan": "Menghubungkan dua kantor sekaligus memakai VPN…",
+   "opsi": [
+    "Remote access",
+    "Static route",
+    "Site-to-site",
+    "Hub"
+   ],
+   "benar": 2,
+   "penjelasan": "Dua jaringan saling terhubung."
+  },
+  {
+   "pertanyaan": "IPsec adalah…",
+   "opsi": [
+    "Jenis kabel",
+    "Alamat IP",
+    "Rangkaian protokol keamanan untuk paket IP",
+    "Browser"
+   ],
+   "benar": 2,
+   "penjelasan": "IPsec mengamankan komunikasi IP."
+  },
+  {
+   "pertanyaan": "Protokol VPN modern yang ringan adalah…",
+   "opsi": [
+    "WireGuard",
+    "Telnet",
+    "FTP",
+    "SMTP"
+   ],
+   "benar": 0,
+   "penjelasan": "WireGuard."
+  },
+  {
+   "pertanyaan": "VPN membantu menyembunyikan…",
+   "opsi": [
+    "Kabel LAN",
+    "Nama komputer lokal saja",
+    "Warna layar",
+    "IP asli pengguna dari situs tujuan"
+   ],
+   "benar": 3,
+   "penjelasan": "Situs tujuan melihat IP server VPN."
+  },
+  {
+   "pertanyaan": "Keuntungan VPN dibanding jalur sewa adalah…",
+   "opsi": [
+    "Pasti lebih cepat",
+    "Biaya lebih hemat",
+    "Tidak butuh internet",
+    "Tanpa konfigurasi"
+   ],
+   "benar": 1,
+   "penjelasan": "Memakai internet publik lebih murah."
+  },
+  {
+   "pertanyaan": "Dampak negatif VPN yang sering muncul adalah…",
+   "opsi": [
+    "Latensi bertambah",
+    "Data tak terenkripsi",
+    "Alamat IP hilang permanen",
+    "Kabel putus"
+   ],
+   "benar": 0,
+   "penjelasan": "Terowongan terenkripsi menambah latensi."
+  }
+ ]
+}

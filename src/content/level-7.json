@@ -1,0 +1,200 @@
+{
+ "level": 7,
+ "judul": "Subnetting",
+ "sumber": "P-07 Subnetting.pptx (Drive). Contoh perhitungan memakai angka dari slide; angka host untuk /12 dikoreksi menjadi 2^20 - 2.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Apa itu subnetting",
+   "uraian": "Subnetting adalah proses membagi jaringan besar menjadi beberapa subjaringan yang lebih kecil dan efisien, dengan meminjam bit dari bagian host untuk menjadi bagian jaringan.",
+   "poin": [
+    "Efisiensi alamat IP",
+    "Kinerja: mengurangi lalu lintas broadcast",
+    "Keamanan: mengisolasi kelompok perangkat",
+    "Manajemen: mempermudah troubleshooting"
+   ],
+   "cek": {
+    "pertanyaan": "Subnetting bekerja dengan meminjam bit dari bagian…",
+    "opsi": [
+     "Network",
+     "Host",
+     "Header Ethernet"
+    ],
+    "benar": 1,
+    "penjelasan": "Bit host dipinjam menjadi bit jaringan."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Rumus perhitungan subnet",
+   "uraian": "Tiga rumus dasar dipakai untuk menghitung subnet.",
+   "poin": [
+    "Jumlah subnet = 2^x, x = jumlah bit 1 pada oktet yang dipinjam",
+    "Host per subnet = 2^y - 2, y = jumlah bit 0 pada bagian host",
+    "Blok subnet = 256 - nilai oktet terakhir subnet mask, lalu dilipatkan"
+   ],
+   "cek": {
+    "pertanyaan": "Host valid per subnet dihitung dengan…",
+    "opsi": [
+     "2^x",
+     "256 - mask",
+     "2^y - 2"
+    ],
+    "benar": 2,
+    "penjelasan": "Dua alamat dipakai untuk network dan broadcast."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Contoh kelas C: /24, /25, dan /26",
+   "uraian": "Contoh dengan jaringan 192.168.1.0.",
+   "poin": [
+    "/24: mask 255.255.255.0, 1 blok, 254 host valid",
+    "/25: mask 255.255.255.128, 2 blok, 126 host valid; blok 0 dan 128",
+    "/26: mask 255.255.255.192, 4 blok, 62 host valid; blok 0, 64, 128, 192"
+   ],
+   "cek": {
+    "pertanyaan": "Berapa host valid pada /26?",
+    "opsi": [
+     "62",
+     "64",
+     "126"
+    ],
+    "benar": 0,
+    "penjelasan": "2^6 - 2 = 62."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Contoh kelas B dan A",
+   "uraian": "Jaringan 175.1.0.0/19 memakai mask 255.255.224.0. Jaringan 72.0.0.0/12 memakai mask 255.240.0.0.",
+   "poin": [
+    "/19: 8 subnet, 8190 host per subnet, blok 32",
+    "/12: 16 subnet, blok 16, host per subnet 2^20 - 2",
+    "Host pertama = network + 1, broadcast = satu angka sebelum subnet berikutnya"
+   ],
+   "cek": {
+    "pertanyaan": "Pada /19, jumlah subnetnya adalah…",
+    "opsi": [
+     "16",
+     "8",
+     "32"
+    ],
+    "benar": 1,
+    "penjelasan": "Ada tiga bit 1 tambahan sehingga 2^3 = 8."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Subnetting membagi…",
+   "opsi": [
+    "Kabel menjadi dua",
+    "Jaringan besar menjadi subjaringan kecil",
+    "Server menjadi klien",
+    "IP menjadi domain"
+   ],
+   "benar": 1,
+   "penjelasan": "Itu definisi subnetting."
+  },
+  {
+   "pertanyaan": "Manfaat subnetting yang BUKAN benar adalah…",
+   "opsi": [
+    "Mengurangi broadcast",
+    "Meningkatkan keamanan lewat segmentasi",
+    "Menghemat alamat IP",
+    "Menambah kecepatan kabel secara fisik"
+   ],
+   "benar": 3,
+   "penjelasan": "Subnetting tidak mengubah kecepatan kabel."
+  },
+  {
+   "pertanyaan": "Rumus host per subnet adalah…",
+   "opsi": [
+    "2^y + 2",
+    "y x 2",
+    "2^y - 2",
+    "256 + y"
+   ],
+   "benar": 2,
+   "penjelasan": "Dikurangi alamat network dan broadcast."
+  },
+  {
+   "pertanyaan": "Mask /25 sama dengan…",
+   "opsi": [
+    "255.255.255.0",
+    "255.255.255.128",
+    "255.255.255.192",
+    "255.255.255.224"
+   ],
+   "benar": 1,
+   "penjelasan": "/25 = 255.255.255.128."
+  },
+  {
+   "pertanyaan": "Jumlah host valid pada /25 adalah…",
+   "opsi": [
+    "62",
+    "128",
+    "254",
+    "126"
+   ],
+   "benar": 3,
+   "penjelasan": "2^7 - 2 = 126."
+  },
+  {
+   "pertanyaan": "Blok subnet untuk /26 adalah…",
+   "opsi": [
+    "0, 64, 128, 192",
+    "0, 32, 64, 96",
+    "0, 128",
+    "0, 16, 32"
+   ],
+   "benar": 0,
+   "penjelasan": "256 - 192 = 64."
+  },
+  {
+   "pertanyaan": "Mask /19 adalah…",
+   "opsi": [
+    "255.255.192.0",
+    "255.255.240.0",
+    "255.255.224.0",
+    "255.255.248.0"
+   ],
+   "benar": 2,
+   "penjelasan": "/19 = 255.255.224.0."
+  },
+  {
+   "pertanyaan": "Pada 192.168.1.0/24, alamat broadcast adalah…",
+   "opsi": [
+    "192.168.1.0",
+    "192.168.1.1",
+    "192.168.1.255",
+    "192.168.1.254"
+   ],
+   "benar": 2,
+   "penjelasan": "Alamat terakhir blok adalah broadcast."
+  },
+  {
+   "pertanyaan": "Pada /12 (mask 255.240.0.0), jumlah subnet adalah…",
+   "opsi": [
+    "16",
+    "4",
+    "12",
+    "240"
+   ],
+   "benar": 0,
+   "penjelasan": "Empat bit 1 tambahan: 2^4 = 16."
+  },
+  {
+   "pertanyaan": "Host pertama pada sebuah subnet adalah…",
+   "opsi": [
+    "Network address",
+    "Broadcast address",
+    "Gateway wajib",
+    "Network address + 1"
+   ],
+   "benar": 3,
+   "penjelasan": "Host pertama satu angka setelah network address."
+  }
+ ]
+}

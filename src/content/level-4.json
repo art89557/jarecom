@@ -1,0 +1,226 @@
+{
+ "level": 4,
+ "judul": "OSI Layer vs TCP/IP",
+ "sumber": "P-04 OSI Layer vs TCP.docx (Drive). File pptx-nya tidak berisi teks yang bisa dibaca, jadi isi diambil dari file docx.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Model OSI dan tujuh lapisannya",
+   "uraian": "OSI (Open Systems Interconnection) membagi komunikasi data menjadi tujuh lapisan yang berbeda fungsi tetapi saling terkait. Model ini dipakai sebagai konsep dalam pendidikan dan dokumentasi, bukan diterapkan langsung di jaringan saat ini.",
+   "poin": [
+    "Physical: transmisi sinyal lewat kabel atau radio",
+    "Data Link: frame, alamat MAC, deteksi kesalahan",
+    "Network: routing dan alamat IP",
+    "Transport: pengiriman end-to-end (TCP/UDP)",
+    "Session, Presentation, Application: sesi, format data dan enkripsi, serta antarmuka ke aplikasi"
+   ],
+   "cek": {
+    "pertanyaan": "Lapisan OSI yang menangani routing dan alamat IP adalah…",
+    "opsi": [
+     "Data Link",
+     "Network",
+     "Transport"
+    ],
+    "benar": 1,
+    "penjelasan": "Network layer bertanggung jawab atas routing dan pengalamatan IP."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Model TCP/IP dan empat lapisannya",
+   "uraian": "TCP/IP dikembangkan DARPA pada akhir 1970-an dan menjadi dasar ARPANET yang berkembang menjadi Internet. Berbeda dengan OSI, TCP/IP dibuat secara praktis dan langsung dipakai.",
+   "poin": [
+    "Network Interface: komunikasi dengan perangkat keras",
+    "Internet: alamat IP dan routing",
+    "Transport: TCP atau UDP",
+    "Application: gabungan application, presentation, dan session OSI"
+   ],
+   "cek": {
+    "pertanyaan": "Berapa jumlah lapisan model TCP/IP?",
+    "opsi": [
+     "5",
+     "7",
+     "4"
+    ],
+    "benar": 2,
+    "penjelasan": "TCP/IP memiliki empat lapisan."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Perbandingan OSI dan TCP/IP",
+   "uraian": "Kedua model sama-sama membagi komunikasi ke dalam lapisan demi interoperabilitas dan standarisasi. Bedanya, OSI punya 7 lapisan dan bersifat teoritis, sedangkan TCP/IP punya 4 lapisan dan dipakai luas.",
+   "poin": [
+    "Application, Presentation, Session (OSI) setara Application (TCP/IP)",
+    "Transport setara Transport",
+    "Network setara Internet",
+    "Data Link dan Physical setara Network Interface"
+   ],
+   "cek": {
+    "pertanyaan": "Network layer OSI setara dengan lapisan TCP/IP yang mana?",
+    "opsi": [
+     "Internet",
+     "Application",
+     "Network Interface"
+    ],
+    "benar": 0,
+    "penjelasan": "Network (OSI) dipetakan ke Internet (TCP/IP)."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Pemetaan protokol dan studi kasus",
+   "uraian": "Protokol dapat dipetakan ke lapisannya. Saat mengakses website, data dikemas berlapis dari atas ke bawah.",
+   "poin": [
+    "HTTP dan FTP di Application",
+    "SSL/TLS di Presentation (OSI)",
+    "TCP dan UDP di Transport, IP di Network",
+    "Ethernet di Data Link dan Physical",
+    "Akses web: HTTP, dibungkus TCP, lalu header IP, lalu Ethernet atau Wi-Fi"
+   ],
+   "cek": {
+    "pertanyaan": "Pada akses website, HTTP dikemas dalam protokol…",
+    "opsi": [
+     "Ethernet",
+     "TCP",
+     "SSL"
+    ],
+    "benar": 1,
+    "penjelasan": "HTTP dikemas dalam TCP, lalu dibungkus header IP."
+   }
+  },
+  {
+   "id": 5,
+   "judul": "Firewall dan tren modern",
+   "uraian": "Firewall bekerja di beberapa lapisan. Tren modern seperti NFV, SDN, dan application-aware networking mengaburkan batas lapisan tradisional.",
+   "poin": [
+    "Transport: memblokir port TCP",
+    "Application: memfilter URL",
+    "Network: memblokir alamat IP tertentu",
+    "SDN memisahkan control plane dan data plane"
+   ],
+   "cek": {
+    "pertanyaan": "Firewall yang memblokir alamat IP tertentu bekerja di lapisan…",
+    "opsi": [
+     "Application",
+     "Physical",
+     "Network"
+    ],
+    "benar": 2,
+    "penjelasan": "Pemblokiran IP dilakukan di Network layer."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "OSI singkatan dari…",
+   "opsi": [
+    "Online System Internet",
+    "Optical Signal Interface",
+    "Open Systems Interconnection",
+    "Open Service Interface"
+   ],
+   "benar": 2,
+   "penjelasan": "OSI adalah Open Systems Interconnection."
+  },
+  {
+   "pertanyaan": "Berapa lapisan pada model OSI?",
+   "opsi": [
+    "7",
+    "4",
+    "5",
+    "6"
+   ],
+   "benar": 0,
+   "penjelasan": "OSI memiliki tujuh lapisan."
+  },
+  {
+   "pertanyaan": "Lapisan OSI yang mengatur frame dan alamat MAC adalah…",
+   "opsi": [
+    "Physical",
+    "Network",
+    "Transport",
+    "Data Link"
+   ],
+   "benar": 3,
+   "penjelasan": "Data Link menangani frame, MAC, dan deteksi kesalahan."
+  },
+  {
+   "pertanyaan": "TCP dan UDP berada di lapisan…",
+   "opsi": [
+    "Network",
+    "Transport",
+    "Session",
+    "Application"
+   ],
+   "benar": 1,
+   "penjelasan": "Keduanya protokol Transport."
+  },
+  {
+   "pertanyaan": "Lapisan Application TCP/IP menggabungkan fungsi…",
+   "opsi": [
+    "Application, Presentation, Session",
+    "Physical, Data Link, Network",
+    "Transport dan Network",
+    "Hanya Application"
+   ],
+   "benar": 0,
+   "penjelasan": "Application TCP/IP = Application + Presentation + Session OSI."
+  },
+  {
+   "pertanyaan": "Siapa yang mengembangkan model TCP/IP?",
+   "opsi": [
+    "ISO",
+    "Cisco",
+    "DARPA",
+    "IEEE"
+   ],
+   "benar": 2,
+   "penjelasan": "TCP/IP dikembangkan DARPA pada akhir 1970-an."
+  },
+  {
+   "pertanyaan": "Perbedaan utama OSI dan TCP/IP adalah…",
+   "opsi": [
+    "OSI 4 lapisan, TCP/IP 7 lapisan",
+    "OSI teoritis 7 lapisan, TCP/IP praktis 4 lapisan",
+    "Keduanya sama persis",
+    "TCP/IP tidak punya lapisan transport"
+   ],
+   "benar": 1,
+   "penjelasan": "OSI bersifat teoritis dengan 7 lapisan, TCP/IP praktis dengan 4."
+  },
+  {
+   "pertanyaan": "Ethernet berada di lapisan…",
+   "opsi": [
+    "Application",
+    "Transport",
+    "Session",
+    "Data Link dan Physical"
+   ],
+   "benar": 3,
+   "penjelasan": "Ethernet berada di Data Link/Physical (Network Interface)."
+  },
+  {
+   "pertanyaan": "SSL/TLS dipetakan ke lapisan OSI…",
+   "opsi": [
+    "Presentation",
+    "Network",
+    "Physical",
+    "Transport"
+   ],
+   "benar": 0,
+   "penjelasan": "SSL/TLS termasuk Presentation (6)."
+  },
+  {
+   "pertanyaan": "Mempelajari OSI membantu troubleshooting karena…",
+   "opsi": [
+    "Semua jaringan memakai OSI persis",
+    "OSI mempercepat kabel",
+    "Masalah bisa dicari per lapisan",
+    "OSI menggantikan TCP/IP"
+   ],
+   "benar": 2,
+   "penjelasan": "Pendekatan per lapisan mempermudah pencarian sumber masalah."
+  }
+ ]
+}

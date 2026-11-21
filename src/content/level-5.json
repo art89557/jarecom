@@ -1,0 +1,242 @@
+{
+ "level": 5,
+ "judul": "Physical Layer dan Data Analog & Digital",
+ "sumber": "P-05 Physical Layer dan Data Analog & Digital.pptx (Drive)",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Fungsi Physical Layer",
+   "uraian": "Physical layer mendefinisikan media transmisi, metode pensinyalan, sinkronisasi bit, dan pengkabelan untuk mengirim deretan bit lewat saluran fisik.",
+   "poin": [
+    "Proses encoding",
+    "Mengelola paket data",
+    "Menjalankan proses transmisi"
+   ],
+   "cek": {
+    "pertanyaan": "Physical layer mengirim data dalam bentuk…",
+    "opsi": [
+     "Halaman web",
+     "Alamat IP",
+     "Deretan bit"
+    ],
+    "benar": 2,
+    "penjelasan": "Physical layer mentransmisikan deretan bit lewat saluran fisik."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Media transmisi kabel",
+   "uraian": "Ada tiga jenis kabel utama.",
+   "poin": [
+    "UTP: paling banyak untuk LAN, maksimal 100 meter, 10 sampai 100 Mbps",
+    "Coaxial: lebih dari 500 meter, 10 sampai 100 Mbps",
+    "Fiber optik: lebih cepat, tahan noise, menjangkau lebih dari 3 km"
+   ],
+   "cek": {
+    "pertanyaan": "Kabel yang paling banyak dipakai untuk LAN adalah…",
+    "opsi": [
+     "UTP",
+     "Coaxial",
+     "Fiber optik"
+    ],
+    "benar": 0,
+    "penjelasan": "UTP paling umum untuk LAN dengan jarak maksimal 100 meter."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Perangkat dan konektor",
+   "uraian": "Perangkat dan konektor menghubungkan komputer ke media.",
+   "poin": [
+    "NIC (LAN card): meneruskan sinyal biner lewat kabel",
+    "Hub: topologi bintang, mengirim ke semua port",
+    "Switch: lebih selektif, mengirim hanya ke tujuan",
+    "Repeater: menambah jangkauan",
+    "Konektor: BNC (coaxial), RJ11/RJ14/RJ45 (UTP), Fiber Connector"
+   ],
+   "cek": {
+    "pertanyaan": "Perbedaan switch dengan hub adalah switch…",
+    "opsi": [
+     "Mengirim ke semua port",
+     "Mengirim data hanya ke tujuan",
+     "Tidak memakai kabel"
+    ],
+    "benar": 1,
+    "penjelasan": "Switch lebih selektif dalam menentukan penerima data."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Transmisi nirkabel",
+   "uraian": "Transmisi nirkabel memakai gelombang atau sinar untuk menghantarkan data tanpa kabel.",
+   "poin": [
+    "Gelombang mikro: frekuensi tinggi (GHz)",
+    "Satelit: menerima sinyal dari stasiun bumi dan meneruskannya",
+    "Gelombang radio: suara dan data",
+    "Inframerah: jarak dekat, contohnya remote TV"
+   ],
+   "cek": {
+    "pertanyaan": "Media yang dipakai remote control TV adalah…",
+    "opsi": [
+     "Satelit",
+     "Fiber optik",
+     "Inframerah"
+    ],
+    "benar": 2,
+    "penjelasan": "Inframerah dipakai untuk komunikasi jarak dekat."
+   }
+  },
+  {
+   "id": 5,
+   "judul": "Data, sinyal, dan bandwidth",
+   "uraian": "Data adalah fakta yang terekam, bisa analog atau digital. Sinyal juga analog atau digital. Data rate diukur dalam bps dan 8 bit sama dengan 1 byte.",
+   "poin": [
+    "Spectrum: batas frekuensi dalam sinyal (absolute dan effective bandwidth)",
+    "Bandwidth: jumlah data maksimum yang dapat ditransfer per satuan waktu, dalam bps"
+   ],
+   "cek": {
+    "pertanyaan": "1 byte sama dengan berapa bit?",
+    "opsi": [
+     "8",
+     "4",
+     "16"
+    ],
+    "benar": 0,
+    "penjelasan": "1 byte = 8 bit."
+   }
+  },
+  {
+   "id": 6,
+   "judul": "Transmisi analog dan digital",
+   "uraian": "Data digital dikirim lewat sinyal analog memakai modem, dan data analog diubah ke digital dengan PCM. Pengiriman bit bisa paralel atau serial.",
+   "poin": [
+    "Line coding: unipolar, polar, bipolar",
+    "PCM: sampling, quantization, encoding",
+    "Nyquist: laju sampling minimal dua kali frekuensi tertinggi",
+    "Paralel: semua bit sekaligus; serial: satu per satu lewat satu saluran"
+   ],
+   "cek": {
+    "pertanyaan": "Tiga langkah PCM adalah…",
+    "opsi": [
+     "Routing, switching, bridging",
+     "Sampling, quantization, encoding",
+     "Division, parity, framing"
+    ],
+    "benar": 1,
+    "penjelasan": "PCM terdiri dari sampling, quantization, dan encoding."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Kabel UTP maksimal berjarak…",
+   "opsi": [
+    "100 meter",
+    "10 meter",
+    "500 meter",
+    "3 kilometer"
+   ],
+   "benar": 0,
+   "penjelasan": "UTP maksimal sekitar 100 meter."
+  },
+  {
+   "pertanyaan": "Kabel yang menjangkau lebih dari 3 km dan tahan noise adalah…",
+   "opsi": [
+    "UTP",
+    "Coaxial",
+    "Kabel telepon",
+    "Fiber optik"
+   ],
+   "benar": 3,
+   "penjelasan": "Fiber optik lebih cepat dan tahan noise."
+  },
+  {
+   "pertanyaan": "Konektor untuk kabel UTP adalah…",
+   "opsi": [
+    "BNC",
+    "RJ45",
+    "FC",
+    "USB"
+   ],
+   "benar": 1,
+   "penjelasan": "RJ45 dipakai untuk UTP."
+  },
+  {
+   "pertanyaan": "NIC berfungsi…",
+   "opsi": [
+    "Meneruskan sinyal biner dari komputer ke kabel",
+    "Menambah jangkauan transmisi",
+    "Menyimpan data",
+    "Menerjemahkan nama domain"
+   ],
+   "benar": 0,
+   "penjelasan": "NIC (LAN card) meneruskan sinyal biner lewat kabel."
+  },
+  {
+   "pertanyaan": "Perangkat yang menambah jangkauan transmisi adalah…",
+   "opsi": [
+    "NIC",
+    "Konektor BNC",
+    "Repeater",
+    "Modem"
+   ],
+   "benar": 2,
+   "penjelasan": "Repeater memperpanjang jangkauan sinyal."
+  },
+  {
+   "pertanyaan": "Alat untuk mengirim data digital lewat sinyal analog adalah…",
+   "opsi": [
+    "Switch",
+    "Modem",
+    "Hub",
+    "Repeater"
+   ],
+   "benar": 1,
+   "penjelasan": "Modem (modulator demodulator)."
+  },
+  {
+   "pertanyaan": "Bandwidth diukur dalam…",
+   "opsi": [
+    "Meter",
+    "Hertz saja",
+    "Volt",
+    "Bit per detik"
+   ],
+   "benar": 3,
+   "penjelasan": "Bandwidth dalam bit per detik (bps)."
+  },
+  {
+   "pertanyaan": "Menurut Nyquist, laju sampling minimal…",
+   "opsi": [
+    "Dua kali frekuensi tertinggi",
+    "Setengah frekuensi tertinggi",
+    "Sama dengan frekuensi tertinggi",
+    "Sepuluh kali frekuensi tertinggi"
+   ],
+   "benar": 0,
+   "penjelasan": "Laju sampling minimal dua kali frekuensi tertinggi sinyal."
+  },
+  {
+   "pertanyaan": "Transmisi serial berarti…",
+   "opsi": [
+    "Semua bit dikirim sekaligus",
+    "Data dikirim tanpa bit",
+    "Bit dikirim satu demi satu lewat satu saluran",
+    "Data dikirim lewat satelit saja"
+   ],
+   "benar": 2,
+   "penjelasan": "Serial mengirim bit satu per satu."
+  },
+  {
+   "pertanyaan": "Contoh media nirkabel jarak dekat adalah…",
+   "opsi": [
+    "Satelit",
+    "Gelombang mikro",
+    "Inframerah",
+    "Fiber optik"
+   ],
+   "benar": 2,
+   "penjelasan": "Inframerah dipakai untuk jarak dekat."
+  }
+ ]
+}

@@ -1,0 +1,195 @@
+{
+ "level": 3,
+ "judul": "Topologi Jaringan",
+ "sumber": "P-03 TOPOLOGI JARINGAN.pptx (Drive). Slide tidak memuat teks yang bisa dibaca (hanya judul); isi disusun dari RPS (topologi kabel dan nirkabel) dan pengetahuan umum, perlu diperiksa terhadap slide asli.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Topologi bus dan ring",
+   "uraian": "Pada topologi bus, semua perangkat terhubung ke satu kabel utama (backbone). Pada topologi ring, setiap perangkat terhubung ke dua perangkat di sebelahnya sehingga membentuk lingkaran.",
+   "poin": [
+    "Bus: murah dan sederhana, tapi satu kabel utama menjadi titik lemah",
+    "Ring: data berputar satu arah, putusnya satu titik bisa mengganggu seluruh jaringan"
+   ],
+   "cek": {
+    "pertanyaan": "Pada topologi bus, perangkat terhubung ke…",
+    "opsi": [
+     "Satu kabel utama",
+     "Switch pusat",
+     "Semua perangkat lain"
+    ],
+    "benar": 0,
+    "penjelasan": "Semua perangkat berbagi satu kabel backbone."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "Topologi star dan tree",
+   "uraian": "Pada topologi star, setiap perangkat terhubung ke satu perangkat pusat seperti switch. Topologi tree menggabungkan beberapa star dalam bentuk bertingkat.",
+   "poin": [
+    "Star: mudah dipasang dan dicari gangguannya, tetapi perangkat pusat menjadi titik lemah",
+    "Tree: cocok untuk jaringan gedung bertingkat"
+   ],
+   "cek": {
+    "pertanyaan": "Apa kelemahan utama topologi star?",
+    "opsi": [
+     "Perangkat pusat rusak membuat semua terputus",
+     "Tidak bisa menambah perangkat",
+     "Butuh kabel utama panjang"
+    ],
+    "benar": 0,
+    "penjelasan": "Semua perangkat bergantung pada switch pusat."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "Topologi mesh dan hybrid",
+   "uraian": "Pada topologi mesh, perangkat saling terhubung langsung sehingga ada banyak jalur cadangan. Topologi hybrid menggabungkan lebih dari satu jenis topologi.",
+   "poin": [
+    "Mesh penuh dengan n perangkat butuh n(n-1)/2 kabel",
+    "Mesh: paling andal tetapi mahal"
+   ],
+   "cek": {
+    "pertanyaan": "Berapa kabel yang dibutuhkan mesh penuh untuk 5 perangkat?",
+    "opsi": [
+     "5",
+     "10",
+     "20"
+    ],
+    "benar": 1,
+    "penjelasan": "5 x 4 / 2 = 10 kabel."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Topologi nirkabel",
+   "uraian": "Jaringan nirkabel dapat memakai mode infrastruktur, yaitu perangkat terhubung lewat access point, atau mode ad hoc, yaitu perangkat terhubung langsung satu sama lain tanpa access point.",
+   "poin": [
+    "Infrastruktur: ada access point sebagai pusat",
+    "Ad hoc: tanpa access point"
+   ],
+   "cek": {
+    "pertanyaan": "Perangkat pusat pada mode infrastruktur nirkabel adalah…",
+    "opsi": [
+     "Access point",
+     "Repeater kabel",
+     "Modem serat optik"
+    ],
+    "benar": 0,
+    "penjelasan": "Perangkat nirkabel terhubung lewat access point."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "Topologi yang semua perangkatnya terhubung ke satu kabel utama adalah…",
+   "opsi": [
+    "Star",
+    "Bus",
+    "Ring",
+    "Mesh"
+   ],
+   "benar": 1,
+   "penjelasan": "Itu ciri topologi bus."
+  },
+  {
+   "pertanyaan": "Pada topologi ring, setiap perangkat terhubung ke…",
+   "opsi": [
+    "Satu kabel utama",
+    "Dua perangkat di sampingnya",
+    "Semua perangkat",
+    "Satu switch pusat"
+   ],
+   "benar": 1,
+   "penjelasan": "Perangkat membentuk lingkaran."
+  },
+  {
+   "pertanyaan": "Topologi yang memakai switch sebagai pusat adalah…",
+   "opsi": [
+    "Bus",
+    "Ring",
+    "Star",
+    "Mesh"
+   ],
+   "benar": 2,
+   "penjelasan": "Pada star semua perangkat terhubung ke perangkat pusat."
+  },
+  {
+   "pertanyaan": "Kelemahan topologi star adalah…",
+   "opsi": [
+    "Switch pusat rusak membuat jaringan terputus",
+    "Sulit menambah perangkat",
+    "Butuh banyak kabel antarperangkat",
+    "Tidak bisa memakai switch"
+   ],
+   "benar": 0,
+   "penjelasan": "Semua perangkat bergantung pada perangkat pusat."
+  },
+  {
+   "pertanyaan": "Topologi yang menggabungkan beberapa star secara bertingkat adalah…",
+   "opsi": [
+    "Tree",
+    "Bus",
+    "Ring",
+    "Ad hoc"
+   ],
+   "benar": 0,
+   "penjelasan": "Tree adalah gabungan star bertingkat."
+  },
+  {
+   "pertanyaan": "Topologi dengan banyak jalur cadangan dan paling andal adalah…",
+   "opsi": [
+    "Bus",
+    "Mesh",
+    "Ring",
+    "Star"
+   ],
+   "benar": 1,
+   "penjelasan": "Mesh punya banyak jalur alternatif."
+  },
+  {
+   "pertanyaan": "Berapa kabel untuk mesh penuh 4 perangkat?",
+   "opsi": [
+    "4",
+    "6",
+    "8",
+    "12"
+   ],
+   "benar": 1,
+   "penjelasan": "4 x 3 / 2 = 6."
+  },
+  {
+   "pertanyaan": "Topologi hybrid adalah…",
+   "opsi": [
+    "Gabungan dua atau lebih jenis topologi",
+    "Topologi tanpa kabel",
+    "Topologi satu perangkat",
+    "Nama lain bus"
+   ],
+   "benar": 0,
+   "penjelasan": "Hybrid menggabungkan beberapa topologi."
+  },
+  {
+   "pertanyaan": "Mode nirkabel dengan access point sebagai pusat disebut…",
+   "opsi": [
+    "Infrastruktur",
+    "Ad hoc",
+    "Ring",
+    "Bus"
+   ],
+   "benar": 0,
+   "penjelasan": "Mode infrastruktur memakai access point."
+  },
+  {
+   "pertanyaan": "Jaringan nirkabel tanpa access point, perangkat langsung berhubungan, disebut…",
+   "opsi": [
+    "Infrastruktur",
+    "Ad hoc",
+    "Tree",
+    "Star"
+   ],
+   "benar": 1,
+   "penjelasan": "Itu mode ad hoc."
+  }
+ ]
+}

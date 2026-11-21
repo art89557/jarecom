@@ -1,0 +1,219 @@
+{
+ "level": 6,
+ "judul": "IP, Netmask dan Subnetting",
+ "sumber": "P-06 IP_Netmask_dan_Subnetting_pptx.pdf (Drive). Banyak slide berisi gambar saja; yang ditulis hanyalah teks yang terbaca.",
+ "subtopik": [
+  {
+   "id": 1,
+   "judul": "Pengertian IP Address",
+   "uraian": "Agar saling berkomunikasi, komputer memerlukan IP Address, yaitu alamat pengenal standar untuk perangkat di jaringan berprotokol internet. IP menjadi label ke mana paket data dikirim dan diterima.",
+   "poin": [
+    "Menurut panjang bit: IPv4 dan IPv6",
+    "Menurut fungsi: IP publik dan IP privat",
+    "Menurut sifat: IP dinamis dan IP statis"
+   ],
+   "cek": {
+    "pertanyaan": "IP Address berfungsi sebagai…",
+    "opsi": [
+     "Label tujuan pengiriman paket data",
+     "Pengganti kabel",
+     "Kata sandi Wi-Fi"
+    ],
+    "benar": 0,
+    "penjelasan": "IP menjadi label alamat kirim dan terima paket."
+   }
+  },
+  {
+   "id": 2,
+   "judul": "IP dinamis dan statis",
+   "uraian": "IP dinamis berganti, misalnya ketika modem direstart atau saat terhubung ke hotspot, dan dialokasikan otomatis oleh DHCP Server. IP statis dipasang manual atau dialokasikan khusus sehingga tidak berubah.",
+   "poin": [
+    "Dinamis: otomatis lewat DHCP, tanpa pengaturan manual",
+    "Statis: manual, tetap setelah restart",
+    "Cara cek: restart modem lalu bandingkan IP-nya"
+   ],
+   "cek": {
+    "pertanyaan": "Yang mengalokasikan IP dinamis secara otomatis adalah…",
+    "opsi": [
+     "DNS Server",
+     "DHCP Server",
+     "Web server"
+    ],
+    "benar": 1,
+    "penjelasan": "DHCP Server membagikan IP otomatis."
+   }
+  },
+  {
+   "id": 3,
+   "judul": "IP publik dan IP privat",
+   "uraian": "IP publik dipakai di internet global dan bisa diakses langsung, biasanya oleh server. IP privat hanya bisa diakses di jaringan lokal dan perlu bantuan router (NAT) untuk ke internet. IP privat dialokasikan standar oleh IANA dan tidak perlu didaftarkan.",
+   "poin": [
+    "Publik: dari ISP, dibagi menurut negara",
+    "Privat: tidak perlu registrasi, diatur IANA",
+    "Contoh publik: web server, mail server, DNS server"
+   ],
+   "cek": {
+    "pertanyaan": "IP yang tidak bisa diakses langsung dari internet adalah…",
+    "opsi": [
+     "IP publik",
+     "Keduanya",
+     "IP privat"
+    ],
+    "benar": 2,
+    "penjelasan": "IP privat hanya untuk jaringan lokal dan butuh NAT."
+   }
+  },
+  {
+   "id": 4,
+   "judul": "Netmask, network ID, dan alamat khusus",
+   "uraian": "Netmask menentukan bagian network dan bagian host dari sebuah IP. Network address mewakili sekumpulan host dalam satu jaringan. Broadcast address dipakai untuk mengirim paket ke semua host dalam jaringan itu.",
+   "poin": [
+    "Network address menandai jaringan agar berbeda dari jaringan lain",
+    "Broadcast: ke semua host satu jaringan, tidak untuk jaringan lain",
+    "Ada directed broadcast dan limited broadcast"
+   ],
+   "cek": {
+    "pertanyaan": "Alamat untuk mengirim ke semua host dalam satu jaringan adalah…",
+    "opsi": [
+     "Broadcast address",
+     "Network address",
+     "Gateway"
+    ],
+    "benar": 0,
+    "penjelasan": "Broadcast address mengarah ke semua host di jaringan itu."
+   }
+  },
+  {
+   "id": 5,
+   "judul": "Subnetting dan CIDR",
+   "uraian": "Subnetting memecah jaringan menjadi subjaringan lebih kecil agar pengelolaan lebih mudah. CIDR menuliskan subnet mask secara ringkas, misalnya /24 yang sama dengan 255.255.255.0.",
+   "poin": [
+    "/24 = 11111111.11111111.11111111.00000000",
+    "Slide: kelas A /8 sampai /15, B /16 sampai /23, C /24 sampai /28",
+    "/31 dan /32 tidak ada dalam jaringan nyata (menurut slide)"
+   ],
+   "cek": {
+    "pertanyaan": "Notasi /24 sama dengan subnet mask…",
+    "opsi": [
+     "255.255.0.0",
+     "255.255.255.0",
+     "255.0.0.0"
+    ],
+    "benar": 1,
+    "penjelasan": "24 bit pertama bernilai 1."
+   }
+  }
+ ],
+ "kuis": [
+  {
+   "pertanyaan": "IPv4 dan IPv6 dibedakan menurut…",
+   "opsi": [
+    "Fungsi",
+    "Sifat",
+    "Negara",
+    "Panjang bit"
+   ],
+   "benar": 3,
+   "penjelasan": "Pembagian berdasarkan panjang bit."
+  },
+  {
+   "pertanyaan": "IP yang berganti setiap modem direstart adalah…",
+   "opsi": [
+    "IP statis",
+    "IP dinamis",
+    "IP broadcast",
+    "IP loopback"
+   ],
+   "benar": 1,
+   "penjelasan": "Itu ciri IP dinamis."
+  },
+  {
+   "pertanyaan": "IP dinamis dibagikan otomatis oleh…",
+   "opsi": [
+    "DHCP Server",
+    "Firewall",
+    "Switch",
+    "Hub"
+   ],
+   "benar": 0,
+   "penjelasan": "DHCP Server."
+  },
+  {
+   "pertanyaan": "IP publik biasanya dimiliki perangkat berperan sebagai…",
+   "opsi": [
+    "Printer rumah",
+    "Remote TV",
+    "Server",
+    "Kabel"
+   ],
+   "benar": 2,
+   "penjelasan": "Server web, mail, DNS memakai IP publik."
+  },
+  {
+   "pertanyaan": "IP publik didapat dari…",
+   "opsi": [
+    "Router rumah",
+    "ISP",
+    "Kabel UTP",
+    "Hub"
+   ],
+   "benar": 1,
+   "penjelasan": "IP publik dialokasikan lewat ISP."
+  },
+  {
+   "pertanyaan": "Lembaga yang menetapkan alokasi IP privat adalah…",
+   "opsi": [
+    "ISO",
+    "DARPA",
+    "IEEE",
+    "IANA"
+   ],
+   "benar": 3,
+   "penjelasan": "IP privat diatur IANA."
+  },
+  {
+   "pertanyaan": "IP privat bisa mengakses internet dengan bantuan…",
+   "opsi": [
+    "NAT pada router",
+    "Hub",
+    "Kabel coaxial",
+    "Repeater"
+   ],
+   "benar": 0,
+   "penjelasan": "Router dengan NAT menerjemahkan IP privat."
+  },
+  {
+   "pertanyaan": "Fungsi network address adalah…",
+   "opsi": [
+    "Mengirim ke semua host",
+    "Menentukan warna kabel",
+    "Menandai jaringan agar berbeda dari jaringan lain",
+    "Menyimpan data"
+   ],
+   "benar": 2,
+   "penjelasan": "Network address mewakili satu jaringan."
+  },
+  {
+   "pertanyaan": "Subnetting bertujuan…",
+   "opsi": [
+    "Menggabungkan semua jaringan",
+    "Mengganti kabel",
+    "Memecah jaringan menjadi subjaringan lebih kecil",
+    "Mempercepat prosesor"
+   ],
+   "benar": 2,
+   "penjelasan": "Subnetting memecah jaringan agar mudah dikelola."
+  },
+  {
+   "pertanyaan": "CIDR digunakan untuk…",
+   "opsi": [
+    "Menulis subnet mask dengan ringkas",
+    "Membuat kabel",
+    "Mengenkripsi data",
+    "Mengirim email"
+   ],
+   "benar": 0,
+   "penjelasan": "CIDR meringkas notasi subnet mask, misal /24."
+  }
+ ]
+}
