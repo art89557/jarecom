@@ -50,3 +50,8 @@ Lencana: satu per level. Biru saat kuis lulus, emas jika pernah skor 100. Dihitu
 - Level 2, 3, 9, dan 10 isinya perlu dicocokkan dengan slide asli (lihat `sumber` di tiap JSON).
 - Animasi Lottie belum dipasang; umpan balik memakai animasi CSS (dimatikan saat prefers-reduced-motion) dan bunyi Howler.
 - Posisi terakhir di materi tersimpan per perangkat (localStorage), belum di server.
+
+## Suara
+
+- **Suara efek** (`public/sfx/*.wav`) dibuat dengan `python3 tools/gen-sfx.py` (nada orisinal, bukan sampel pihak lain). Ubah nada di skrip itu lalu jalankan lagi.
+- **Suara panduan** pada tur: taruh rekaman `public/voice/tur-1.mp3` sampai `tur-6.mp3` (satu per langkah). Jika file tidak ada, aplikasi memakai suara bahasa Indonesia bawaan perangkat. Tidak berbunyi sendiri; hanya dari tombol "Dengarkan".

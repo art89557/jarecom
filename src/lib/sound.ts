@@ -4,7 +4,7 @@ const KEY = 'jarecom:sound'
 let enabled = true
 try { enabled = localStorage.getItem(KEY) !== 'off' } catch { /* abaikan */ }
 
-const NAMES = ['benar', 'salah', 'lulus'] as const
+const NAMES = ['benar', 'salah', 'lulus', 'tekan'] as const
 type Nama = (typeof NAMES)[number]
 
 // Dibuat langsung saat modul dimuat dan dipramuat. Dengan preload:false Howler tidak

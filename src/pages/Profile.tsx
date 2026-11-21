@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { repo } from '../lib'
 import { setSound, soundOn } from '../lib/sound'
+import { setVoice, voiceOn } from '../lib/voice'
 import { reduceOn, setReduce } from '../lib/prefs'
 import { shareCard } from '../lib/shareCard'
 import { badgeState, levelLabel } from '../lib/engine'
@@ -46,6 +47,7 @@ export default function Profile() {
   const { user, progress, signOut, setTour, setUser } = useApp()
   const nav = useNavigate()
   const [snd, setSnd] = useState(soundOn())
+  const [vc, setVc] = useState(voiceOn())
   const [red, setRed] = useState(reduceOn())
   const [msg, setMsg] = useState('')
   const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null)
@@ -111,6 +113,7 @@ export default function Profile() {
         <div className="flex min-w-0 flex-1 flex-col gap-4">
           <Group title="Suara dan gerak">
             <Toggle icon="volume" title="Suara efek" desc="Bunyi saat jawaban benar atau salah" on={snd} onChange={(v) => { setSnd(v); setSound(v) }} />
+            <Toggle icon="volume" title="Suara panduan" desc="Tombol Dengarkan di tur panduan" on={vc} onChange={(v) => { setVc(v); setVoice(v) }} />
             <Toggle icon="motion" title="Kurangi animasi" desc="Matikan gerak Netty dan efek perayaan" on={red} onChange={(v) => { setRed(v); setReduce(v) }} />
           </Group>
           {bip && (

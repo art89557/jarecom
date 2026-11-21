@@ -3,6 +3,8 @@ import { repo } from '../lib'
 import { useApp } from '../state'
 import { findTarget, markTourSeen, TOUR_STEPS, type TourStep } from '../lib/tour'
 import { useDialog } from '../lib/useDialog'
+import { Icon } from './icons'
+import { hasVoiceFile, probeVoiceFiles, speak, stopVoice, voiceOn, voiceSupported } from '../lib/voice'
 
 interface Box { top: number; left: number; width: number; height: number }
 
@@ -14,8 +16,12 @@ export default function Tour() {
   const [box, setBox] = useState<Box | null>(null)
   const [vp, setVp] = useState({ w: window.innerWidth, h: window.innerHeight })
   const card = useRef<HTMLDivElement>(null)
+  const [talking, setTalking] = useState(false)
+  const [vmsg, setVmsg] = useState('')
+  const [probed, setProbed] = useState(false)
 
   const close = useCallback(() => {
+    stopVoice()
     if (user) markTourSeen(user.id)
     setTour(false)
     // Simpan juga di akun supaya tidak muncul lagi di perangkat lain; gagal simpan tidak mengganggu.
@@ -30,6 +36,10 @@ export default function Tour() {
     if (ok.length === 0) close()
     else setSteps(ok)
   }, [close])
+
+  useEffect(() => { void probeVoiceFiles(TOUR_STEPS.length).then(() => setProbed(true)); return () => stopVoice() }, [])
+  // Pindah langkah menghentikan bacaan sebelumnya.
+  useEffect(() => { stopVoice(); setTalking(false); setVmsg('') }, [i])
 
   const step = steps[i]
   const measure = useCallback(() => {
@@ -60,11 +70,19 @@ export default function Tour() {
   useEffect(() => { card.current?.querySelector<HTMLElement>('[data-next]')?.focus() }, [i, steps.length])
 
   if (!step) return null
+  const canTalk = voiceOn() && (voiceSupported() || (probed && hasVoiceFile(i)))
+  function toggleVoice() {
+    if (talking) { stopVoice(); setTalking(false); return }
+    setVmsg('')
+    const ok = speak(i, `${step.title}. ${step.body}`, () => setTalking(false))
+    if (ok) setTalking(true)
+    else setVmsg('Suara bahasa Indonesia belum tersedia di perangkat ini. Baca teks di atas.')
+  }
   const last = i === steps.length - 1
   const w = Math.min(350, vp.w - 40)
   const below = box ? box.top + box.height / 2 < vp.h / 2 : true
   const pos: React.CSSProperties = { width: w, left: Math.max(20, Math.min((box ? box.left + box.width / 2 : vp.w / 2) - w / 2, vp.w - w - 20)) }
-  if (box && below) pos.top = Math.min(box.top + box.height + 14, vp.h - 260)
+  if (box && below) pos.top = Math.min(box.top + box.height + 14, vp.h - 310)
   else if (box) pos.bottom = Math.max(vp.h - box.top + 14, 20)
   else pos.top = vp.h / 2 - 120
 
@@ -79,6 +97,12 @@ export default function Tour() {
         </div>
         <h2 id="tur-judul" className="text-[22px] font-bold leading-tight">{step.title}</h2>
         <p id="tur-isi" className="text-base leading-relaxed text-[#33415A]">{step.body}</p>
+        {canTalk && (
+          <button type="button" onClick={toggleVoice} aria-pressed={talking} className="inline-flex min-h-[48px] items-center gap-2 self-start rounded-xl border-2 border-primary px-3.5 font-semibold text-primary hover:bg-primary-soft">
+            <Icon name="volume" size={20} sw={2.2} />{talking ? 'Berhenti' : 'Dengarkan'}
+          </button>
+        )}
+        {vmsg && <p role="status" className="help">{vmsg}</p>}
         <div className="mt-1.5 flex items-center gap-2">
           <button type="button" onClick={close} className="mr-auto inline-flex min-h-[48px] items-center rounded-xl px-1.5 text-[15px] font-semibold text-[#4A5568] hover:underline">Lewati</button>
           {i > 0 && <button type="button" onClick={() => setI(i - 1)} className="inline-flex min-h-[48px] items-center rounded-xl border-2 border-primary px-4 font-semibold text-primary hover:bg-primary-soft">Kembali</button>}

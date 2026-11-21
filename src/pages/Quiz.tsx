@@ -214,7 +214,7 @@ export function QuizPlay() {
           if (fb) c = k === fb.benar ? 'ok pop' : k === sel ? 'no' : 'dim'
           else if (sel === k) c = 'sel'
           return (
-            <button key={o} type="button" disabled={!!fb} aria-pressed={sel === k} onClick={() => setSel(k)} className={`opt ${c}`}>
+            <button key={o} type="button" disabled={!!fb} aria-pressed={sel === k} onClick={() => { setSel(k); play('tekan') }} className={`opt ${c}`}>
               <span className="font-semibold">{'ABCD'[k]}.</span><span className="flex-1">{o}</span>
               {fb && k === fb.benar && <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold"><Icon name="check" size={20} sw={2.8} />{k === sel ? 'Benar' : 'Jawaban benar'}</span>}
               {fb && k !== fb.benar && k === sel && <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold"><Icon name="x" size={20} sw={2.8} />Belum tepat</span>}
