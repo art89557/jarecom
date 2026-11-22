@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../state'
 import { getLevel, LEVELS } from '../content'
-import { badgeState, latestBadge, levelLabel, levelPct, nextLevel, quizAvailable, type Progress } from '../lib/engine'
+import { badgeState, latestBadge, levelLabel, levelPctLive, nextLevel, quizAvailable, type Progress } from '../lib/engine'
 import { getDoneSubtopics } from '../lib/position'
 import { pickFakta } from '../lib/fakta'
 import { Icon, LevelBadge } from '../components/icons'
@@ -26,7 +26,7 @@ function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progre
   const total = lv.subtopik.length
   const done = kuis ? total : Math.min(getDoneSubtopics(uid, n), total)
   const started = progress.xp > 0 || done > 0
-  const pct = levelPct(n, progress) + (kuis ? 0 : Math.round((done / total) * 50))
+  const pct = levelPctLive(n, progress, done, total)
   const sub = kuis ? 'Materi selesai. Kuis 10 soal siap dikerjakan.' : `Sub-topik ${Math.min(done + 1, total)} dari ${total}: ${lv.subtopik[Math.min(done, total - 1)].judul}`
   const bub = kuis ? 'Tinggal satu langkah lagi. Kuismu sudah siap!' : started ? 'Ayo lanjut, sedikit lagi beres!' : 'Halo! Yuk mulai dari Level 1.'
   const to = kuis ? `/kuis/${n}` : `/materi/${n}`

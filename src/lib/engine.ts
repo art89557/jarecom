@@ -42,6 +42,14 @@ export const levelLabel = (p: Progress): string => (isTamat(p) ? 'Tamat' : Strin
 export const levelPct = (n: number, p: Progress): number =>
   (p.completed.includes(n) ? 50 : 0) + (p.passed.includes(n) ? 50 : 0)
 
+/** Persen level yang ikut menghitung sub-topik materi yang sudah selesai (maks 50 dari porsi materi). Satu rumus untuk Beranda, Peta, dan halaman lain. */
+export const levelPctLive = (n: number, p: Progress, doneSub: number, totalSub: number): number => {
+  const base = levelPct(n, p)
+  if (p.completed.includes(n) || totalSub <= 0) return base
+  const d = Math.max(0, Math.min(doneSub, totalSub))
+  return base + Math.round((d / totalSub) * 50)
+}
+
 export const nextLevel = (p: Progress): number | null => {
   for (let n = 1; n <= TOTAL; n++) {
     if (isUnlocked(n, p) && !(p.completed.includes(n) && p.passed.includes(n))) return n

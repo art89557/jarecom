@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyMaterial, applyQuiz, computeScore, emptyProgress, isUnlocked, levelPct, nextLevel, quizAvailable, userLevel } from './engine'
+import { applyMaterial, applyQuiz, computeScore, emptyProgress, isUnlocked, levelPct, levelPctLive, nextLevel, quizAvailable, userLevel } from './engine'
 
 describe('unlock', () => {
   it('hanya level 1 terbuka di awal', () => {
@@ -58,6 +58,16 @@ describe('lain-lain', () => {
   it('skor dibulatkan', () => {
     expect(computeScore(7, 10)).toBe(70)
     expect(computeScore(2, 3)).toBe(67)
+  })
+  it('persen level ikut sub-topik (Beranda dan Peta sama)', () => {
+    const p = emptyProgress()
+    expect(levelPctLive(1, p, 0, 6)).toBe(0)
+    expect(levelPctLive(1, p, 1, 6)).toBe(8)
+    expect(levelPctLive(1, p, 6, 6)).toBe(50)
+    expect(levelPctLive(1, p, 99, 6)).toBe(50)
+    const q = applyMaterial(p, 1).next
+    expect(levelPctLive(1, q, 3, 6)).toBe(50)
+    expect(levelPctLive(1, applyQuiz(q, 1, 70).next, 0, 6)).toBe(100)
   })
   it('level pengguna dan persen', () => {
     let p = applyMaterial(emptyProgress(), 1).next

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { LEVELS, type LevelContent } from '../content'
-import { badgeState, isUnlocked, latestBadge, levelLabel, levelPct, nextLevel, nodeState, quizAvailable, type Progress } from '../lib/engine'
+import { badgeState, isUnlocked, latestBadge, levelLabel, levelPctLive, nextLevel, nodeState, quizAvailable, type Progress } from '../lib/engine'
 import { getDoneSubtopics } from '../lib/position'
 import { useApp } from '../state'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
@@ -93,11 +93,11 @@ function Path({ lv, progress, uid, onLock }: { lv: LevelContent; progress: Progr
   )
 }
 
-function SidePanel({ current, progress }: { current: number | null; progress: Progress }) {
+function SidePanel({ current, progress, uid }: { current: number | null; progress: Progress; uid: string }) {
   const lv = current ? LEVELS.find((l) => l.level === current) : null
   const bd = latestBadge(progress)
   const kuis = current !== null && progress.completed.includes(current)
-  const pct = current ? levelPct(current, progress) : 100
+  const pct = current && lv ? levelPctLive(current, progress, getDoneSubtopics(uid, current), lv.subtopik.length) : 100
   const rows: [IconName, string, string, string, string][] = [
     ['book', 'Semua materi selesai', '+20 XP', '#E8EEFF', '#1B46D1'],
     ['trophy', 'Kuis lulus (skor 70+)', '+50 XP', '#EFE6FA', '#7E22CE'],
@@ -184,7 +184,7 @@ export default function MapPage() {
           })}
         </div>
       </div>
-      <SidePanel current={current} progress={progress} />
+      <SidePanel current={current} progress={progress} uid={user?.id ?? ''} />
       {toast && <div role="status" className="fixed inset-x-4 bottom-24 z-30 mx-auto max-w-md rounded-2xl bg-ink px-4 py-3 text-center text-sm font-medium text-white md:bottom-8">{toast}</div>}
     </div>
   )
