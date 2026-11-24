@@ -1,4 +1,8 @@
 // Aturan sistem Jar'ecom (PRD "Aturan sistem"). Fungsi murni, dipakai mode lokal dan diuji.
+//
+// PENTING: aturan ini ada di DUA tempat. Di sini (mode demo/localRepo, sisi klien)
+// dan di supabase/schema.sql (fungsi Postgres, dipakai produksi). Ubah keduanya bersamaan,
+// lalu jalankan `npm test`. Di produksi yang berlaku adalah aturan di server.
 export const PASS_SCORE = 70
 export const XP_MATERIAL = 20
 export const XP_QUIZ = 50

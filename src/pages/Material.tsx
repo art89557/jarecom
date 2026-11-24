@@ -38,11 +38,15 @@ export default function Material() {
     setPicked(i)
     play(i === s.cek.benar ? 'benar' : 'salah')
   }
+  // Alur tombol "Lanjut":
+  // - Bukan sub-topik terakhir: simpan posisi baca (di perangkat dulu, lalu server) dan pindah ke sub-topik berikutnya.
+  // - Sub-topik terakhir: tandai materi selesai di server (+XP sekali per level), muat ulang progres, lalu ke layar selesai.
   async function next() {
     if (!user) return
     if (!last) {
       const v = Math.max(getDoneSubtopics(user.id, n), idx + 1)
       setDoneSubtopics(user.id, n, v)
+      // Kirim ke server tanpa menunggu. Jika gagal tidak masalah: posisi sudah aman di perangkat.
       void repo.savePosition(n, v).catch(() => { /* tetap tersimpan di perangkat */ })
       setIdx(idx + 1); setPicked(null); window.scrollTo(0, 0)
       return

@@ -27,6 +27,8 @@ const toUser = (u: { id: string; email?: string; user_metadata?: Record<string, 
 })
 
 // Semua penghitungan XP, skor, dan unlock dilakukan oleh fungsi Postgres (lihat supabase/schema.sql).
+// Berkas ini hanya memanggil fungsi tersebut lewat rpc() dan menerjemahkan hasilnya ke tipe aplikasi.
+// Klien tidak menulis langsung ke tabel dan tidak pernah menerima kunci jawaban kuis.
 export const supabaseRepo: Repo = {
   mode: 'supabase',
   async getUser() {

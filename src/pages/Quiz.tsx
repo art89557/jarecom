@@ -164,6 +164,7 @@ export function QuizPlay() {
   const [busy, setBusy] = useState(false)
   const started = useRef(false)
 
+  // Soal diambil dari server tanpa kunci jawaban. `started` mencegah pengambilan ganda (React StrictMode memanggil effect dua kali).
   useEffect(() => {
     if (started.current || !lv) return
     started.current = true
@@ -175,6 +176,7 @@ export function QuizPlay() {
 
   const q = qs[i]
   const lastQ = i === qs.length - 1
+  // Periksa satu jawaban lewat server (kunci jawaban tidak ada di klien), tampilkan benar/salah dan penjelasan.
   async function check() {
     if (sel === null) return
     setBusy(true); setErr('')
@@ -185,6 +187,8 @@ export function QuizPlay() {
       play(r.benar === sel ? 'benar' : 'salah')
     } catch (e) { setErr((e as Error).message) } finally { setBusy(false) }
   }
+  // Soal berikutnya. Setelah soal terakhir, kirim semua jawaban: server menghitung skor, kelulusan (>= 70), dan XP,
+  // lalu hasilnya dibawa ke halaman hasil lewat state router.
   async function next() {
     if (!lastQ) { setI(i + 1); setSel(null); setFb(null); return }
     setBusy(true); setErr('')
