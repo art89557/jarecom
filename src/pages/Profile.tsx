@@ -1,3 +1,4 @@
+// Profil dan pengaturan: identitas, etalase lencana, kartu pencapaian, pengaturan (suara, gerak, pasang aplikasi), dan akun.
 import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { repo } from '../lib'
@@ -12,10 +13,12 @@ import { Icon, LevelBadge, type IconName } from '../components/icons'
 import { LevelPill, Netty, XpBadge } from '../components/ui'
 import { NameDialog, PasswordDialog } from '../components/AccountDialogs'
 
+/** Kotak ikon bulat untuk baris pengaturan (abu-abu jika fitur "segera hadir"). */
 const chipIc = (i: IconName, soon = false) => (
   <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${soon ? 'bg-[#E4E9F2] text-[#4A5568]' : 'bg-primary-soft text-[#1B46D1]'}`}><Icon name={i} size={22} sw={2.2} /></span>
 )
 
+/** Baris pengaturan dengan saklar hidup/mati (suara, suara panduan, kurangi animasi). */
 function Toggle({ icon, title, desc, on, onChange }: { icon: IconName; title: string; desc: string; on: boolean; onChange: (v: boolean) => void }) {
   return (
     <label className="relative flex min-h-[72px] cursor-pointer items-center gap-3.5 px-4 py-3 hover:bg-bg [&+&]:border-t [&+&]:border-[#E6EAF1]">
@@ -27,6 +30,7 @@ function Toggle({ icon, title, desc, on, onChange }: { icon: IconName; title: st
   )
 }
 
+/** Baris menu biasa: tautan ke halaman lain, atau label "segera" jika belum tersedia. */
 function Row({ icon, title, desc, to, soon }: { icon: IconName; title: string; desc: string; to?: string; soon?: boolean }) {
   const inner = (
     <>
@@ -39,19 +43,22 @@ function Row({ icon, title, desc, to, soon }: { icon: IconName; title: string; d
   return soon ? <div role="button" aria-disabled="true" className={`${cls} cursor-not-allowed`}>{inner}</div> : <Link to={to ?? '/'} className={`${cls} hover:bg-bg`}>{inner}</Link>
 }
 
+/** Pengelompokan baris pengaturan dengan judul. */
 const Group = ({ title, children }: { title: string; children: ReactNode }) => (
   <section><h2 className="mx-1 mb-2 text-base text-[#3D4A5E]">{title}</h2><div className="overflow-hidden rounded-2xl border-[1.5px] border-line bg-white">{children}</div></section>
 )
 
+/** Halaman Profil (/profil). */
 export default function Profile() {
   const { user, progress, signOut, setTour, setUser } = useApp()
   const nav = useNavigate()
-  const [snd, setSnd] = useState(soundOn())
-  const [vc, setVc] = useState(voiceOn())
-  const [red, setRed] = useState(reduceOn())
-  const [msg, setMsg] = useState('')
-  const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null)
-  const [note, setNote] = useState('')
+  const [snd, setSnd] = useState(soundOn()) // efek suara aktif
+  const [vc, setVc] = useState(voiceOn()) // suara panduan aktif
+  const [red, setRed] = useState(reduceOn()) // kurangi animasi aktif
+  const [msg, setMsg] = useState('') // pesan hasil bagikan kartu
+  const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null) // dialog yang terbuka
+  const [note, setNote] = useState('') // pesan setelah ubah nama/kata sandi
+  // Peristiwa pemasangan PWA yang ditahan browser; dipakai tombol "Pasang aplikasi".
   const [bip, setBip] = useState<{ prompt: () => Promise<void> } | null>(null)
   useEffect(() => {
     const h = (e: Event) => { e.preventDefault(); setBip(e as unknown as { prompt: () => Promise<void> }) }
@@ -59,11 +66,13 @@ export default function Profile() {
     return () => window.removeEventListener('beforeinstallprompt', h)
   }, [])
   const name = user?.name ?? ''
+  // Etalase lencana: tampilkan hingga 3 slot, emas lebih dulu lalu biru, sisanya diisi "Berikutnya".
   const earned = LEVELS.map((l) => l.level).filter((n) => badgeState(n, progress) !== 'off')
   const show = [...earned.filter((n) => badgeState(n, progress) === 'gold').reverse(), ...earned.filter((n) => badgeState(n, progress) === 'got').reverse()].slice(0, 3)
   const nextN = LEVELS.map((l) => l.level).find((n) => badgeState(n, progress) === 'off')
   const slots: { n: number; cap: string }[] = show.map((n) => ({ n, cap: `Level ${n} · ${badgeState(n, progress) === 'gold' ? 'Emas' : 'Lulus'}` }))
   while (slots.length < 3 && nextN !== undefined) slots.push({ n: nextN + (slots.length - show.length), cap: 'Berikutnya' })
+  // Bagikan kartu pencapaian (Web Share) atau unduh sebagai gambar.
   async function share() {
     setMsg('')
     try {

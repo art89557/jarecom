@@ -1,3 +1,5 @@
+// Membaca materi satu level, sub-topik demi sub-topik. Tiap sub-topik berisi uraian, poin, dan satu soal cek pemahaman.
+// Tombol lanjut baru aktif setelah soal cek dijawab benar. Setelah sub-topik terakhir, materi ditandai selesai.
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { getLevel } from '../content'
@@ -9,30 +11,34 @@ import { useApp } from '../state'
 import { Icon, type IconName } from '../components/icons'
 import { Back, ErrorMsg, Netty, Segments, XpBadge } from '../components/ui'
 
+/** Halaman membaca materi (/materi/:n). */
 export default function Material() {
-  const n = Number(useParams().n)
-  const lv = getLevel(n)
+  const n = Number(useParams().n) // nomor level dari alamat
+  const lv = getLevel(n) // isi level; undefined jika nomornya tidak ada
   const { user, progress, refresh } = useApp()
   const nav = useNavigate()
   const total = lv?.subtopik.length ?? 0
-  const alreadyDone = progress.completed.includes(n)
-  const [idx, setIdx] = useState(0)
-  const [picked, setPicked] = useState<number | null>(null)
+  const alreadyDone = progress.completed.includes(n) // materi level ini sudah pernah ditandai selesai
+  const [idx, setIdx] = useState(0) // sub-topik yang sedang dibaca (mulai 0)
+  const [picked, setPicked] = useState<number | null>(null) // opsi yang dipilih di soal cek
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState('')
 
+  // Saat halaman dibuka: lanjut dari sub-topik terakhir yang lolos (atau dari awal jika materi sudah selesai).
   useEffect(() => {
     if (!user || !lv) return
     setIdx(alreadyDone ? 0 : Math.min(getDoneSubtopics(user.id, n), total - 1))
     setPicked(null)
   }, [user, n, lv, total, alreadyDone])
 
+  // Nomor level tidak ada atau level masih terkunci: kembali ke peta.
   if (!lv) return <Navigate to="/materi" replace />
   if (!isUnlocked(n, progress)) return <Navigate to="/materi" replace />
-  const s = lv.subtopik[idx]
+  const s = lv.subtopik[idx] // sub-topik aktif
   const correct = picked !== null && picked === s.cek.benar
-  const last = idx === total - 1
+  const last = idx === total - 1 // sub-topik terakhir?
 
+  // Pilih jawaban cek pemahaman; setelah benar, pilihan dikunci.
   function pick(i: number) {
     if (correct) return
     setPicked(i)
@@ -106,6 +112,8 @@ export default function Material() {
   )
 }
 
+// Data konfeti layar selesai: posisi, ukuran, jeda, durasi, warna, dan bentuk (bulat/persegi) dihitung tetap dari indeks (tanpa acak)
+// supaya tampilan sama setiap kali. Animasi jatuhnya ada di index.css (`fall`).
 const CONFETTI = Array.from({ length: 22 }, (_, i) => ({
   x: (i * 37 + 11) % 96 + 2,
   s: 8 + ((i * 5) % 7),
@@ -115,12 +123,15 @@ const CONFETTI = Array.from({ length: 22 }, (_, i) => ({
   r: i % 3 === 0
 }))
 
+/** Layar "Materi selesai!" (/materi/:n/selesai): XP yang didapat, progres level, dan ajakan mengerjakan kuis. */
 export function Done() {
   const n = Number(useParams().n)
   const lv = getLevel(n)
   const { progress } = useApp()
   if (!lv) return <Navigate to="/materi" replace />
+  // XP dibawa dari halaman sebelumnya lewat state router; 0 jika halaman dibuka langsung.
   const xp = (history.state?.usr as { xp?: number } | null)?.xp ?? 0
+  // Kotak statistik kecil (ikon, nilai, label).
   const stat = (icon: IconName, v: string, l: string) => (
     <div className="flex flex-1 flex-col items-center gap-1 rounded-2xl bg-white/15 px-2 py-3.5">
       <Icon name={icon} size={22} sw={2.2} /><b className="font-display text-xl">{v}</b><span className="text-sm opacity-90">{l}</span>

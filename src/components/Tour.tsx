@@ -6,20 +6,22 @@ import { useDialog } from '../lib/useDialog'
 import { Icon } from './icons'
 import { hasVoiceFile, probeVoiceFiles, speak, stopVoice, voiceOn, voiceSupported } from '../lib/voice'
 
+/** Posisi dan ukuran kotak sorotan di layar (piksel). */
 interface Box { top: number; left: number; width: number; height: number }
 
 /** Tur panduan: sorotan satu elemen per langkah dengan kartu penjelasan. */
 export default function Tour() {
   const { user, setTour, refresh } = useApp()
-  const [steps, setSteps] = useState<TourStep[]>([])
-  const [i, setI] = useState(0)
-  const [box, setBox] = useState<Box | null>(null)
+  const [steps, setSteps] = useState<TourStep[]>([]) // langkah yang sasarannya terlihat di layar
+  const [i, setI] = useState(0) // indeks langkah aktif
+  const [box, setBox] = useState<Box | null>(null) // kotak sorotan untuk sasaran langkah aktif
   const [vp, setVp] = useState({ w: window.innerWidth, h: window.innerHeight })
   const card = useRef<HTMLDivElement>(null)
-  const [talking, setTalking] = useState(false)
+  const [talking, setTalking] = useState(false) // suara panduan sedang berbunyi
   const [vmsg, setVmsg] = useState('')
-  const [probed, setProbed] = useState(false)
+  const [probed, setProbed] = useState(false) // pengecekan file rekaman sudah selesai
 
+  // Tutup tur: hentikan suara, catat sudah dilihat (perangkat dan akun), lalu sembunyikan.
   const close = useCallback(() => {
     stopVoice()
     if (user) markTourSeen(user.id)
@@ -28,6 +30,7 @@ export default function Tour() {
     if (user && !user.tourSeen) void repo.markTourSeen().then(refresh).catch(() => { /* abaikan */ })
   }, [user, setTour, refresh])
 
+  // Kartu tur berperilaku sebagai dialog: Esc menutup dan Tab berputar di dalamnya.
   useDialog(card, close, false)
 
   // Langkah yang sasarannya tidak ada di layar dilewati tanpa galat.
@@ -37,11 +40,13 @@ export default function Tour() {
     else setSteps(ok)
   }, [close])
 
+  // Cek sekali file rekaman suara; saat tur ditutup suara dihentikan.
   useEffect(() => { void probeVoiceFiles(TOUR_STEPS.length).then(() => setProbed(true)); return () => stopVoice() }, [])
   // Pindah langkah menghentikan bacaan sebelumnya.
   useEffect(() => { stopVoice(); setTalking(false); setVmsg('') }, [i])
 
   const step = steps[i]
+  // Ukur posisi sasaran langkah aktif (dengan bantalan 6 px) untuk menaruh sorotan.
   const measure = useCallback(() => {
     setVp({ w: window.innerWidth, h: window.innerHeight })
     const el = step ? findTarget(step.target) : null
@@ -51,6 +56,7 @@ export default function Tour() {
     setBox({ top: r.top - pad, left: r.left - pad, width: r.width + pad * 2, height: r.height + pad * 2 })
   }, [step])
 
+  // Saat langkah berganti: gulir sasaran ke tengah layar bila di luar jangkauan, lalu ukur.
   useLayoutEffect(() => {
     if (!step) return
     const el = findTarget(step.target)
@@ -61,16 +67,20 @@ export default function Tour() {
     measure()
   }, [step, measure])
 
+  // Ukur ulang saat layar diubah ukurannya atau digulir.
   useEffect(() => {
     window.addEventListener('resize', measure)
     window.addEventListener('scroll', measure, true)
     return () => { window.removeEventListener('resize', measure); window.removeEventListener('scroll', measure, true) }
   }, [measure])
 
+  // Fokus keyboard ke tombol Lanjut setiap pindah langkah.
   useEffect(() => { card.current?.querySelector<HTMLElement>('[data-next]')?.focus() }, [i, steps.length])
 
   if (!step) return null
+  // Tombol suara muncul jika suara aktif dan ada rekaman atau suara bawaan perangkat.
   const canTalk = voiceOn() && (voiceSupported() || (probed && hasVoiceFile(i)))
+  // Putar atau hentikan suara untuk langkah ini; beri tahu jika suara Indonesia tidak tersedia.
   function toggleVoice() {
     if (talking) { stopVoice(); setTalking(false); return }
     setVmsg('')
@@ -78,6 +88,7 @@ export default function Tour() {
     if (ok) setTalking(true)
     else setVmsg('Suara bahasa Indonesia belum tersedia di perangkat ini. Baca teks di atas.')
   }
+  // Penempatan kartu: di bawah sasaran jika sasaran ada di separuh atas layar, kalau tidak di atasnya.
   const last = i === steps.length - 1
   const w = Math.min(350, vp.w - 40)
   const below = box ? box.top + box.height / 2 < vp.h / 2 : true

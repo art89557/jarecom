@@ -1,4 +1,5 @@
 // Set ikon garis (SVG 24 px). Tidak memakai emoji.
+// Tiap nilai adalah data jalur SVG (atribut `d`); nama kunci = nama ikon yang dipakai di <Icon name=... />.
 const PATHS = {
   check: 'M5 12.5l4.5 4.5L19 7',
   lock: 'M7 11h10a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2zM8 11V7a4 4 0 0 1 8 0v4',
@@ -35,8 +36,10 @@ const PATHS = {
   sliders: 'M4 6h8M16 6h4M4 12h2M10 12h10M4 18h10M18 18h2M14 4a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM8 10a2 2 0 1 0 0 4 2 2 0 0 0 0-4zM16 16a2 2 0 1 0 0 4 2 2 0 0 0 0-4z'
 } as const
 
+/** Nama ikon yang tersedia. */
 export type IconName = keyof typeof PATHS
 
+/** Ikon garis dari PATHS. `sw` = tebal garis, `fill` = isi (kosong secara bawaan). */
 export function Icon({ name, size = 24, sw = 2, fill = 'none', className }: { name: IconName; size?: number; sw?: number; fill?: string; className?: string }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth={sw} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={className}>
@@ -45,9 +48,11 @@ export function Icon({ name, size = 24, sw = 2, fill = 'none', className }: { na
   )
 }
 
+// Ikon lencana untuk level 1 sampai 11, urut sesuai nomor level.
 const LEVEL_ICON: IconName[] = ['globe', 'hash', 'share', 'layers', 'wave', 'grid', 'split', 'route', 'shield', 'sliders', 'shieldcheck']
 
 
+/** Lencana level (heksagon). Status: emas = skor 100, got = lulus (biru), off = terkunci (abu-abu bergembok). */
 export function LevelBadge({ level, state, size = 92 }: { level: number; state: 'gold' | 'got' | 'off'; size?: number }) {
   const hex = 'M46 4l36 20v44L46 88 10 68V24z'
   return (

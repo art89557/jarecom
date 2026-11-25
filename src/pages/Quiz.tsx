@@ -1,3 +1,5 @@
+// Kuis: daftar kuis per level (QuizList), mengerjakan soal satu per satu (QuizPlay), dan layar hasil (QuizResultPage).
+// Kunci jawaban tidak ada di klien: jawaban diperiksa dan dinilai oleh repo (server pada mode produksi).
 import { Icon, LevelBadge, ReadyBadge, type IconName } from '../components/icons'
 import { useEffect, useRef, useState } from 'react'
 import { useDialog } from '../lib/useDialog'
@@ -10,13 +12,16 @@ import { play } from '../lib/sound'
 import { useApp } from '../state'
 import { Back, ErrorMsg, Netty, XpBadge } from '../components/ui'
 
+/** Filter daftar kuis. */
 type Filter = 'semua' | 'siap' | 'lulus' | 'belum-emas'
 
+/** Kartu kuis satu level di daftar: lencana, judul, status (emas/lulus/siap/terkunci), dan skor terbaik. */
 function QuizCard({ n, onOpen }: { n: number; onOpen: (n: number) => void }) {
   const { progress } = useApp()
   const lv = LEVELS[n - 1]
   const st = quizStatus(n, progress)
   const best = bestScore(n, progress)
+  // Label status kuis; yang terkunci hanya hiasan (tidak bisa diklik).
   const chip = {
     gold: <span className="inline-flex items-center gap-1 rounded-full bg-xp-soft px-2.5 py-1 text-sm font-bold text-[#8A5A00]"><Icon name="star" size={15} sw={2.4} />Emas</span>,
     pass: <span className="inline-flex items-center gap-1 rounded-full bg-pass-soft px-2.5 py-1 text-sm font-bold text-pass-ink"><Icon name="check" size={15} sw={2.8} />Lulus</span>,
@@ -42,6 +47,7 @@ function QuizCard({ n, onOpen }: { n: number; onOpen: (n: number) => void }) {
   )
 }
 
+/** Lembar persiapan sebelum kuis: jumlah soal, nilai lulus, XP, dan tombol mulai/ulangi. */
 function PrepSheet({ n, onClose }: { n: number; onClose: () => void }) {
   const { progress } = useApp()
   const lv = LEVELS[n - 1]
@@ -49,6 +55,7 @@ function PrepSheet({ n, onClose }: { n: number; onClose: () => void }) {
   const best = bestScore(n, progress)
   const box = useRef<HTMLDivElement>(null)
   useDialog(box, onClose)
+  // Baris aturan kuis: [ikon, teks, warna latar, warna ikon].
   const rows: [IconName, string, string, string][] = [
     ['help', `${lv.kuis.length} soal pilihan ganda`, '#E8EEFF', '#1B46D1'],
     ['check', `Lulus dengan skor ${PASS_SCORE} atau lebih`, '#E3F5EC', '#0A5C3F'],
@@ -80,19 +87,21 @@ function PrepSheet({ n, onClose }: { n: number; onClose: () => void }) {
   )
 }
 
+/** Halaman daftar kuis (/kuis) dengan kartu "Kuis berikutnya", bintang emas, filter, dan grid kuis. */
 export function QuizList() {
   const { progress } = useApp()
   const [filter, setFilter] = useState<Filter>('semua')
-  const [sheet, setSheet] = useState<number | null>(null)
+  const [sheet, setSheet] = useState<number | null>(null) // level yang lembar persiapannya terbuka
   const stat = (n: number) => quizStatus(n, progress)
   const nums = LEVELS.map((l) => l.level)
-  const nextQ = nums.find((n) => stat(n) === 'ready')
-  const retry = nums.find((n) => stat(n) === 'pass')
-  const gold = progress.perfect.length
+  const nextQ = nums.find((n) => stat(n) === 'ready') // kuis pertama yang siap dikerjakan
+  const retry = nums.find((n) => stat(n) === 'pass') // lulus tetapi belum 100: dianjurkan mengulang untuk bintang emas
+  const gold = progress.perfect.length // jumlah bintang emas
+  // Jumlah kuis per filter, daftar yang ditampilkan menurut filter, dan daftar tab filter.
   const counts = { semua: 11, siap: nums.filter((n) => stat(n) === 'ready').length, lulus: nums.filter((n) => stat(n) === 'pass' || stat(n) === 'gold').length, 'belum-emas': nums.filter((n) => stat(n) === 'pass').length }
   const shown = nums.filter((n) => filter === 'semua' ? true : filter === 'siap' ? stat(n) === 'ready' : filter === 'lulus' ? stat(n) === 'pass' || stat(n) === 'gold' : stat(n) === 'pass')
   const filters: [Filter, string][] = [['semua', 'Semua'], ['siap', 'Siap'], ['lulus', 'Lulus'], ['belum-emas', 'Belum emas']]
-  const waiting = nextLevel(progress)
+  const waiting = nextLevel(progress) // level yang materinya perlu diselesaikan dulu
   return (
     <div className="mx-auto flex max-w-5xl flex-col gap-4 md:gap-5">
       <header>
@@ -150,19 +159,20 @@ export function QuizList() {
   )
 }
 
+/** Halaman mengerjakan kuis (/kuis/:n): satu soal per layar, jawaban diperiksa lewat repo, soal terakhir mengirim hasil. */
 export function QuizPlay() {
   const n = Number(useParams().n)
   const lv = getLevel(n)
   const { progress, refresh } = useApp()
   const nav = useNavigate()
-  const [qs, setQs] = useState<QuizQuestion[] | null>(null)
-  const [i, setI] = useState(0)
-  const [answers, setAnswers] = useState<number[]>([])
-  const [sel, setSel] = useState<number | null>(null)
-  const [fb, setFb] = useState<CheckResult | null>(null)
+  const [qs, setQs] = useState<QuizQuestion[] | null>(null) // soal dari repo; null = sedang dimuat
+  const [i, setI] = useState(0) // indeks soal aktif
+  const [answers, setAnswers] = useState<number[]>([]) // jawaban yang sudah diperiksa, per soal
+  const [sel, setSel] = useState<number | null>(null) // opsi yang sedang dipilih
+  const [fb, setFb] = useState<CheckResult | null>(null) // umpan balik setelah diperiksa (jawaban benar + penjelasan)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
-  const started = useRef(false)
+  const started = useRef(false) // penanda soal sudah diminta
 
   // Soal diambil dari server tanpa kunci jawaban. `started` mencegah pengambilan ganda (React StrictMode memanggil effect dua kali).
   useEffect(() => {
@@ -171,10 +181,11 @@ export function QuizPlay() {
     repo.getQuiz(n).then(setQs).catch((e: Error) => setErr(e.message))
   }, [n, lv])
 
+  // Level tidak ada atau kuis belum tersedia: kembali ke daftar. Soal belum tiba: tampilkan "Memuat".
   if (!lv || !quizAvailable(n, progress)) return <Navigate to="/kuis" replace />
   if (!qs) return <div className="mx-auto max-w-2xl pt-10"><ErrorMsg>{err}</ErrorMsg>{!err && <p className="help">Memuat soal…</p>}</div>
 
-  const q = qs[i]
+  const q = qs[i] // soal aktif
   const lastQ = i === qs.length - 1
   // Periksa satu jawaban lewat server (kunci jawaban tidak ada di klien), tampilkan benar/salah dan penjelasan.
   async function check() {
@@ -199,7 +210,7 @@ export function QuizPlay() {
       nav(`/kuis/${n}/hasil`, { state: res })
     } catch (e) { setErr((e as Error).message) } finally { setBusy(false) }
   }
-  const right = fb && fb.benar === sel
+  const right = fb && fb.benar === sel // jawaban terpilih benar?
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
@@ -245,6 +256,7 @@ export function QuizPlay() {
   )
 }
 
+/** Layar hasil kuis (/kuis/:n/hasil): skor, lulus atau belum, XP, lencana. Data dibawa lewat state router; tanpa itu kembali ke daftar. */
 export function QuizResultPage() {
   const n = Number(useParams().n)
   const { state } = useLocation() as { state: QuizResult | null }

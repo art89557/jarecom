@@ -1,3 +1,4 @@
+// Dialog ubah nama dan ubah kata sandi di halaman Profil. Keduanya memakai kerangka <Sheet>.
 import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { repo } from '../lib'
 import type { User } from '../lib/repo'
@@ -5,6 +6,7 @@ import { useDialog } from '../lib/useDialog'
 import { Icon } from './icons'
 import { Field } from '../pages/Auth'
 
+/** Kerangka dialog: latar gelap (klik untuk menutup), judul, tombol Tutup, dan isi. Aksesibel lewat useDialog. */
 function Sheet({ title, id, onClose, children }: { title: string; id: string; onClose: () => void; children: ReactNode }) {
   const box = useRef<HTMLDivElement>(null)
   useDialog(box, onClose)
@@ -23,6 +25,7 @@ function Sheet({ title, id, onClose, children }: { title: string; id: string; on
   )
 }
 
+/** Dialog ubah nama tampilan. Memvalidasi: wajib diisi dan maksimal 60 karakter. */
 export function NameDialog({ current, onClose, onSaved }: { current: string; onClose: () => void; onSaved: (u: User) => void }) {
   const [name, setName] = useState(current)
   const [err, setErr] = useState('')
@@ -46,8 +49,9 @@ export function NameDialog({ current, onClose, onSaved }: { current: string; onC
   )
 }
 
+/** Dialog ubah kata sandi. Memvalidasi: kata sandi lama terisi, baru minimal 8 karakter dan berbeda, ulangi harus sama. */
 export function PasswordDialog({ onClose, onSaved }: { onClose: () => void; onSaved: () => void }) {
-  const [f, setF] = useState({ cur: '', pw: '', pw2: '' })
+  const [f, setF] = useState({ cur: '', pw: '', pw2: '' }) // cur = saat ini, pw = baru, pw2 = ulangi
   const [errs, setErrs] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState(false)
   async function submit(e: FormEvent) {
@@ -58,6 +62,7 @@ export function PasswordDialog({ onClose, onSaved }: { onClose: () => void; onSa
     else if (f.pw === f.cur) x.pw = 'Kata sandi baru harus berbeda dari yang lama'
     if (f.pw2 !== f.pw) x.pw2 = 'Kata sandi tidak sama'
     setErrs(x)
+    // Fokus ke kolom salah pertama agar pembaca layar langsung diarahkan ke sana.
     const firstBad = (['cur', 'pw', 'pw2'] as const).find((k) => x[k])
     if (firstBad) { setTimeout(() => document.getElementById(`pk-${firstBad}`)?.focus(), 0); return }
     setBusy(true)

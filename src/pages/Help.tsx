@@ -1,3 +1,4 @@
+// Halaman Bantuan (/bantuan): isi langkah tur dalam bentuk teks, plus tombol untuk memutar tur lagi.
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/icons'
 import { Back } from '../components/ui'

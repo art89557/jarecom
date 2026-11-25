@@ -1,3 +1,4 @@
+// Beranda: ringkasan dan jalan pintas. Kartu "Lanjutkan belajar", pintasan kuis/bintang/lencana, peta mini, dan fakta hari ini.
 import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../state'
@@ -10,6 +11,7 @@ import { LevelPill, Netty, Ring, XpBadge } from '../components/ui'
 import FaktaCard from '../components/Fakta'
 import { tourSeen } from '../lib/tour'
 
+/** Garis segmen di kartu Lanjut: terisi penuh jika materi selesai, segmen berikutnya setengah terang. */
 function Segs({ total, done, kuis }: { total: number; done: number; kuis: boolean }) {
   return (
     <div className="flex gap-1.5" role="img" aria-label={`${done} dari ${total} sub-topik selesai`}>
@@ -20,13 +22,18 @@ function Segs({ total, done, kuis }: { total: number; done: number; kuis: boolea
   )
 }
 
+/** Kartu besar "Lanjutkan belajar" untuk level yang sedang dikerjakan (materi atau kuis). */
 function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progress }) {
   const lv = getLevel(n)!
-  const kuis = progress.completed.includes(n)
+  const kuis = progress.completed.includes(n) // materi selesai berarti tinggal kuis
   const total = lv.subtopik.length
+  // Sub-topik yang sudah selesai: semua jika materi tuntas, kalau tidak dari posisi baca di perangkat.
   const done = kuis ? total : Math.min(getDoneSubtopics(uid, n), total)
+  // Sudah mulai belajar? (punya XP atau minimal satu sub-topik selesai)
   const started = progress.xp > 0 || done > 0
+  // Persen level memakai rumus yang sama dengan halaman Peta.
   const pct = levelPctLive(n, progress, done, total)
+  // Teks pendukung: subjudul, gelembung ucapan Netty, tujuan tautan, dan label tombol.
   const sub = kuis ? 'Materi selesai. Kuis 10 soal siap dikerjakan.' : `Sub-topik ${Math.min(done + 1, total)} dari ${total}: ${lv.subtopik[Math.min(done, total - 1)].judul}`
   const bub = kuis ? 'Tinggal satu langkah lagi. Kuismu sudah siap!' : started ? 'Ayo lanjut, sedikit lagi beres!' : 'Halo! Yuk mulai dari Level 1.'
   const to = kuis ? `/kuis/${n}` : `/materi/${n}`
@@ -55,6 +62,7 @@ function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progre
   )
 }
 
+/** Peta mini: 11 titik level (centang = lulus, biru = sedang dipelajari). Mengarah ke halaman Peta. */
 function MiniMap({ cur, kuis, progress }: { cur: number | null; kuis: boolean; progress: Progress }) {
   const passed = progress.passed.length
   return (
@@ -80,6 +88,7 @@ function MiniMap({ cur, kuis, progress }: { cur: number | null; kuis: boolean; p
   )
 }
 
+/** Halaman Beranda. */
 export default function Home() {
   const { user, progress, ready, tour, setTour } = useApp()
   // Tur muncul otomatis sekali saat pertama kali masuk Beranda.
@@ -87,13 +96,14 @@ export default function Home() {
     if (ready && user && !tour && !user.tourSeen && !tourSeen(user.id)) setTour(true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ready, user?.id])
-  const next = nextLevel(progress)
+  // Data turunan untuk kartu-kartu di bawah.
+  const next = nextLevel(progress) // level yang sedang dikerjakan
   const kuis = next !== null && progress.completed.includes(next)
   const uid = user?.id ?? ''
   const fakta = pickFakta(progress, uid)
   const sisaEmas = progress.passed.filter((n) => !progress.perfect.includes(n)).sort((a, b) => a - b)
   const siap = LEVELS.find((l) => quizAvailable(l.level, progress) && !progress.passed.includes(l.level) && l.level !== next)
-  const bd = latestBadge(progress)
+  const bd = latestBadge(progress) // level lencana terbaru
   const first = user?.name.split(' ')[0]
   return (
     <div className="mx-auto flex max-w-4xl flex-col gap-4 md:gap-5">

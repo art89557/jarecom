@@ -1,9 +1,11 @@
+// Kerangka halaman setelah login: menu samping (desktop), menu bawah (ponsel), dan area isi.
 import { useEffect, useRef } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../state'
 import { Logo } from './ui'
 import Tour from './Tour'
 
+// Menu utama. `tour` = penanda untuk tur panduan (atribut data-tour); `icon` = gambar SVG.
 const items = [
   { to: '/beranda', tour: 'nav-beranda', label: 'Beranda', icon: <path d="M3 11 12 3l9 8M5 10v10h5v-6h4v6h5V10" /> },
   { to: '/materi', tour: 'nav-materi', label: 'Materi', icon: <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7" /> },
@@ -11,8 +13,10 @@ const items = [
   { to: '/progres', tour: 'nav-progres', label: 'Progres', icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> }
 ]
 
+// Menu ponsel sama dengan menu utama ditambah Profil (di desktop Profil ada di bawah menu samping).
 const mobileItems = [...items, { to: '/profil', tour: 'nav-profil', label: 'Profil', icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></> }]
 
+// Judul tab browser per alamat. Urutan penting: pola yang lebih spesifik ditaruh lebih dulu.
 const TITLES: [RegExp, string][] = [
   [/^\/beranda/, 'Beranda'], [/^\/materi\/\d+\/selesai/, 'Materi selesai'], [/^\/materi\/\d+/, 'Materi'], [/^\/materi/, 'Peta level'],
   [/^\/kuis\/\d+\/hasil/, 'Hasil kuis'], [/^\/kuis\/\d+/, 'Soal kuis'], [/^\/kuis/, 'Daftar kuis'],
@@ -20,10 +24,12 @@ const TITLES: [RegExp, string][] = [
   [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil dan pengaturan']
 ]
 
+/** Pembungkus ikon SVG seragam untuk menu. */
 const Icon = ({ children }: { children: React.ReactNode }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
 )
 
+/** Kerangka halaman terlindungi. Halaman yang cocok dengan rute tampil di <Outlet />. */
 export default function Shell() {
   const { user, signOut, tour } = useApp()
   const nav = useNavigate()
@@ -37,6 +43,7 @@ export default function Shell() {
     if (first.current) { first.current = false; return }
     main.current?.focus({ preventScroll: true })
   }, [pathname])
+  // Gaya tautan menu: biru saat aktif.
   const cls = ({ isActive }: { isActive: boolean }) => (isActive ? 'bg-primary-soft text-primary' : 'text-ink hover:bg-bg')
   return (
     <div className="mx-auto flex min-h-screen max-w-[1440px]">

@@ -1,3 +1,4 @@
+// Kartu "fakta jaringan" di Beranda: sisi depan pertanyaan, sisi belakang jawaban.
 import { Icon } from './icons'
 import type { Fakta } from '../lib/fakta'
 

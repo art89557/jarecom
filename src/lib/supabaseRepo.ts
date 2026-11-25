@@ -3,22 +3,28 @@ import { normalizeProgress, type Progress } from './engine'
 import { mergeDoneSubtopics } from './position'
 import { AppError, type CheckResult, type QuizQuestion, type Repo, type User } from './repo'
 
+// Konfigurasi dari variabel lingkungan (diatur di Vercel / file .env). Hanya kunci publik (anon) yang dipakai di klien.
 const url = import.meta.env.VITE_SUPABASE_URL as string | undefined
 const key = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined
+/** True jika URL dan kunci Supabase terisi; lib/index.ts memakainya untuk memilih repo. */
 export const supabaseConfigured = Boolean(url && key)
 
+// Klien dibuat sekali. Bila belum dikonfigurasi, `client()` melempar galat yang jelas.
 const sb = supabaseConfigured ? createClient(url!, key!) : null
 const client = () => {
   if (!sb) throw new AppError('Supabase belum dikonfigurasi')
   return sb
 }
+/** Ubah galat Supabase menjadi AppError agar pesannya bisa ditampilkan ke pengguna. */
 const fail = (e: { message: string } | null): never => {
   throw new AppError(e?.message ?? 'Terjadi kesalahan')
 }
+/** Terjemahkan pesan galat kata sandi dari Supabase (Inggris) ke bahasa Indonesia. */
 const passwordError = (m: string): string =>
   /different from the old/i.test(m) ? 'Kata sandi baru harus berbeda dari yang lama'
     : /at least|weak|pwned|compromised|easy to guess/i.test(m) ? 'Kata sandi terlalu lemah atau pernah bocor. Coba yang lain'
     : m
+/** Petakan pengguna Supabase ke tipe User aplikasi. */
 const toUser = (u: { id: string; email?: string; user_metadata?: Record<string, unknown> }): User => ({
   id: u.id,
   email: u.email ?? '',
@@ -31,6 +37,8 @@ const toUser = (u: { id: string; email?: string; user_metadata?: Record<string, 
 // Klien tidak menulis langsung ke tabel dan tidak pernah menerima kunci jawaban kuis.
 export const supabaseRepo: Repo = {
   mode: 'supabase',
+
+  // --- Akun (Supabase Auth) ---
   async getUser() {
     const { data } = await client().auth.getUser()
     return data.user ? toUser(data.user) : null
@@ -78,10 +86,14 @@ export const supabaseRepo: Repo = {
     const { error } = await client().auth.updateUser({ password: next })
     if (error) throw new AppError(passwordError(error.message))
   },
+
+  // --- Kemajuan belajar (fungsi Postgres lewat rpc) ---
+  // Simpan posisi baca ke server (save_position).
   async savePosition(level, done) {
     const { error } = await client().rpc('save_position', { p_level: level, p_done: done })
     if (error) fail(error)
   },
+  // Ambil seluruh kemajuan (get_state) dan gabungkan posisi baca server ke perangkat.
   async getProgress() {
     const { data, error } = await client().rpc('get_state')
     if (error) fail(error)
@@ -90,24 +102,31 @@ export const supabaseRepo: Repo = {
     if (s.session) mergeDoneSubtopics(s.session.user.id, d.pos)
     return normalizeProgress(d)
   },
+  // Tandai materi selesai (complete_material). Server yang menentukan XP dan menolak level terkunci.
   async completeMaterial(level) {
     const { data, error } = await client().rpc('complete_material', { p_level: level })
     if (error) fail(error)
     return { xpGained: Number((data as { xp_gained: number }).xp_gained) }
   },
+
+  // --- Kuis ---
+  // Ambil soal tanpa kunci jawaban (get_quiz).
   async getQuiz(level) {
     const { data, error } = await client().rpc('get_quiz', { p_level: level })
     if (error) fail(error)
     return data as QuizQuestion[]
   },
+  // Periksa satu jawaban (check_answer): server mengembalikan jawaban benar dan penjelasan.
   async checkAnswer(level, index, choice) {
     const { data, error } = await client().rpc('check_answer', { p_level: level, p_index: index, p_choice: choice })
     if (error) fail(error)
     return data as CheckResult
   },
+  // Kirim semua jawaban (submit_quiz): server menghitung skor, kelulusan, dan XP, lalu klien memetakan nama kolomnya.
   async submitQuiz(level, answers) {
     const { data, error } = await client().rpc('submit_quiz', { p_level: level, p_answers: answers })
     if (error) fail(error)
+    // Server memakai snake_case (xp_gained); aplikasi memakai camelCase (xpGained).
     const d = data as { score: number; passed: boolean; xp_gained: number; correct: number; total: number }
     return { score: d.score, passed: d.passed, xpGained: d.xp_gained, correct: d.correct, total: d.total }
   }

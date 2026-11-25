@@ -1,3 +1,4 @@
+// Peta level: 11 banner level; level yang dibuka menampilkan jalur sub-topik dan kuis. Panel samping (desktop) berisi ringkasan.
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { LEVELS, type LevelContent } from '../content'
@@ -7,7 +8,9 @@ import { useApp } from '../state'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
 import { LevelPill, Netty, Ring, XpBadge } from '../components/ui'
 
+/** Jenis node di jalur: selesai, aktif, berikutnya, terkunci, kuis terkunci, kuis terbuka. */
 type Kind = 'done' | 'act' | 'next' | 'lock' | 'quiz' | 'quizOpen'
+// Gaya dasar node bulat, dan variasi warna per jenis (bayangan bawah memberi kesan tombol timbul).
 const BASE = 'relative flex h-[72px] w-[72px] items-center justify-center rounded-full transition duration-100'
 const KIND: Record<Kind, string> = {
   done: 'bg-pass text-white shadow-[0_6px_0_#0A5A3C] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_2px_0_#0A5A3C]',
@@ -18,6 +21,7 @@ const KIND: Record<Kind, string> = {
   quizOpen: 'node-act bg-quiz text-white shadow-[0_6px_0_#5B1A99] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_2px_0_#5B1A99]'
 }
 
+/** Satu node di jalur. Node terkunci berupa tombol yang menampilkan pesan; node lain berupa tautan. `dx` menggeser ke kiri/kanan agar jalur berkelok. */
 function Node({ kind, icon, to, label, aria, dx, onLock, extra }: { kind: Kind; icon: IconName; to?: string; label: string; aria: string; dx: number; onLock?: () => void; extra?: ReactNode }) {
   const cls = `${BASE} ${KIND[kind]}`
   const locked = kind === 'lock' || kind === 'quiz'
@@ -39,8 +43,10 @@ function Node({ kind, icon, to, label, aria, dx, onLock, extra }: { kind: Kind; 
   )
 }
 
+// Pergeseran horizontal per node mengikuti gelombang sinus supaya jalur berkelok.
 const dxOf = (i: number) => Math.round(Math.sin(i * 1.15) * 54)
 
+/** Banner satu level (hijau selesai, biru aktif, abu terkunci). Bisa dibuka/ditutup untuk menampilkan jalurnya. */
 function Banner({ lv, state, right, onToggle, expanded }: { lv: LevelContent; state: 'done' | 'act' | 'lock'; right?: ReactNode; onToggle?: () => void; expanded?: boolean }) {
   const bg = { done: 'bg-pass', act: 'bg-primary', lock: 'bg-[#8A95A8]' }[state]
   const tag = { done: 'SELESAI', act: 'AKTIF', lock: 'TERKUNCI' }[state]
@@ -66,12 +72,15 @@ function Banner({ lv, state, right, onToggle, expanded }: { lv: LevelContent; st
   )
 }
 
+/** Jalur satu level: node tiap sub-topik lalu node kuis. Netty menemani di node aktif. */
 function Path({ lv, progress, uid, onLock }: { lv: LevelContent; progress: Progress; uid: string; onLock: (m: string) => void }) {
   const n = lv.level
   const levelDone = progress.completed.includes(n)
+  // Jumlah sub-topik selesai: semua jika materi tuntas, kalau tidak dari posisi baca di perangkat.
   const doneCount = levelDone ? lv.subtopik.length : getDoneSubtopics(uid, n)
   const quizOk = quizAvailable(n, progress)
   const passed = progress.passed.includes(n)
+  // Node aktif = sub-topik pertama yang belum selesai.
   const activeIdx = lv.subtopik.findIndex((_, i) => nodeState(i, doneCount, levelDone) === 'active')
   const lockMsg = () => onLock(`Kuis Level ${n} terbuka setelah semua sub-topik selesai.`)
   return (
@@ -93,11 +102,14 @@ function Path({ lv, progress, uid, onLock }: { lv: LevelContent; progress: Progr
   )
 }
 
+/** Panel samping desktop: XP dan level, ringkasan level aktif, daftar hadiah, dan lencana terbaru. */
 function SidePanel({ current, progress, uid }: { current: number | null; progress: Progress; uid: string }) {
   const lv = current ? LEVELS.find((l) => l.level === current) : null
   const bd = latestBadge(progress)
   const kuis = current !== null && progress.completed.includes(current)
+  // Persen level aktif (sama dengan Beranda). Semua tuntas = 100.
   const pct = current && lv ? levelPctLive(current, progress, getDoneSubtopics(uid, current), lv.subtopik.length) : 100
+  // Baris hadiah: [ikon, teks, XP, warna latar, warna ikon].
   const rows: [IconName, string, string, string, string][] = [
     ['book', 'Semua materi selesai', '+20 XP', '#E8EEFF', '#1B46D1'],
     ['trophy', 'Kuis lulus (skor 70+)', '+50 XP', '#EFE6FA', '#7E22CE'],
@@ -137,14 +149,17 @@ function SidePanel({ current, progress, uid }: { current: number | null; progres
   )
 }
 
+/** Halaman Peta level. */
 export default function MapPage() {
   const { user, progress } = useApp()
-  const [toast, setToast] = useState('')
+  const [toast, setToast] = useState('') // pesan singkat (mis. level terkunci)
   const [pick, setPick] = useState<number | null>(null)
+  // Tampilkan pesan singkat selama 3,5 detik.
   const say = (m: string) => {
     setToast(m)
     window.setTimeout(() => setToast(''), 3500)
   }
+  // Level terbuka secara bawaan = level aktif; pilihan pengguna menggantikannya (-1 = semua tertutup).
   const current = nextLevel(progress)
   const openLv = pick ?? current
   const toggle = (n: number) => setPick(openLv === n ? -1 : n)

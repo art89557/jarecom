@@ -1,3 +1,4 @@
+// Daftar rute aplikasi. Halaman publik (login, daftar) di atas; halaman yang butuh login di dalam <Protected />.
 import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import Shell from './components/Shell'
 import { Netty } from './components/ui'
@@ -12,13 +13,16 @@ import { QuizList, QuizPlay, QuizResultPage } from './pages/Quiz'
 import { useApp } from './state'
 import { useEffect, useState } from 'react'
 
+/** Penjaga rute: tunggu sesi diperiksa, lalu tampilkan Shell (menu + halaman) atau arahkan ke /masuk. */
 function Protected() {
   const { ready, user } = useApp()
   if (!ready) return <div className="p-10 text-center help">Memuat…</div>
   return user ? <Shell /> : <Navigate to="/masuk" replace />
 }
 
+/** Banner di atas layar saat perangkat offline. Hilang sendiri saat kembali online. */
 function Offline() {
+  // Awalnya ikut status jaringan; lalu mengikuti peristiwa offline/online dari browser.
   const [off, setOff] = useState(!navigator.onLine)
   useEffect(() => {
     const a = () => setOff(true), b = () => setOff(false)
@@ -29,10 +33,12 @@ function Offline() {
   return <div role="status" className="fixed inset-x-0 top-0 z-40 flex items-center justify-center gap-2 bg-ink px-4 py-2 text-sm font-medium text-white"><Netty pose="offline" size={32} />Kamu sedang offline. Progres baru tersimpan saat online.</div>
 }
 
+/** Halaman untuk alamat yang tidak dikenal. */
 function NotFound() {
   return <div className="mx-auto flex max-w-sm flex-col items-center gap-4 p-10 text-center"><Netty pose="sedih" size={140} label="Netty sedih" /><h1 className="text-2xl font-bold">Halaman tidak ditemukan</h1><Link to="/" className="btn">Ke beranda</Link></div>
 }
 
+/** Susunan rute. Alamat dalam bahasa Indonesia: /materi, /kuis, /progres, dan seterusnya. */
 export default function App() {
   return (
     <>

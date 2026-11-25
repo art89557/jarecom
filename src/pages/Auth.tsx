@@ -1,21 +1,25 @@
+// Halaman sebelum masuk: Splash (pengenalan), Login, Register, Forgot (lupa kata sandi), dan NewPassword (atur ulang dari tautan email).
 import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { repo } from '../lib'
 import { useApp } from '../state'
 import { Back, ErrorMsg, Logo, Netty, type Pose } from '../components/ui'
 
+// Tiga layar pengenalan di Splash: pose Netty, judul, dan teks.
 const STEPS: { pose: Pose; judul: string; teks: string }[] = [
   { pose: 'halo', judul: 'Belajar jaringan, level demi level', teks: '11 level dari dasar jaringan sampai keamanan. Selesaikan materi dan kuis untuk membuka level berikutnya.' },
   { pose: 'berpikir', judul: 'Cek pemahaman di setiap sub-topik', teks: 'Setiap sub-topik ditutup satu pertanyaan singkat. Kuis akhir level butuh skor minimal 70.' },
   { pose: 'rayakan', judul: 'Kumpulkan XP', teks: 'Materi selesai +20 XP, kuis lulus +50 XP, dan bonus +20 XP untuk skor 100.' }
 ]
 
+/** Peristiwa "beforeinstallprompt" milik browser, dipakai untuk tombol pasang aplikasi. */
 interface BIPEvent extends Event { prompt: () => Promise<void> }
 
+/** Layar pengenalan (/). Jika sudah masuk, langsung ke Beranda. */
 export function Splash() {
   const { user, ready } = useApp()
-  const [i, setI] = useState(0)
-  const [bip, setBip] = useState<BIPEvent | null>(null)
+  const [i, setI] = useState(0) // layar pengenalan aktif
+  const [bip, setBip] = useState<BIPEvent | null>(null) // peristiwa pasang aplikasi yang ditahan
   useEffect(() => {
     const h = (e: Event) => { e.preventDefault(); setBip(e as BIPEvent) }
     window.addEventListener('beforeinstallprompt', h)
@@ -44,12 +48,14 @@ export function Splash() {
   )
 }
 
+/** Kerangka halaman Auth: kartu di tengah layar. */
 function AuthFrame({ children }: { children: ReactNode }) {
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-[440px] flex-col gap-6 px-6 pb-8 pt-10">{children}</main>
   )
 }
 
+/** Kolom isian berlabel dengan pesan galat/petunjuk. Dipakai juga oleh dialog akun di Profil. */
 export function Field(p: { id: string; label: string; type?: string; value: string; set: (v: string) => void; err?: string; auto?: string; hint?: string; bad?: boolean }) {
   return (
     <div className="flex flex-col gap-1.5">
@@ -62,6 +68,7 @@ export function Field(p: { id: string; label: string; type?: string; value: stri
   )
 }
 
+/** Halaman masuk (/masuk). Galat ditampilkan di kolom kata sandi. */
 export function Login() {
   const { setUser } = useApp()
   const nav = useNavigate()
@@ -92,6 +99,7 @@ export function Login() {
   )
 }
 
+/** Halaman daftar (/daftar). Memeriksa nama, email, dan kata sandi minimal 8 karakter sebelum dikirim. */
 export function Register() {
   const { setUser } = useApp()
   const nav = useNavigate()
@@ -100,6 +108,7 @@ export function Register() {
   const [busy, setBusy] = useState(false)
   async function submit(e: FormEvent) {
     e.preventDefault()
+    // Kumpulkan semua galat per kolom, lalu fokus ke kolom salah pertama.
     const x: Record<string, string> = {}
     if (!f.name.trim()) x.name = 'Nama wajib diisi'
     if (!/^\S+@\S+\.\S+$/.test(f.email)) x.email = 'Masukkan email yang valid'
@@ -125,6 +134,7 @@ export function Register() {
   )
 }
 
+/** Halaman lupa kata sandi (/lupa). Pesan konfirmasi sama baik email terdaftar maupun tidak (tidak membocorkan akun). */
 export function Forgot() {
   const [email, setEmail] = useState('')
   const [sent, setSent] = useState(false)
@@ -158,6 +168,7 @@ export function Forgot() {
   )
 }
 
+/** Halaman atur kata sandi baru (/sandi-baru), dibuka dari tautan email. Tanpa sesi dari tautan, tampil "Tautan tidak berlaku". */
 export function NewPassword() {
   const { ready, user, setUser } = useApp()
   const nav = useNavigate()

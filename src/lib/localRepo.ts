@@ -3,13 +3,17 @@ import { applyMaterial, applyQuiz, computeScore, emptyProgress, normalizeProgres
 import { AppError, type CheckResult, type QuizQuestion, type QuizResult, type Repo, type User } from './repo'
 
 // Mode demo: semua data di localStorage browser. Kata sandi tidak di-hash; jangan dipakai untuk data nyata.
+// Dipakai otomatis saat variabel lingkungan Supabase kosong (lihat lib/index.ts). Aturan XP memakai engine.ts.
+
+/** Bentuk data yang disimpan di localStorage di bawah satu kunci. */
 interface Db {
   users: Record<string, { id: string; name: string; password: string }>
-  session: string | null
+  session: string | null // email pengguna yang sedang masuk, atau null
   progress: Record<string, Progress>
 }
 const KEY = 'jarecom:db'
 
+/** Baca seluruh data dari localStorage; kosong jika belum ada atau rusak. */
 function load(): Db {
   try {
     const raw = localStorage.getItem(KEY)
@@ -17,13 +21,17 @@ function load(): Db {
   } catch { /* abaikan */ }
   return { users: {}, session: null, progress: {} }
 }
+/** Tulis seluruh data kembali ke localStorage. */
 function save(db: Db) {
   try { localStorage.setItem(KEY, JSON.stringify(db)) } catch { /* abaikan */ }
 }
+// Email disamakan (huruf kecil, tanpa spasi) agar tidak terdaftar ganda.
 const norm = (e: string) => e.trim().toLowerCase()
 
 export const localRepo: Repo = {
   mode: 'local',
+
+  // --- Akun ---
   async markTourSeen() { /* mode lokal: penanda disimpan di perangkat oleh lib/tour.ts */ },
   async getUser() {
     const db = load()
@@ -73,6 +81,8 @@ export const localRepo: Repo = {
     u.password = next
     save(db)
   },
+
+  // --- Kemajuan belajar ---
   async savePosition() { /* mode lokal: posisi sudah tersimpan di perangkat oleh lib/position.ts */ },
   async resetPassword(email) {
     if (!email.includes('@')) throw new AppError('Masukkan email yang valid')
@@ -92,9 +102,12 @@ export const localRepo: Repo = {
     save(db)
     return { xpGained }
   },
+
+  // --- Kuis (kunci jawaban ada di konten lokal, jadi aman untuk demo saja) ---
   async getQuiz(level): Promise<QuizQuestion[]> {
     const l = getLevel(level)
     if (!l) throw new AppError('Level tidak ada')
+    // Hanya pertanyaan dan opsi yang diberikan, kunci jawaban tidak ikut.
     return l.kuis.map((k) => ({ pertanyaan: k.pertanyaan, opsi: k.opsi }))
   },
   async checkAnswer(level, index): Promise<CheckResult> {
@@ -108,6 +121,7 @@ export const localRepo: Repo = {
     if (!u) throw new AppError('Belum masuk')
     const l = getLevel(level)
     if (!l) throw new AppError('Level tidak ada')
+    // Hitung jawaban benar, ubah ke skor, lalu catat hasilnya lewat aturan di engine.ts.
     const correct = l.kuis.reduce((n, k, i) => n + (answers[i] === k.benar ? 1 : 0), 0)
     const score = computeScore(correct, l.kuis.length)
     const { next, xpGained, passed } = applyQuiz(normalizeProgress(db.progress[u.id]), level, score)

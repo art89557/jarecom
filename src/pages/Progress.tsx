@@ -1,3 +1,4 @@
+// Halaman Progres dengan tiga tab: Ringkasan (cincin, peta panas, detail level), Lencana, dan Riwayat XP.
 import { useEffect, useRef, useState } from 'react'
 import { useDialog } from '../lib/useDialog'
 import { Link, NavLink } from 'react-router-dom'
@@ -7,7 +8,9 @@ import { useApp } from '../state'
 import { Ring } from '../components/ui'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
 
+// Nama pendek tiap level (urut level 1 sampai 11) untuk petak peta panas.
 const SHORT = ['Jaringan Terkini', 'IP Address', 'Topologi', 'OSI vs TCP/IP', 'Physical Layer', 'Netmask', 'Subnetting', 'Routing', 'VPN', 'Manajemen', 'Keamanan']
+// Gaya petak peta panas per status, dan nama status untuk pembaca layar.
 const HEAT_CLS: Record<HeatState, string> = {
   gold: 'border-[#B8860B] bg-xp-soft text-[#5C3A00]',
   pass: 'border-primary bg-primary-soft text-[#143AA8]',
@@ -16,6 +19,7 @@ const HEAT_CLS: Record<HeatState, string> = {
 }
 const HEAT_NAME: Record<HeatState, string> = { gold: 'emas', pass: 'lulus', materi: 'materi selesai, kuis siap', locked: 'terkunci' }
 
+/** Hitung naik dari 0 ke `target` selama 0,7 detik (efek angka bergulir). Langsung ke nilai akhir jika animasi dikurangi. */
 function useCount(target: number) {
   const [v, setV] = useState(0)
   useEffect(() => {
@@ -33,8 +37,9 @@ function useCount(target: number) {
   return v
 }
 
+/** Kartu ringkasan: cincin persen total, total XP (bergulir), dan tiga statistik (lulus, emas, lencana). */
 function RingCard({ progress }: { progress: Progress }) {
-  const pct = overallPct(progress)
+  const pct = overallPct(progress) // persen keseluruhan semua level
   const xp = useCount(progress.xp)
   const gold = progress.perfect.length
   const chip = (v: string, l: string, i: IconName, cls: string) => (
@@ -59,6 +64,7 @@ function RingCard({ progress }: { progress: Progress }) {
   )
 }
 
+/** Peta panas: satu petak per level dengan warna menurut status (emas, lulus, materi selesai, terkunci). */
 function Heat({ progress, sel, onSel }: { progress: Progress; sel: number | null; onSel: (n: number) => void }) {
   return (
     <ul className="grid grid-cols-3 gap-2.5 lg:grid-cols-4">
@@ -88,6 +94,7 @@ function Heat({ progress, sel, onSel }: { progress: Progress; sel: number | null
   )
 }
 
+/** Keterangan warna peta panas. */
 function Legend() {
   const it: [string, string, string][] = [['bg-locked', 'border-dashed border-[#B9C2D0]', 'Terkunci'], ['bg-white', 'border-primary', 'Materi selesai'], ['bg-primary-soft', 'border-primary', 'Lulus'], ['bg-xp-soft', 'border-[#B8860B]', 'Emas']]
   return (
@@ -97,11 +104,13 @@ function Legend() {
   )
 }
 
+/** Detail satu level: lencana, status materi, skor terbaik, dan bintang emas beserta XP-nya. */
 function Detail({ n, progress }: { n: number; progress: Progress }) {
   const lv = LEVELS[n - 1]
   const done = progress.completed.includes(n)
   const best = bestScore(n, progress)
   const bs = badgeState(n, progress)
+  // Tiga baris detail: [ikon, judul, keterangan, XP, warna latar, warna ikon].
   const rows: [IconName, string, string, string, string, string][] = [
     ['book', 'Materi', done ? `${lv.subtopik.length} dari ${lv.subtopik.length} sub-topik selesai` : 'Belum selesai', done ? `+${XP_MATERIAL} XP` : '-', '#E8EEFF', '#1B46D1'],
     ['trophy', 'Skor terbaik', best === null ? 'Belum dikerjakan' : `${best}, ${progress.passed.includes(n) ? 'lulus' : 'belum lulus'} (minimal 70)`, progress.passed.includes(n) ? '+50 XP' : '-', '#EFE6FA', '#7E22CE'],
@@ -130,6 +139,7 @@ function Detail({ n, progress }: { n: number; progress: Progress }) {
   )
 }
 
+/** Label hari untuk riwayat: "Hari ini", "Kemarin", atau tanggal (mis. 12 November). */
 const dayLabel = (at: number): string => {
   const d = new Date(at)
   const t = new Date()
@@ -137,12 +147,14 @@ const dayLabel = (at: number): string => {
   const diff = Math.round((k(t) - k(d)) / 86400000)
   return diff <= 0 ? 'Hari ini' : diff === 1 ? 'Kemarin' : d.toLocaleDateString('id-ID', { day: 'numeric', month: 'long' })
 }
+// Tampilan tiap jenis XP di riwayat: ikon, warna, teks utama, dan keterangan.
 const EV: Record<XpEvent['type'], { icon: IconName; bg: string; fg: string; label: (n: number, p: Progress) => string; sub: string }> = {
   materi: { icon: 'book', bg: '#E8EEFF', fg: '#1B46D1', label: (n) => `Materi Level ${n} selesai`, sub: 'Materi' },
   kuis: { icon: 'trophy', bg: '#EFE6FA', fg: '#7E22CE', label: (n, p) => `Kuis Level ${n} lulus${bestScore(n, p) !== null ? `, skor ${bestScore(n, p)}` : ''}`, sub: 'Kuis' },
   bonus: { icon: 'star', bg: '#FEF3C7', fg: '#8A5A00', label: () => 'Bonus skor 100', sub: 'Kuis' }
 }
 
+/** Satu baris riwayat XP. */
 function EventRow({ e, progress }: { e: XpEvent; progress: Progress }) {
   const m = EV[e.type]
   return (
@@ -154,10 +166,12 @@ function EventRow({ e, progress }: { e: XpEvent; progress: Progress }) {
   )
 }
 
+/** Tab Riwayat XP: ringkasan per jenis XP dan daftar peristiwa dikelompokkan per hari. */
 function Riwayat({ progress, aside }: { progress: Progress; aside?: boolean }) {
-  const ev = progress.events
+  const ev = progress.events // sudah urut terbaru di depan
   const sum = (t: XpEvent['type']) => ev.filter((e) => e.type === t).reduce((a, e) => a + e.xp, 0)
   const parts: [string, number, string][] = [['Materi selesai', sum('materi'), '#2457F5'], ['Kuis lulus', sum('kuis'), '#7E22CE'], ['Bonus skor 100', sum('bonus'), '#B8860B']]
+  // Kelompokkan peristiwa berurutan yang harinya sama.
   const groups: { label: string; items: XpEvent[] }[] = []
   for (const e of ev) {
     const label = dayLabel(e.at)
@@ -187,6 +201,7 @@ function Riwayat({ progress, aside }: { progress: Progress; aside?: boolean }) {
   return list
 }
 
+/** Lembar detail level untuk layar kecil (di desktop detail tampil di samping). */
 function DetailSheet({ n, progress, onClose }: { n: number; progress: Progress; onClose: () => void }) {
   const box = useRef<HTMLDivElement>(null)
   useDialog(box, onClose)
@@ -201,15 +216,18 @@ function DetailSheet({ n, progress, onClose }: { n: number; progress: Progress; 
   )
 }
 
+/** Halaman Progres. `tab` ditentukan oleh rute: /progres, /progres/lencana, /progres/riwayat. */
 export default function ProgressPage({ tab }: { tab: 'ringkasan' | 'lencana' | 'riwayat' }) {
   const { progress } = useApp()
-  const [sel, setSel] = useState<number | null>(null)
+  const [sel, setSel] = useState<number | null>(null) // level yang dipilih di peta panas
   const [badgeSel, setBadgeSel] = useState(1)
   const got = LEVELS.filter((l) => badgeState(l.level, progress) !== 'off').length
   const cur = LEVELS.find((l) => l.level === badgeSel) ?? LEVELS[0]
   const curState = badgeState(cur.level, progress)
+  // Level yang detailnya tampil secara bawaan: lulus terakhir, atau materi selesai terakhir, atau level 1.
   const defSel = sel ?? (progress.passed.length ? Math.max(...progress.passed) : progress.completed.length ? Math.max(...progress.completed) : 1)
   const tabs: [string, string][] = [['/progres', 'Ringkasan'], ['/progres/lencana', 'Lencana'], ['/progres/riwayat', 'Riwayat XP']]
+  // Pindah tab mengosongkan pilihan level.
   useEffect(() => { setSel(null) }, [tab])
   return (
     <div className="mx-auto max-w-5xl">
