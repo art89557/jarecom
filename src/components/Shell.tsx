@@ -47,24 +47,24 @@ export default function Shell() {
   // Gaya tautan menu: biru saat aktif.
   const cls = ({ isActive }: { isActive: boolean }) => (isActive ? 'bg-primary-soft text-primary' : 'text-ink hover:bg-bg')
   return (
-    <div className="mx-auto flex min-h-screen max-w-[1440px]">
+    <div className="flex min-h-screen">
       <a href="#isi" onClick={(e) => { e.preventDefault(); main.current?.focus() }} className="sr-only z-[60] rounded-xl bg-white px-4 py-3 font-semibold text-primary focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Lewati ke isi halaman</a>
-      <aside aria-label="Menu samping" className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col gap-2 border-r border-line bg-white p-4 md:flex">
-        <div className="px-2 py-3"><Logo size={40} /></div>
+      <aside aria-label="Menu samping" className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col gap-1.5 border-r border-line bg-white px-4 pb-5 pt-6 md:flex lg:w-[280px] lg:px-5">
+        <div className="mb-4 px-3 py-2"><Logo size={40} /></div>
         {items.map((i) => (
-          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[48px] items-center gap-3 rounded-xl px-3 font-semibold ${cls(s)}`}>
+          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[52px] items-center gap-3.5 rounded-xl px-4 text-[17px] font-semibold ${cls(s)}`}>
             <Icon>{i.icon}</Icon>{i.label}
           </NavLink>
         ))}
         <div className="flex-1" />
-        <button onClick={() => nav('/profil')} data-tour="nav-profil" className="flex min-h-[52px] items-center gap-3 rounded-xl px-3 text-left hover:bg-bg">
+        <button onClick={() => nav('/profil')} data-tour="nav-profil" className="flex min-h-[56px] items-center gap-3 rounded-xl px-4 text-left hover:bg-bg">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft font-bold text-primary">{user?.name.charAt(0).toUpperCase()}</span>
           <span className="truncate text-sm font-semibold">{user?.name}</span>
         </button>
-        <button onClick={async () => { await signOut(); nav('/masuk') }} className="min-h-[44px] rounded-xl px-3 text-left text-sm font-medium text-ink-soft hover:bg-bg">Keluar</button>
+        <button onClick={async () => { await signOut(); nav('/masuk') }} className="min-h-[44px] rounded-xl px-4 text-left text-[15px] font-medium text-ink-soft hover:bg-bg">Keluar</button>
       </aside>
       <main id="isi" ref={main} tabIndex={-1} className="min-w-0 flex-1 px-5 pb-28 pt-8 outline-none md:px-10 md:pb-10">
-        <Outlet />
+        <div className="mx-auto w-full max-w-[1180px]"><Outlet /></div>
       </main>
       <nav aria-label="Menu utama" className="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
         {mobileItems.map((i) => (
