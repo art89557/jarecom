@@ -59,6 +59,7 @@ export const VERSI = '0.1.0'
 
 /** Riwayat perubahan, terbaru di atas. */
 export const CHANGELOG: { tanggal: string; isi: string }[] = [
+  { tanggal: '26 Nov 2026', isi: 'Lab Topologi gaya Packet Tracer: 12 misi (topologi, kabel, hub vs switch, IP dan subnet, router, troubleshooting, proyek kantor), menu Simulasi (5 gambar interaktif), bar atas yang menempel dan seragam, halaman Kredit, dan menu samping yang lebih lega.' },
   { tanggal: '25 Nov 2026', isi: 'Komentar penjelas di seluruh kode agar mudah dibaca.' },
   { tanggal: '22 Nov 2026', isi: 'Persen level di Peta ikut menghitung sub-topik yang sudah selesai.' },
   { tanggal: '21 Nov 2026', isi: 'Suara efek, suara panduan tur, halaman atur kata sandi baru, dan menyimpan posisi baca di akun.' },

@@ -4,12 +4,15 @@ export interface TourStep { target: string; title: string; body: string }
 
 /** Daftar langkah tur, urut dari awal sampai akhir. */
 export const TOUR_STEPS: TourStep[] = [
-  { target: 'lanjut', title: 'Mulai dari sini', body: 'Beranda menunjukkan level yang sedang kamu pelajari. Ketuk tombolnya untuk melanjutkan belajar.' },
-  { target: 'peta', title: 'Peta belajar', body: 'Ada 11 level yang terbuka berurutan. Selesaikan satu level untuk membuka level berikutnya.' },
-  { target: 'nav-materi', title: 'Baca materinya', body: 'Di tab Materi kamu membaca uraian dan ilustrasi, lalu menjawab cek pemahaman.' },
-  { target: 'nav-kuis', title: 'Uji pemahamanmu', body: 'Setelah materi selesai, kerjakan kuis. Skor 70 atau lebih berarti lulus dan level berikutnya terbuka.' },
-  { target: 'nav-progres', title: 'Pantau kemajuanmu', body: 'Lihat XP, level, peta panas, dan lencana yang sudah kamu kumpulkan.' },
-  { target: 'nav-profil', title: 'Atur akunmu', body: 'Di Profil kamu bisa mengatur suara dan gerak, memasang aplikasi, dan melihat panduan ini lagi.' }
+  { target: 'lanjut', title: 'Mulai dari sini', body: 'Kartu biru menunjukkan level dan sub-topik yang sedang kamu pelajari. Ketuk tombolnya untuk lanjut belajar.' },
+  { target: 'bar', title: 'XP dan level', body: 'Bar di atas selalu menampilkan XP dan level kamu, di halaman mana pun.' },
+  { target: 'peta', title: 'Peta belajar', body: 'Ada 11 level yang terbuka berurutan. Selesaikan materi dan lulus kuis untuk membuka level berikutnya.' },
+  { target: 'nav-materi', title: 'Baca materinya', body: 'Di Materi kamu membaca per sub-topik, lalu menjawab cek pemahaman.' },
+  { target: 'nav-kuis', title: 'Uji pemahamanmu', body: 'Setelah materi selesai, kerjakan kuis 10 soal. Skor 70 atau lebih berarti lulus.' },
+  { target: 'nav-lab', title: 'Rakit jaringan', body: 'Di Lab kamu merakit jaringan seperti di Cisco Packet Tracer: 12 misi dari topologi, kabel, sampai IP dan router.' },
+  { target: 'nav-simulasi', title: 'Bandingkan konsep', body: 'Simulasi berisi gambar interaktif: kabel straight dan cross, OSI, hub dan switch, IP, serta subnet.' },
+  { target: 'nav-progres', title: 'Pantau kemajuanmu', body: 'Lihat XP, lencana, dan peta panas 11 level.' },
+  { target: 'nav-profil', title: 'Atur akunmu', body: 'Di Profil kamu mengatur suara dan animasi, memasang aplikasi, membuka Bantuan, dan melihat Kredit.' }
 ]
 
 // Kunci localStorage penanda tur sudah dilihat, per pengguna.

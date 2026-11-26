@@ -5,6 +5,8 @@ import { Netty } from './components/ui'
 import { Forgot, Login, NewPassword, Register, Splash } from './pages/Auth'
 import Help from './pages/Help'
 import Credit from './pages/Credit'
+import { LabList, LabPlay } from './pages/Lab'
+import { SimList, SimPage } from './pages/Simulasi'
 import Home from './pages/Home'
 import MapPage from './pages/MapPage'
 import Material, { Done } from './pages/Material'
@@ -61,6 +63,10 @@ export default function App() {
           <Route path="/progres" element={<ProgressPage tab="ringkasan" />} />
           <Route path="/progres/lencana" element={<ProgressPage tab="lencana" />} />
           <Route path="/progres/riwayat" element={<ProgressPage tab="riwayat" />} />
+          <Route path="/lab" element={<LabList />} />
+          <Route path="/lab/:n" element={<LabPlay />} />
+          <Route path="/simulasi" element={<SimList />} />
+          <Route path="/simulasi/:slug" element={<SimPage />} />
           <Route path="/kredit" element={<Credit />} />
           <Route path="/profil" element={<Profile />} />
           <Route path="/bantuan" element={<Help />} />
