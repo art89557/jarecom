@@ -8,8 +8,8 @@ import { Back } from '../components/ui'
 import { useApp } from '../state'
 import { reduceOn } from '../lib/prefs'
 import {
-  LABEL, MISSIONS, MODEL, dev, freePort, isEnd, labDone, labOpen, linkDown, linkOf, ping, portAt, setLabDone,
-  type Dev, type DevType, type Link as Cable, type Net, type Pdu
+  CABLE, GROUPS, LABEL, MISSIONS, MODEL, dev, freePort, ipPdu, ipNum, isEnd, labDone, labOpen, linkDown, linkOf, needKind, ping, portAt, setLabDone, validMask, wrongCable,
+  type CableKind, type Dev, type DevType, type Link as Cable, type Mission, type Net, type Pdu
 } from '../lib/lab'
 
 // ---------------------------------------------------------------- Daftar misi
@@ -22,11 +22,14 @@ export function LabList() {
     <div className="flex flex-col gap-6">
       <header>
         <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Lab Topologi</h1>
-        <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#33415A]">Rakit jaringan sendiri seperti di Cisco Packet Tracer: taruh switch dan PC, pasang kabel, lalu kirim Simple PDU untuk membuktikan cara kerja tiap topologi. Misi terbuka berurutan.</p>
+        <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#33415A]">Rakit jaringan sendiri seperti di Cisco Packet Tracer: taruh router, switch, dan PC, pilih kabel, atur alamat IP, lalu buktikan dengan Simple PDU, ping, dan tracert. Misi di tiap kelompok terbuka berurutan; misi pertama tiap kelompok langsung bisa dicoba.</p>
       </header>
-      <p className="help -mt-2">Paling pas setelah menyelesaikan Level 3: Topologi Jaringan. Paling nyaman dipakai di laptop atau tablet.</p>
+      <p className="help -mt-2">Topologi cocok setelah Level 3, kabel setelah Level 5, alamat IP setelah Level 2 dan 6, routing setelah Level 8. Paling nyaman dipakai di laptop atau tablet.</p>
+      {GROUPS.map(([g, gt, gd]) => (
+      <section key={g} aria-labelledby={`g-${g}`} className="flex flex-col gap-3">
+        <div><h2 id={`g-${g}`} className="text-[20px] font-bold">{gt}</h2><p className="help">{gd}</p></div>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {MISSIONS.map((m) => {
+        {MISSIONS.filter((m) => m.group === g).map((m) => {
           const ok = done.includes(m.n), open = labOpen(done, m.n)
           const body = (
             <>
@@ -50,6 +53,7 @@ export function LabList() {
           )
         })}
       </ul>
+      </section>))}
     </div>
   )
 }
@@ -61,6 +65,7 @@ function DevIcon({ t }: { t: DevType }) {
   const p = { width: 32, height: 32, viewBox: '0 0 40 40', fill: 'none', stroke: 'currentColor', strokeWidth: 2.4, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const, 'aria-hidden': true }
   if (t === 'pc') return <svg {...p}><rect x="4" y="6" width="32" height="21" rx="3" /><path d="M14 34h12M20 27v7" /></svg>
   if (t === 'laptop') return <svg {...p}><rect x="8" y="8" width="24" height="16" rx="2" /><path d="M3 31h34l-3-7H6z" /></svg>
+  if (t === 'router') return <svg {...p}><circle cx="20" cy="20" r="15" /><path d="M13 16h11l-3-3M27 24H16l3 3" /></svg>
   if (t === 'hub') return <svg {...p}><rect x="3" y="12" width="34" height="16" rx="3" /><circle cx="12" cy="20" r="2" /><circle cx="20" cy="20" r="2" /><circle cx="28" cy="20" r="2" /></svg>
   return <svg {...p}><rect x="3" y="12" width="34" height="16" rx="3" /><path d="M9 20h3M15 20h3M21 20h3M27 20h3" /></svg>
 }
@@ -84,7 +89,8 @@ export function LabPlay() {
   const blocked = !m || !labOpen(done, m.n)
   useEffect(() => { if (blocked) nav('/lab', { replace: true }) }, [blocked, nav])
 
-  const [net, setNet] = useState<Net>({ devices: [], links: [] })
+  const [net, setNet] = useState<Net>(() => m?.start?.() ?? { devices: [], links: [] })
+  const [cableKind, setCableKind] = useState<'auto' | CableKind>('auto')
   const [pdus, setPdus] = useState<Pdu[]>([])
   const [step, setStep] = useState(0)
   const [since, setSince] = useState(0)
@@ -100,7 +106,6 @@ export function LabPlay() {
   const [toast, setToast] = useState<{ text: string; warn?: boolean } | null>(null)
   const [finished, setFinished] = useState(false)
   const [showDone, setShowDone] = useState(false)
-  const counters = useRef<Record<string, number>>({})
   const area = useRef<HTMLDivElement>(null)
   const drag = useRef<{ id: string; ox: number; oy: number; cx: number; cy: number; moved: boolean } | null>(null)
 
@@ -131,7 +136,7 @@ export function LabPlay() {
   netRef.current = net
   useEffect(() => {
     if (!anim) return
-    if (reduceOn() || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setAnim(null); finishPdu(anim.from, anim.to); return }
+    if (reduceOn() || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) { setAnim(null); finishPdu(anim.from, anim.to, true); return }
     let raf = 0, last = performance.now()
     const tick = (now: number) => {
       const a = animRef.current; if (!a) return
@@ -139,9 +144,9 @@ export function LabPlay() {
       last = now
       if (t >= 1) {
         hop++; t = 0
-        if (hop >= a.path.length - 1) { setAnim(null); finishPdu(a.from, a.to); return }
+        if (hop >= a.path.length - 1) { setAnim(null); finishPdu(a.from, a.to, true); return }
         const g = netRef.current
-        setEvents((e) => [...e, `${dev(g, a.path[hop])?.name}: teruskan ke ${dev(g, a.path[hop + 1])?.name}`].slice(-8))
+        setEvents((e) => [...e, hopText(g, a.path[hop - 1], a.path[hop], a.path[hop + 1])].slice(-8))
       }
       setAnim({ ...a, t, hop })
       raf = requestAnimationFrame(tick)
@@ -154,8 +159,18 @@ export function LabPlay() {
   if (!m || blocked) return null
 
   /** Catat hasil PDU ke daftar. */
-  function finishPdu(from: string, to: string) {
-    const r = ping(netRef.current, from, to, pdusRef.current.length + 1)
+  function finishPdu(from: string, to: string, sim = false) {
+    record({ ...makePdu(from, to, pdusRef.current.length + 1), sim })
+  }
+  /** Simple PDU: di misi ber-IP memakai IP tujuan, di misi lain cukup jalur kabel. */
+  function makePdu(from: string, to: string, num: number): Pdu {
+    const g = netRef.current, t = dev(g, to)
+    if (!m?.ip) return ping(g, from, to, num)
+    if (!t?.ip) return { n: num, src: dev(g, from)?.name ?? '?', dst: t?.name ?? '?', ok: false, why: `${t?.name} belum punya IP Address.`, path: [], cmd: 'pdu' }
+    return ipPdu(g, from, t.ip, num, 'pdu')
+  }
+  /** Catat satu hasil ke PDU List (juga dipakai Command Prompt). */
+  function record(r: Pdu) {
     pdusRef.current = [...pdusRef.current, r]
     setPdus(pdusRef.current)
     say(r.ok ? `Successful: ${r.src} ke ${r.dst}` : `Failed: ${r.why}`, !r.ok)
@@ -168,8 +183,8 @@ export function LabPlay() {
   /** Klik area kerja kosong: taruh perangkat. Keyboard: Enter menaruh di posisi kosong berikutnya. */
   function placeAt(x: number, y: number) {
     if (tool !== 'place' || !placeType) return
-    const c = counters.current[placeType] ?? 0
-    counters.current[placeType] = c + 1
+    let c = 0
+    while (net.devices.some((x) => x.name === `${LABEL[placeType]}${c}`)) c++
     const d: Dev = { id: `d${Date.now()}${c}`, type: placeType, name: `${LABEL[placeType]}${c}`, x, y, on: true, off: {} }
     setNet((p) => ({ ...p, devices: [...p.devices, d] }))
   }
@@ -191,13 +206,15 @@ export function LabPlay() {
       if (first === id) { setFirst(null); return }
       const a = dev(net, first)!
       if (linkOf(net, a.id, d.id)) { setFirst(null); return say(`${a.name} dan ${d.name} sudah tersambung.`, true) }
-      if (isEnd(a) && isEnd(d)) { setFirst(null); return say('Di lab ini PC disambung lewat switch atau hub, bukan langsung ke PC.', true) }
       const pa = freePort(net, a), pb = freePort(net, d)
       if (!pa || !pb) { setFirst(null); return say(`Port ${!pa ? a.name : d.name} sudah penuh.`, true) }
-      const l: Cable = { id: `l${Date.now()}`, a: a.id, b: d.id, pa, pb, ready: false }
+      const need = needKind(a.type, d.type)
+      const kind = cableKind === 'auto' ? need : cableKind
+      const l: Cable = { id: `l${Date.now()}`, a: a.id, b: d.id, pa, pb, ready: false, kind, manual: cableKind !== 'auto' }
       setNet((p) => ({ ...p, links: [...p.links, l] }))
       setFirst(null)
-      return say(`Tersambung: ${a.name} ${pa} ke ${d.name} ${pb}. Tunggu lampu hijau.`)
+      if (kind !== need) return say(`Kabel ${CABLE[kind]} salah untuk ${a.name}–${d.name}: lampu merah. Yang benar ${CABLE[need]}.`, true)
+      return say(`Tersambung (${CABLE[kind]}): ${a.name} ${pa} ke ${d.name} ${pb}. Tunggu lampu hijau.`)
     }
     if (tool === 'pdu') {
       if (!isEnd(d)) return say('Simple PDU dikirim dari PC atau Laptop.', true)
@@ -205,7 +222,7 @@ export function LabPlay() {
       if (first === id) { setFirst(null); return }
       const from = first; setFirst(null)
       if (mode === 'realtime' || anim) return finishPdu(from, id)
-      const path = ping(net, from, id, 0).path
+      const path = makePdu(from, id, 0).path
       setEvents([`ICMP Echo Request dibuat di ${dev(net, from)?.name} untuk ${d.name}`])
       if (path.length < 2) return finishPdu(from, id)
       setAnim({ path: [...path, ...path.slice(0, -1).reverse()], hop: 0, t: 0, from, to: id })
@@ -238,9 +255,9 @@ export function LabPlay() {
     say(`Kabel ${dev(net, l.a)?.name}–${dev(net, l.b)?.name} dicabut.`)
   }
 
-  function reset() {
-    setNet({ devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
-    setFinished(false); setShowDone(false); counters.current = {}; pick('select'); say('Activity di-reset. Mulai dari langkah 1.')
+  function reset(mm: Mission | undefined = m) {
+    setNet(mm?.start?.() ?? { devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
+    setFinished(false); setShowDone(false); pick('select'); say('Activity di-reset. Mulai dari langkah 1.')
   }
 
   const pct = Math.round((Math.min(step, m.steps.length) / m.steps.length) * 100)
@@ -260,7 +277,7 @@ export function LabPlay() {
           <h1 className="font-display text-[24px] font-bold tracking-tight md:text-[28px]">Misi {m.n} · {m.title}</h1>
         </div>
         <ToolBtn on={hint} onClick={() => setHint((h) => !h)} label="Petunjuk"><Icon name="help" size={20} /></ToolBtn>
-        <ToolBtn onClick={reset} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
+        <ToolBtn onClick={() => reset()} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -282,6 +299,17 @@ export function LabPlay() {
             ))}
           </ol>
           {hint && step < m.steps.length && <p className="rounded-xl bg-[#EEF2FF] px-3.5 py-3 text-[15px] leading-relaxed text-[#1E3A8A]">{cur.hint}</p>}
+          {m.table && (
+            <div>
+              <h3 className="text-[16px] font-bold">Addressing Table <span className="text-[14px] font-medium text-ink-soft">· tabel alamat</span></h3>
+              <div className="mt-1.5 overflow-x-auto">
+                <table className="w-full text-left text-[14px]">
+                  <thead><tr className="text-ink-soft"><th className="py-1 pr-2 font-semibold">Perangkat</th><th className="py-1 font-semibold">IP, Mask, Gateway</th></tr></thead>
+                  <tbody>{m.table.map((r, i) => <tr key={i} className="border-t border-[#E6EAF1] align-top"><td className="py-1.5 pr-2"><b>{r.dev}</b><br /><span className="text-ink-soft">{r.iface}</span></td><td className="py-1.5 font-mono">{r.ip}<br /><span className="text-ink-soft">{r.mask}</span>{r.gw !== '-' && <><br /><span className="font-sans">GW </span>{r.gw}</>}</td></tr>)}</tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Daftar PDU dan Event List */}
@@ -291,7 +319,7 @@ export function LabPlay() {
             <ul className="flex flex-col gap-1.5">
               {pdus.slice(-6).reverse().map((p) => (
                 <li key={p.n} className="flex items-center justify-between gap-2 rounded-lg bg-bg px-2.5 py-2 text-[14px]">
-                  <span className="truncate">#{p.n} {p.src} → {p.dst}</span>
+                  <span className="truncate">#{p.n} {p.cmd === 'ping' ? 'ping ' : p.cmd === 'tracert' ? 'tracert ' : ''}{p.src} → {p.dst}</span>
                   <span className={`shrink-0 font-bold ${p.ok ? 'text-[#15803D]' : 'text-[#B91C1C]'}`}>{p.ok ? 'Successful' : 'Failed'}</span>
                 </li>))}
             </ul>)}
@@ -300,7 +328,7 @@ export function LabPlay() {
             {events.length === 0 ? <p className="help">Kirim PDU di mode Simulation untuk melihat paket berjalan per hop.</p>
               : <ol className="flex flex-col gap-1 text-[14px] leading-snug text-[#33415A]">{events.map((e, i) => <li key={i}>{e}</li>)}</ol>}
           </>}
-          <p className="help mt-auto">Segitiga hijau = port aktif. Bulat oranye = port bersiap. Segitiga merah = port mati.</p>
+          <p className="help mt-auto">Segitiga hijau = port aktif. Bulat oranye = port bersiap. Segitiga merah = port mati atau kabel salah jenis.</p>
         </section>
         </div>
         {/* Area kerja */}
@@ -324,7 +352,7 @@ export function LabPlay() {
 
             {/* Kabel */}
             <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none" aria-hidden>
-              {net.links.map((l) => { const a = dev(net, l.a)!, b = dev(net, l.b)!; const dn = linkDown(net, l); return <line key={l.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={dn ? '#DC2626' : '#0F172A'} strokeWidth={2.5} strokeDasharray={dn ? '6 5' : undefined} vectorEffect="non-scaling-stroke" /> })}
+              {net.links.map((l) => { const a = dev(net, l.a)!, b = dev(net, l.b)!; const dn = linkDown(net, l); return <line key={l.id} x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke={dn ? '#DC2626' : '#0F172A'} strokeWidth={2.5} strokeDasharray={l.kind === 'cross' ? '7 5' : undefined} vectorEffect="non-scaling-stroke" /> })}
             </svg>
             <svg className="pointer-events-none absolute inset-0 h-full w-full" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
               {net.links.map((l) => { const a = dev(net, l.a)!, b = dev(net, l.b)!; return (
@@ -360,6 +388,12 @@ export function LabPlay() {
             })}
 
             {/* Paket (mode Simulation) */}
+            {anim && dev(net, anim.path[anim.hop])?.type === 'hub' && net.links.filter((l) => (l.a === anim.path[anim.hop] || l.b === anim.path[anim.hop]) && !linkDown(net, l)).map((l) => {
+              const h = dev(net, anim.path[anim.hop])!, o = dev(net, l.a === h.id ? l.b : l.a)!
+              if (o.id === anim.path[anim.hop + 1] || o.id === anim.path[anim.hop - 1]) return null
+              const x = h.x + (o.x - h.x) * anim.t, y = h.y + (o.y - h.y) * anim.t
+              return <span key={l.id} aria-hidden className="pointer-events-none absolute z-[4] flex h-6 w-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-md bg-[#94A3B8] text-white" style={{ left: `${(x / W) * 100}%`, top: `${(y / H) * 100}%` }}><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg></span>
+            })}
             {anim && (() => {
               const a = dev(net, anim.path[anim.hop]), b = dev(net, anim.path[anim.hop + 1]); if (!a || !b) return null
               const x = a.x + (b.x - a.x) * anim.t, y = a.y + (b.y - a.y) * anim.t
@@ -378,22 +412,23 @@ export function LabPlay() {
               ))}
             </div>
             <div className="flex flex-wrap gap-2">
-              {cat === 'network' && (['switch', 'hub'] as DevType[]).map((t) => <PaletteBtn key={t} on={tool === 'place' && placeType === t} onClick={() => pick('place', t)} t={t} />)}
+              {cat === 'network' && (['router', 'switch', 'hub'] as DevType[]).map((t) => <PaletteBtn key={t} on={tool === 'place' && placeType === t} onClick={() => pick('place', t)} t={t} />)}
               {cat === 'end' && (['pc', 'laptop'] as DevType[]).map((t) => <PaletteBtn key={t} on={tool === 'place' && placeType === t} onClick={() => pick('place', t)} t={t} />)}
-              {cat === 'conn' && (
-                <button type="button" aria-pressed={tool === 'cable'} onClick={() => pick('cable')} className={`flex min-h-[52px] items-center gap-2 rounded-xl border-2 px-3 text-left ${tool === 'cable' ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}>
-                  <Icon name="zap" size={22} /><span><span className="block text-[14px] font-bold">Automatic</span><span className="block text-[14px] text-ink-soft">Kabel otomatis</span></span>
+              {cat === 'conn' && ([['auto', 'Automatic', 'Pilih jenis otomatis'], ['straight', 'Copper Straight-Through', 'Kabel lurus'], ['cross', 'Copper Cross-Over', 'Kabel silang']] as const).map(([k, t, sub]) => (
+                <button key={k} type="button" aria-pressed={tool === 'cable' && cableKind === k} onClick={() => { pick('cable'); setCableKind(k) }} className={`flex min-h-[52px] items-center gap-2 rounded-xl border-2 px-3 text-left ${tool === 'cable' && cableKind === k ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}>
+                  {k === 'auto' ? <Icon name="zap" size={22} /> : <svg width="26" height="22" viewBox="0 0 26 22" aria-hidden><path d={k === 'straight' ? 'M2 20 24 2' : 'M2 20 24 2'} stroke="#0F172A" strokeWidth="2.4" strokeDasharray={k === 'cross' ? '4 3' : undefined} /></svg>}
+                  <span><span className="block text-[14px] font-bold">{t}</span><span className="block text-[14px] text-ink-soft">{sub}</span></span>
                 </button>
-              )}
+              ))}
             </div>
           </div>
         </section>
 
       </div>
 
-      {dialog && dev(net, dialog) && <DeviceDialog d={dev(net, dialog)!} net={net} onClose={() => setDialog(null)} onChange={(nd) => setNet((p) => ({ ...p, devices: p.devices.map((x) => (x.id === nd.id ? nd : x)) }))} />}
+      {dialog && dev(net, dialog) && <DeviceDialog d={dev(net, dialog)!} net={net} onCmd={(src, kind, ip) => { const r = ipPdu(netRef.current, src, ip, pdusRef.current.length + 1, kind); record(r); return r }} onClose={() => setDialog(null)} onChange={(nd) => setNet((p) => ({ ...p, devices: p.devices.map((x) => (x.id === nd.id ? nd : x)) }))} />}
 
-      {showDone && (
+      {showDone && !dialog && (
         <div role="dialog" aria-modal="true" aria-labelledby="done" className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F172A]/50 p-4">
           <div className="pop w-full max-w-md rounded-[22px] bg-white p-6">
             <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#DCFCE7] text-[#15803D]"><Icon name="check" size={30} sw={2.6} /></span>
@@ -402,7 +437,7 @@ export function LabPlay() {
             <p className="mt-3 text-[15px] leading-relaxed text-[#33415A]">{m.lesson}</p>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row">
               <button type="button" onClick={() => setShowDone(false)} className="min-h-[52px] flex-1 rounded-2xl border-2 border-line px-4 font-semibold">Coba-coba lagi</button>
-              {next ? <button type="button" onClick={() => { setShowDone(false); nav(`/lab/${next.n}`); reset() }} className="btn flex-1">Lanjut: Misi {next.title.replace('Topologi ', '')}</button>
+              {next ? <button type="button" onClick={() => { setShowDone(false); reset(next); nav(`/lab/${next.n}`) }} className="btn flex-1">Lanjut: Misi {next.title.replace('Topologi ', '')}</button>
                 : <Link to="/lab" className="btn flex-1">Kembali ke daftar misi</Link>}
             </div>
           </div>
@@ -410,6 +445,20 @@ export function LabPlay() {
       )}
     </div>
   )
+}
+
+/** Kalimat Event List untuk paket yang tiba di `at`: hub menyalin ke semua port, switch hanya ke port tujuan. */
+function hopText(n: Net, prev: string | undefined, at: string, next: string): string {
+  const d = dev(n, at), nx = dev(n, next)
+  if (!d || !nx) return ''
+  if (d.type === 'hub') {
+    const all = n.links.filter((l) => (l.a === at || l.b === at) && !linkDown(n, l)).map((l) => dev(n, l.a === at ? l.b : l.a)!).filter((o) => o.id !== prev).map((o) => o.name)
+    return `${d.name} (Layer 1): salin ke SEMUA port: ${all.join(', ')}`
+  }
+  const l = linkOf(n, at, next)
+  if (d.type === 'switch') return `${d.name} (Layer 2): teruskan hanya ke ${l ? portAt(l, at).replace('Fa', 'FastEthernet') : 'port'} (${nx.name})`
+  if (d.type === 'router') return `${d.name} (Layer 3): arahkan ke jaringan lain lewat ${l ? portAt(l, at) : 'port'} (${nx.name})`
+  return `${d.name}: kirim ke ${nx.name}`
 }
 
 /** Tombol alat dengan label Packet Tracer dan keterangan kecil opsional. */
@@ -425,53 +474,153 @@ function ToolBtn({ on = false, onClick, label, sub, children }: { on?: boolean; 
 function PaletteBtn({ t, on, onClick }: { t: DevType; on: boolean; onClick: () => void }) {
   return (
     <button type="button" aria-pressed={on} onClick={onClick} className={`flex min-h-[52px] items-center gap-2 rounded-xl border-2 px-3 text-left ${on ? 'border-primary bg-primary-soft text-primary' : 'border-line bg-white'}`}>
-      <DevIcon t={t} /><span><span className="block text-[14px] font-bold text-ink">{t === 'switch' ? 'Switch 2960' : MODEL[t]}</span><span className="block text-[14px] text-ink-soft">{LABEL[t]}</span></span>
+      <DevIcon t={t} /><span><span className="block text-[14px] font-bold text-ink">{t === 'switch' ? 'Switch 2960' : t === 'router' ? 'Router 1941' : MODEL[t]}</span><span className="block text-[14px] text-ink-soft">{LABEL[t]}</span></span>
     </button>
   )
 }
 
-/** Jendela perangkat: tab Physical (Power) dan Config (Port Status), seperti Packet Tracer. */
-function DeviceDialog({ d, net, onClose, onChange }: { d: Dev; net: Net; onClose: () => void; onChange: (d: Dev) => void }) {
-  const [tab, setTab] = useState<'physical' | 'config'>('physical')
-  const ports = useMemo(() => net.links.filter((l) => l.a === d.id || l.b === d.id).map((l) => ({ port: portAt(l, d.id), to: dev(net, l.a === d.id ? l.b : l.a)?.name })), [net, d.id])
+/** Kolom isian alamat IP dengan peringatan format. */
+function IpField({ label, value, onChange, mask = false }: { label: string; value?: string; onChange: (v: string) => void; mask?: boolean }) {
+  const v = value ?? ''
+  const bad = v !== '' && (mask ? !validMask(v) : ipNum(v) === null)
+  const id = useMemo(() => `ip-${Math.random().toString(36).slice(2)}`, [])
+  return (
+    <div className="flex flex-col gap-1">
+      <label htmlFor={id} className="text-[14px] font-semibold">{label}</label>
+      <input id={id} inputMode="decimal" autoComplete="off" spellCheck={false} value={v} onChange={(e) => onChange(e.target.value.trim())} placeholder={mask ? '255.255.255.0' : '192.168.1.10'}
+        aria-invalid={bad} className={`min-h-[44px] rounded-xl border-2 px-3 font-mono text-[15px] outline-none focus:border-primary ${bad ? 'border-[#DC2626]' : 'border-line'}`} />
+      {bad && <span className="text-[14px] text-[#B91C1C]">{mask ? 'Mask tidak sah, contoh 255.255.255.0' : 'Format IP: empat angka 0-255 dipisah titik'}</span>}
+    </div>
+  )
+}
+
+type Cmd = (src: string, kind: 'ping' | 'tracert', ip: string) => Pdu
+
+/** Command Prompt sederhana: ipconfig, ping, tracert, help, cls. */
+function Prompt({ d, onCmd }: { d: Dev; onCmd: Cmd }) {
+  const [lines, setLines] = useState<string[]>(['Packet Tracer PC Command Line 1.0', 'Ketik help untuk daftar perintah.'])
+  const [cmd, setCmd] = useState('')
+  const end = useRef<HTMLDivElement>(null)
+  useEffect(() => { end.current?.scrollIntoView({ block: 'nearest' }) }, [lines])
+  function run(e: React.FormEvent) {
+    e.preventDefault()
+    const c = cmd.trim(); setCmd(''); if (!c) return
+    const [w, arg] = c.split(/\s+/)
+    const out: string[] = [`C:\\>${c}`]
+    if (w === 'cls') return setLines([])
+    if (w === 'help') out.push('ipconfig       tampilkan IP perangkat ini', 'ping <IP>      uji sambungan ke IP tujuan', 'tracert <IP>   lihat lompatan menuju IP tujuan', 'cls            bersihkan layar')
+    else if (w === 'ipconfig') out.push('FastEthernet0 Connection:', `   IPv4 Address. . . . : ${d.ip || '0.0.0.0'}`, `   Subnet Mask . . . . : ${d.mask || '0.0.0.0'}`, `   Default Gateway . . : ${d.gw || '0.0.0.0'}`)
+    else if ((w === 'ping' || w === 'tracert') && arg) {
+      const r = onCmd(d.id, w, arg)
+      if (w === 'ping') {
+        out.push(`Pinging ${arg} with 32 bytes of data:`)
+        for (let i = 0; i < 4; i++) out.push(r.ok ? `Reply from ${arg}: bytes=32 time<1ms TTL=128` : 'Request timed out.')
+        out.push(`Ping statistics for ${arg}: Sent = 4, Received = ${r.ok ? 4 : 0}, Lost = ${r.ok ? 0 : 4} (${r.ok ? 0 : 100}% loss)`)
+        if (!r.ok && r.why) out.push(`Catatan: ${r.why}`)
+      } else {
+        out.push(`Tracing route to ${arg} over a maximum of 30 hops:`)
+        ;(r.hops ?? []).forEach((h, i) => out.push(`  ${i + 1}   0 ms   0 ms   0 ms   ${h}`))
+        if (!r.ok) out.push(`  ${(r.hops?.length ?? 0) + 1}   *   *   *   Request timed out.`, `Catatan: ${r.why}`)
+        out.push('Trace complete.')
+      }
+    } else out.push(`Invalid Command. Contoh: ping 192.168.1.11`)
+    setLines((l) => [...l, ...out, ''].slice(-60))
+  }
+  return (
+    <div className="mt-3 overflow-hidden rounded-xl bg-[#0F172A] text-[#E2E8F0]">
+      <div className="max-h-56 overflow-y-auto whitespace-pre-wrap px-3 py-2 font-mono text-[14px] leading-snug" aria-live="polite">{lines.join('\n')}<div ref={end} /></div>
+      <form onSubmit={run} className="flex items-center gap-2 border-t border-[#334155] px-3">
+        <label htmlFor="cmd" className="font-mono text-[14px]">C:\&gt;</label>
+        <input id="cmd" value={cmd} onChange={(e) => setCmd(e.target.value)} autoComplete="off" spellCheck={false} className="min-h-[44px] flex-1 bg-transparent font-mono text-[15px] text-white outline-none" placeholder="ping 192.168.1.11" />
+        <button type="submit" className="min-h-[44px] rounded-lg px-3 text-[14px] font-bold text-[#93C5FD]">Enter</button>
+      </form>
+    </div>
+  )
+}
+
+/** Jendela perangkat seperti Packet Tracer: Physical (Power), Config (port), Desktop (IP Configuration dan Command Prompt). */
+function DeviceDialog({ d, net, onClose, onChange, onCmd }: { d: Dev; net: Net; onClose: () => void; onChange: (d: Dev) => void; onCmd: Cmd }) {
+  const end = isEnd(d)
+  const [tab, setTab] = useState<'physical' | 'config' | 'desktop'>(end ? 'desktop' : 'config')
+  const [app, setApp] = useState<'ip' | 'cmd'>('ip')
+  const ports = useMemo(() => net.links.filter((l) => l.a === d.id || l.b === d.id).map((l) => ({ port: portAt(l, d.id), to: dev(net, l.a === d.id ? l.b : l.a)?.name, wrong: wrongCable(net, l) })), [net, d.id])
+  const routerPorts = d.type === 'router' ? ['Gig0/0', 'Gig0/1'] : []
   const ref = useRef<HTMLDivElement>(null)
   useEffect(() => { ref.current?.focus(); const k = (e: KeyboardEvent) => e.key === 'Escape' && onClose(); addEventListener('keydown', k); return () => removeEventListener('keydown', k) }, [onClose])
+  const portName = (p: string) => (p.startsWith('Gig') ? 'GigabitEthernet' + p.slice(3) : 'FastEthernet' + p.slice(2))
+  const tabs: ('physical' | 'config' | 'desktop')[] = end ? ['physical', 'config', 'desktop'] : ['physical', 'config']
   return (
     <div role="dialog" aria-modal="true" aria-labelledby="devt" className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F172A]/50 p-4" onClick={onClose}>
-      <div ref={ref} tabIndex={-1} onClick={(e) => e.stopPropagation()} className="w-full max-w-md rounded-[22px] bg-white p-5 outline-none">
+      <div ref={ref} tabIndex={-1} onClick={(e) => e.stopPropagation()} className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-[22px] bg-white p-5 outline-none">
         <div className="flex items-center justify-between gap-3">
           <h2 id="devt" className="text-[20px] font-bold">{d.name} <span className="text-[14px] font-medium text-ink-soft">{MODEL[d.type]}</span></h2>
           <button type="button" onClick={onClose} aria-label="Tutup" className="flex h-11 w-11 items-center justify-center rounded-xl hover:bg-bg"><Icon name="x" size={20} /></button>
         </div>
         <div className="mt-3 flex gap-2" role="tablist">
-          {(['physical', 'config'] as const).map((t) => <button key={t} role="tab" aria-selected={tab === t} type="button" onClick={() => setTab(t)} className={`min-h-[44px] rounded-xl px-4 text-[14px] font-bold ${tab === t ? 'bg-ink text-white' : 'bg-bg'}`}>{t === 'physical' ? 'Physical' : 'Config'}</button>)}
+          {tabs.map((t) => <button key={t} role="tab" aria-selected={tab === t} type="button" onClick={() => setTab(t)} className={`min-h-[44px] rounded-xl px-4 text-[14px] font-bold ${tab === t ? 'bg-ink text-white' : 'bg-bg'}`}>{t === 'physical' ? 'Physical' : t === 'config' ? 'Config' : 'Desktop'}</button>)}
         </div>
-        {tab === 'physical' ? (
+        {tab === 'physical' && (
           <div className="mt-4 flex items-center gap-3">
             <button type="button" onClick={() => onChange({ ...d, on: !d.on })} aria-pressed={d.on} className={`flex h-14 w-14 items-center justify-center rounded-full border-4 ${d.on ? 'border-[#16A34A] text-[#16A34A]' : 'border-[#94A3B8] text-[#64748B]'}`} aria-label={d.on ? 'Matikan perangkat' : 'Nyalakan perangkat'}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" aria-hidden><path d="M12 3v8M6.3 6.3a8 8 0 1 0 11.4 0" /></svg>
             </button>
             <p className="text-[15px] leading-snug">Power: <b>{d.on ? 'Menyala' : 'Mati'}</b><br /><span className="text-ink-soft">Tekan tombol untuk menyalakan atau mematikan.</span></p>
           </div>
-        ) : (
-          <div className="mt-4">
+        )}
+        {tab === 'config' && (
+          <div className="mt-4 flex flex-col gap-3">
             <p className="text-[14px] font-bold uppercase tracking-wider text-ink-soft">Interface</p>
-            {ports.length === 0 ? <p className="help mt-2">Belum ada kabel tersambung ke perangkat ini.</p> : (
-              <ul className="mt-2 flex flex-col gap-2">
+            {d.type === 'router' && routerPorts.map((p) => {
+              const c = ports.find((x) => x.port === p)
+              const v = d.ips?.[p] ?? { ip: '', mask: '' }
+              const set = (k: 'ip' | 'mask', val: string) => onChange({ ...d, ips: { ...d.ips, [p]: { ...v, [k]: val } } })
+              return (
+                <div key={p} className="flex flex-col gap-2 rounded-xl bg-bg p-3">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-[15px]"><b>{portName(p)}</b><br /><span className="text-[14px] text-ink-soft">{c ? `ke ${c.to}` : 'belum tersambung'}</span></span>
+                    <PortToggle on={!d.off[p]} onToggle={() => onChange({ ...d, off: { ...d.off, [p]: !d.off[p] } })} />
+                  </div>
+                  <IpField label="IPv4 Address" value={v.ip} onChange={(x) => set('ip', x)} />
+                  <IpField label="Subnet Mask" value={v.mask} onChange={(x) => set('mask', x)} mask />
+                </div>)
+            })}
+            {d.type !== 'router' && (ports.length === 0 ? <p className="help">Belum ada kabel tersambung ke perangkat ini.</p> : (
+              <ul className="flex flex-col gap-2">
                 {ports.map((p) => (
                   <li key={p.port} className="flex items-center justify-between gap-3 rounded-xl bg-bg px-3 py-2">
-                    <span className="text-[15px]"><b>FastEthernet{p.port.slice(2)}</b><br /><span className="text-[14px] text-ink-soft">ke {p.to}</span></span>
-                    <label className="flex min-h-[44px] cursor-pointer items-center gap-2 text-[14px] font-semibold">
-                      Port Status
-                      <input type="checkbox" className="h-5 w-5 accent-[#2457F5]" checked={!d.off[p.port]} onChange={() => onChange({ ...d, off: { ...d.off, [p.port]: !d.off[p.port] } })} />
-                      {d.off[p.port] ? 'Off' : 'On'}
-                    </label>
+                    <span className="text-[15px]"><b>{portName(p.port)}</b><br /><span className="text-[14px] text-ink-soft">ke {p.to}{p.wrong ? ' · kabel salah jenis' : ''}</span></span>
+                    <PortToggle on={!d.off[p.port]} onToggle={() => onChange({ ...d, off: { ...d.off, [p.port]: !d.off[p.port] } })} />
                   </li>))}
-              </ul>)}
-            <p className="help mt-3">Command Prompt dan IP Configuration belum dipakai di lab ini; fokusnya bentuk topologi.</p>
+              </ul>))}
+          </div>
+        )}
+        {tab === 'desktop' && (
+          <div className="mt-4">
+            <div className="flex gap-2">
+              {([['ip', 'IP Configuration'], ['cmd', 'Command Prompt']] as const).map(([k, t]) => <button key={k} type="button" aria-pressed={app === k} onClick={() => setApp(k)} className={`min-h-[44px] flex-1 rounded-xl border-2 px-3 text-[14px] font-bold ${app === k ? 'border-primary bg-primary-soft text-[#1B46D1]' : 'border-line'}`}>{t}</button>)}
+            </div>
+            {app === 'ip' ? (
+              <div className="mt-3 flex flex-col gap-3">
+                <p className="text-[14px] text-ink-soft">Static. Perubahan langsung tersimpan.</p>
+                <IpField label="IPv4 Address" value={d.ip} onChange={(v) => onChange({ ...d, ip: v })} />
+                <IpField label="Subnet Mask" value={d.mask} onChange={(v) => onChange({ ...d, mask: v })} mask />
+                <IpField label="Default Gateway" value={d.gw} onChange={(v) => onChange({ ...d, gw: v })} />
+              </div>
+            ) : <Prompt d={d} onCmd={onCmd} />}
           </div>
         )}
       </div>
     </div>
+  )
+}
+
+/** Saklar Port Status On/Off. */
+function PortToggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
+  return (
+    <label className="flex min-h-[44px] shrink-0 cursor-pointer items-center gap-2 text-[14px] font-semibold">
+      Port Status
+      <input type="checkbox" className="h-5 w-5 accent-[#2457F5]" checked={on} onChange={onToggle} />
+      {on ? 'On' : 'Off'}
+    </label>
   )
 }
