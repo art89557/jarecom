@@ -137,6 +137,7 @@ export default function Profile() {
               {chipIc('help')}<span className="flex flex-1 flex-col gap-0.5"><span className="text-base font-semibold">Lihat panduan lagi</span><span className="help leading-snug">Ulangi tur singkat cara memakai Jar’ecom</span></span><Icon name="arrow" size={20} sw={2.2} className="text-ink-soft" />
             </button>
             <Row icon="book" title="Bantuan" desc="Baca langkah-langkahnya sebagai teks" to="/bantuan" />
+            <Row icon="award" title="Kredit" desc="Tim pengembang, sumber, dan tentang Jar’ecom" to="/kredit" />
           </Group>
           <Group title="Akun">
             <button type="button" onClick={() => { setNote(''); setDlg('nama') }} className="flex min-h-[72px] w-full items-center gap-3.5 px-4 py-3 text-left hover:bg-bg [&+&]:border-t [&+&]:border-[#E6EAF1]">

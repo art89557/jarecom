@@ -10,18 +10,19 @@ const items = [
   { to: '/beranda', tour: 'nav-beranda', label: 'Beranda', icon: <path d="M3 11 12 3l9 8M5 10v10h5v-6h4v6h5V10" /> },
   { to: '/materi', tour: 'nav-materi', label: 'Materi', icon: <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7" /> },
   { to: '/kuis', tour: 'nav-kuis', label: 'Kuis', icon: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" /></> },
-  { to: '/progres', tour: 'nav-progres', label: 'Progres', icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> }
+  { to: '/progres', tour: 'nav-progres', label: 'Progres', icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> },
+  { to: '/kredit', tour: 'nav-kredit', label: 'Kredit', icon: <path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2L12 16.8 6.4 20l1.3-6.2L3 9.5l6.3-.7z" /> }
 ]
 
-// Menu ponsel sama dengan menu utama ditambah Profil (di desktop Profil ada di bawah menu samping).
-const mobileItems = [...items, { to: '/profil', tour: 'nav-profil', label: 'Profil', icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></> }]
+// Menu ponsel sama dengan menu utama ditambah Profil, tanpa Kredit (di ponsel Kredit dibuka dari Profil). Di desktop Profil ada di bawah menu samping.
+const mobileItems = [...items.filter((i) => i.to !== '/kredit'), { to: '/profil', tour: 'nav-profil', label: 'Profil', icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></> }]
 
 // Judul tab browser per alamat. Urutan penting: pola yang lebih spesifik ditaruh lebih dulu.
 const TITLES: [RegExp, string][] = [
   [/^\/beranda/, 'Beranda'], [/^\/materi\/\d+\/selesai/, 'Materi selesai'], [/^\/materi\/\d+/, 'Materi'], [/^\/materi/, 'Peta level'],
   [/^\/kuis\/\d+\/hasil/, 'Hasil kuis'], [/^\/kuis\/\d+/, 'Soal kuis'], [/^\/kuis/, 'Daftar kuis'],
   [/^\/progres\/lencana/, 'Progres: lencana'], [/^\/progres\/riwayat/, 'Progres: riwayat XP'], [/^\/progres/, 'Progres'],
-  [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil dan pengaturan']
+  [/^\/kredit/, 'Kredit'], [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil dan pengaturan']
 ]
 
 /** Pembungkus ikon SVG seragam untuk menu. */
