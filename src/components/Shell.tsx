@@ -23,10 +23,10 @@ const mobileItems = [...items.filter((i) => i.to !== '/kredit' && i.to !== '/sim
 
 // Judul tab browser per alamat. Urutan penting: pola yang lebih spesifik ditaruh lebih dulu.
 const TITLES: [RegExp, string][] = [
-  [/^\/beranda/, 'Beranda'], [/^\/materi\/\d+\/selesai/, 'Materi selesai'], [/^\/materi\/\d+/, 'Materi'], [/^\/materi/, 'Peta level'],
-  [/^\/kuis\/\d+\/hasil/, 'Hasil kuis'], [/^\/kuis\/\d+/, 'Soal kuis'], [/^\/kuis/, 'Daftar kuis'],
+  [/^\/beranda/, 'Beranda'], [/^\/materi\/\d+\/selesai/, 'Materi selesai'], [/^\/materi\/\d+/, 'Materi'], [/^\/materi/, 'Materi'],
+  [/^\/kuis\/\d+\/hasil/, 'Hasil kuis'], [/^\/kuis\/\d+/, 'Soal kuis'], [/^\/kuis/, 'Kuis'],
   [/^\/progres\/lencana/, 'Progres: lencana'], [/^\/progres\/riwayat/, 'Progres: riwayat XP'], [/^\/progres/, 'Progres'],
-  [/^\/lab\/\d+/, 'Misi lab'], [/^\/lab/, 'Lab Topologi'], [/^\/simulasi\/.+/, 'Simulasi'], [/^\/simulasi/, 'Simulasi'], [/^\/kredit/, 'Kredit'], [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil dan pengaturan']
+  [/^\/lab\/\d+/, 'Misi lab'], [/^\/lab/, 'Lab'], [/^\/simulasi/, 'Simulasi'], [/^\/kredit/, 'Kredit'], [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil']
 ]
 
 /** Pembungkus ikon SVG seragam untuk menu. */
@@ -51,7 +51,8 @@ export default function Shell() {
   }, [pathname])
   // Bar atas: tampilkan judul kecil setelah judul besar (h1) halaman tergulir di bawah bar.
   useEffect(() => {
-    const on = () => { const h = main.current?.querySelector('h1'); setStuck(h ? h.getBoundingClientRect().bottom < 64 : window.scrollY > 40) }
+    // Halaman tanpa judul besar yang terlihat (h1 sr-only): judul selalu tampil di bar.
+    const on = () => { const h = main.current?.querySelector<HTMLElement>('h1:not(.sr-only)'); setStuck(h ? h.getBoundingClientRect().bottom < 64 : true) }
     on(); addEventListener('scroll', on, { passive: true }); return () => removeEventListener('scroll', on)
   }, [pathname])
   const title = TITLES.find(([re]) => re.test(pathname))?.[1] ?? ''
@@ -78,8 +79,8 @@ export default function Shell() {
       <main id="isi" ref={main} tabIndex={-1} className="min-w-0 flex-1 px-5 pb-28 pt-8 outline-none md:px-10 md:pb-10">
         <div className={`sticky top-0 z-30 -mx-5 -mt-8 mb-3 flex min-h-[60px] items-center border-b px-5 transition-colors md:-mx-10 md:px-10 ${stuck ? 'border-line bg-bg/95 backdrop-blur' : 'border-transparent bg-bg'}`}>
           <div className={`mx-auto flex w-full items-center gap-3 ${wide ? 'max-w-[1180px]' : 'max-w-5xl'}`}>
-            <span aria-hidden={!stuck} className={`min-w-0 flex-1 truncate font-display text-[18px] font-bold transition-opacity ${stuck ? 'opacity-100' : 'opacity-0'}`}>{title}</span>
-            <div className="flex shrink-0 gap-2" aria-label="Ringkasan belajar">
+            <span aria-hidden={!stuck} className={`min-w-0 flex-1 truncate font-display text-[20px] font-bold transition-opacity md:text-[22px] ${stuck ? 'opacity-100' : 'opacity-0'}`}>{title}</span>
+            <div className="flex shrink-0 gap-2" aria-label="Ringkasan belajar" data-tour="bar">
               <XpBadge><Ic name="zap" size={16} sw={2.2} fill="#F5B301" className="mr-1.5" />{progress.xp} XP</XpBadge>
               <LevelPill><Ic name="award" size={16} sw={2.2} className="mr-1.5" />Level {levelLabel(progress)}</LevelPill>
             </div>

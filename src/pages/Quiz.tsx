@@ -104,10 +104,7 @@ export function QuizList() {
   const waiting = nextLevel(progress) // level yang materinya perlu diselesaikan dulu
   return (
     <div className="flex flex-col gap-4 md:gap-5">
-      <header>
-        <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Kuis</h1>
-        <p className="help mt-1">{`10 soal per kuis. Skor minimal ${PASS_SCORE} untuk lulus. Boleh diulang kapan saja.`}</p>
-      </header>
+      <h1 className="sr-only">{`Kuis: 10 soal per kuis, skor minimal ${PASS_SCORE} untuk lulus`}</h1>
       <div className="grid gap-4 lg:grid-cols-[1.5fr_1fr]">
         <section className="flex items-center gap-3 overflow-hidden rounded-[22px] bg-primary p-5 text-white md:p-6" aria-label="Kuis berikutnya">
           <div className="flex min-w-0 flex-1 flex-col gap-2.5">

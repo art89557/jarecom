@@ -22,14 +22,10 @@ export function LabList() {
   return (
     <div className="flex flex-col gap-6">
       <LabTabs />
-      <header>
-        <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Lab Topologi</h1>
-        <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#33415A]">Rakit jaringan sendiri seperti di Cisco Packet Tracer: taruh router, switch, dan PC, pilih kabel, atur alamat IP, lalu buktikan dengan Simple PDU, ping, dan tracert. Misi di tiap kelompok terbuka berurutan; misi pertama tiap kelompok langsung bisa dicoba.</p>
-      </header>
-      <p className="help -mt-2">Topologi cocok setelah Level 3, kabel setelah Level 5, alamat IP setelah Level 2 dan 6, routing setelah Level 8. Paling nyaman dipakai di laptop atau tablet.</p>
-      {GROUPS.map(([g, gt, gd]) => (
+      <h1 className="sr-only">Lab Topologi: rakit jaringan seperti di Cisco Packet Tracer</h1>
+      {GROUPS.map(([g, gt]) => (
       <section key={g} aria-labelledby={`g-${g}`} className="flex flex-col gap-3">
-        <div><h2 id={`g-${g}`} className="text-[20px] font-bold">{gt}</h2><p className="help">{gd}</p></div>
+        <h2 id={`g-${g}`} className="text-[20px] font-bold">{gt}</h2>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {MISSIONS.filter((m) => m.group === g).map((m) => {
           const ok = done.includes(m.n), open = labOpen(done, m.n)
@@ -275,7 +271,6 @@ export function LabPlay() {
       <div className="flex flex-wrap items-center gap-3">
         <Back to="/lab">Lab Topologi</Back>
         <div className="mr-auto">
-          <p className="text-sm font-bold uppercase tracking-wider text-ink-soft">Lab Topologi · gaya Packet Tracer</p>
           <h1 className="font-display text-[24px] font-bold tracking-tight md:text-[28px]">Misi {m.n} · {m.title}</h1>
         </div>
         <ToolBtn on={hint} onClick={() => setHint((h) => !h)} label="Petunjuk"><Icon name="help" size={20} /></ToolBtn>

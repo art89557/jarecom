@@ -34,10 +34,7 @@ export function SimList() {
   return (
     <div className="flex flex-col gap-5">
       <LabTabs />
-      <header>
-        <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Simulasi</h1>
-        <p className="mt-1 max-w-2xl text-base leading-relaxed text-[#33415A]">Gambar interaktif untuk membandingkan konsep jaringan. Klik, geser, dan amati perbedaannya. Untuk merakit jaringan sendiri, buka Lab.</p>
-      </header>
+      <h1 className="sr-only">Simulasi: gambar interaktif untuk membandingkan konsep jaringan</h1>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {SIMS.map((s) => (
           <li key={s.slug}>
@@ -64,11 +61,7 @@ export function SimPage() {
   return (
     <div className="flex flex-col gap-4">
       <Back to="/simulasi">Simulasi</Back>
-      <header>
-        <p className="text-sm font-bold uppercase tracking-wider text-ink-soft">{s.level}</p>
-        <h1 className="text-[26px] font-bold tracking-tight md:text-[32px]">{s.title}</h1>
-        <p className="mt-1 text-[15px] text-[#33415A]">{s.desc}</p>
-      </header>
+      <h1 className="text-[24px] font-bold tracking-tight md:text-[28px]">{s.title} <span className="ml-1 align-middle text-[14px] font-semibold text-ink-soft">{s.level}</span></h1>
       {body[s.slug]}
     </div>
   )

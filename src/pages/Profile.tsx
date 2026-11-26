@@ -83,7 +83,7 @@ export default function Profile() {
   const stat = (v: string, l: string) => <div className="min-w-0 flex-1 rounded-xl bg-white/[.16] px-1 py-2 text-center"><div className="font-display text-[22px] font-bold leading-tight">{v}</div><div className="text-sm">{l}</div></div>
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Profil dan pengaturan</h1>
+      <h1 className="sr-only">Profil dan pengaturan</h1>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-7">
         <div className="flex min-w-0 flex-col gap-4 lg:w-[520px] lg:shrink-0">
           <section className="card flex items-center gap-4 p-[18px]" aria-label="Profil">

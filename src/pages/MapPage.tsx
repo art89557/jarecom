@@ -162,11 +162,8 @@ export default function MapPage() {
   return (
     <div className="flex gap-10">
       <div className="min-w-0 max-w-xl flex-1">
-        <header>
-          <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Peta level</h1>
-        </header>
-        <p className="help mt-1">Level terbuka setelah materi sebelumnya selesai dan kuisnya lulus. Ketuk banner untuk membuka jalurnya.</p>
-        <div className="mt-5 flex flex-col gap-3">
+        <h1 className="sr-only">Peta level</h1>
+        <div className="flex flex-col gap-3">
           {LEVELS.map((lv) => {
             const open = isUnlocked(lv.level, progress)
             const done = progress.completed.includes(lv.level) && progress.passed.includes(lv.level)

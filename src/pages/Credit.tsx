@@ -3,12 +3,9 @@ import { Netty } from '../components/ui'
 import { Icon } from '../components/icons'
 import { CHANGELOG, SUMBER, TIM, VERSI, type Anggota } from '../content/kredit'
 
-/** Judul bagian: label kecil di atas, judul besar di bawah. */
-const Heading = ({ id, label, children }: { id: string; label: string; children: string }) => (
-  <header className="mb-4">
-    <p className="text-sm font-bold uppercase tracking-wider text-ink-soft">{label}</p>
-    <h2 id={id} className="text-[22px] font-bold tracking-tight md:text-[26px]">{children}</h2>
-  </header>
+/** Judul bagian. */
+const Heading = ({ id, children }: { id: string; label?: string; children: string }) => (
+  <h2 id={id} className="mb-3 text-[20px] font-bold tracking-tight md:text-[22px]">{children}</h2>
 )
 
 /** Kartu satu anggota: foto bulat (atau inisial jika foto belum ada), nama, NIM, dan peran. */
@@ -30,8 +27,8 @@ function Kartu({ a }: { a: Anggota }) {
 /** Halaman Kredit. Isi teks diambil dari src/content/kredit.ts. */
 export default function Credit() {
   return (
-    <div className="flex flex-col gap-10">
-      <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Kredit</h1>
+    <div className="flex flex-col gap-8">
+      <h1 className="sr-only">Kredit</h1>
 
       <section aria-labelledby="tim">
         <Heading id="tim" label="Tim pengembang">Tim Pengembang</Heading>

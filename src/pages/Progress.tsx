@@ -231,8 +231,8 @@ export default function ProgressPage({ tab }: { tab: 'ringkasan' | 'lencana' | '
   useEffect(() => { setSel(null) }, [tab])
   return (
     <div>
-      <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Progres</h1>
-      <nav className="mt-4 flex gap-1 rounded-2xl bg-[#E4E9F2] p-1 md:max-w-[440px]" aria-label="Tampilan progres">
+      <h1 className="sr-only">Progres</h1>
+      <nav className="flex gap-1 rounded-2xl bg-[#E4E9F2] p-1 md:max-w-[440px]" aria-label="Tampilan progres">
         {tabs.map(([to, t]) => (
           <NavLink key={to} to={to} end replace className={({ isActive }) => `flex min-h-[44px] flex-1 items-center justify-center rounded-xl text-[15px] font-semibold transition ${isActive ? 'bg-white text-ink shadow-sm' : 'text-ink-soft hover:bg-[#D9E0EC]'}`}>{t}</NavLink>
         ))}

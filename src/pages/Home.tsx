@@ -107,10 +107,7 @@ export default function Home() {
   const first = user?.name.split(' ')[0]
   return (
     <div className="flex flex-col gap-4 md:gap-5">
-      <header>
-        <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Beranda</h1>
-        <p className="help mt-0.5 text-[15px]">{progress.xp === 0 ? 'Selamat datang' : 'Halo lagi'}, {first}. Siap lanjut belajar?</p>
-      </header>
+      <h1 className="sr-only">Beranda, {progress.xp === 0 ? 'selamat datang' : 'halo lagi'} {first}</h1>
 
       {next ? <Lanjut n={next} uid={uid} progress={progress} /> : (
         <section className="card flex items-center gap-4"><Netty pose="rayakan" size={110} label="Netty merayakan" bob /><div><h2 className="text-xl font-bold">Semua level selesai</h2><p className="text-ink-soft">Kamu menamatkan 11 level. Kuis bisa diulang kapan saja untuk bintang emas.</p></div></section>
