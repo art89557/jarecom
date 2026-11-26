@@ -54,3 +54,8 @@
 @keyframes badgepop { 0% { transform: scale(.3) rotate(-12deg); opacity: 0 } 70% { transform: scale(1.12) rotate(3deg); opacity: 1 } 100% { transform: scale(1) rotate(0) } }
 .star-spin { animation: starspin .9s .45s ease-out both; }
 @keyframes starspin { 0% { transform: scale(0) rotate(-90deg) } 100% { transform: scale(1) rotate(0) } }
+
+/* Lab Topologi: grid titik seperti Logical Workspace dan lampu port oranye yang berkedip */
+.lab-grid { background-color: #fff; background-image: radial-gradient(#CBD5E1 1px, transparent 1px); background-size: 24px 24px; }
+@keyframes labblink { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
+.lab-blink { animation: labblink .6s infinite }
