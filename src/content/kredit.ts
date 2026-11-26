@@ -10,12 +10,12 @@ export interface Anggota {
   foto?: string
 }
 
-/** Tim pengembang (urutan sama dengan slide kelompok). Isi `foto` setelah file foto ditaruh di public/tim/. */
+/** Tim pengembang (urutan sama dengan slide kelompok). Foto ada di public/tim/ (persegi 256 px). */
 export const TIM: Anggota[] = [
-  { nama: 'Ahmad Rafif Taufiqurrahman', nim: '1152800016', role: 'Project Manager' },
-  { nama: 'Muhamad Ikbar Tikanto', nim: '1152800011', role: 'Programmer' },
-  { nama: 'Muhammad Arik Hadi Sucahyo', nim: '1152800017', role: 'Analis' },
-  { nama: 'Ibrahim Hafid Hatim', nim: '1152800006', role: 'Designer' }
+  { nama: 'Ahmad Rafif Taufiqurrahman', nim: '1152800016', role: 'Project Manager', foto: '/tim/rafif.jpg' },
+  { nama: 'Muhamad Ikbar Tikanto', nim: '1152800011', role: 'Programmer', foto: '/tim/ikbar.jpg' },
+  { nama: 'Muhammad Arik Hadi Sucahyo', nim: '1152800017', role: 'Analis', foto: '/tim/arik.jpg' },
+  { nama: 'Ibrahim Hafid Hatim', nim: '1152800006', role: 'Designer', foto: '/tim/hafid.jpg' }
 ]
 
 /** Satu kelompok sumber: judul kecil dan daftar butir. */
