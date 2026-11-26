@@ -103,7 +103,7 @@ export function QuizList() {
   const filters: [Filter, string][] = [['semua', 'Semua'], ['siap', 'Siap'], ['lulus', 'Lulus'], ['belum-emas', 'Belum emas']]
   const waiting = nextLevel(progress) // level yang materinya perlu diselesaikan dulu
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4 md:gap-5">
+    <div className="flex flex-col gap-4 md:gap-5">
       <header>
         <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Kuis</h1>
         <p className="help mt-1">{`10 soal per kuis. Skor minimal ${PASS_SCORE} untuk lulus. Boleh diulang kapan saja.`}</p>

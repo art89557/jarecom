@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useDialog } from '../lib/useDialog'
 import { Link, NavLink } from 'react-router-dom'
 import { LEVELS } from '../content'
-import { badgeState, bestScore, heatState, LEVEL_XP_MAX, levelLabel, levelXp, overallPct, XP_MATERIAL, type HeatState, type Progress, type XpEvent } from '../lib/engine'
+import { badgeState, bestScore, heatState, LEVEL_XP_MAX, levelXp, overallPct, XP_MATERIAL, type HeatState, type Progress, type XpEvent } from '../lib/engine'
 import { useApp } from '../state'
 import { Ring } from '../components/ui'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
@@ -230,11 +230,8 @@ export default function ProgressPage({ tab }: { tab: 'ringkasan' | 'lencana' | '
   // Pindah tab mengosongkan pilihan level.
   useEffect(() => { setSel(null) }, [tab])
   return (
-    <div className="mx-auto max-w-5xl">
-      <div className="flex items-center justify-between gap-3">
-        <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Progres</h1>
-        <div className="hidden items-center gap-1.5 text-sm font-semibold text-ink-soft md:flex">Level {levelLabel(progress)} · {progress.xp} XP</div>
-      </div>
+    <div>
+      <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Progres</h1>
       <nav className="mt-4 flex gap-1 rounded-2xl bg-[#E4E9F2] p-1 md:max-w-[440px]" aria-label="Tampilan progres">
         {tabs.map(([to, t]) => (
           <NavLink key={to} to={to} end replace className={({ isActive }) => `flex min-h-[44px] flex-1 items-center justify-center rounded-xl text-[15px] font-semibold transition ${isActive ? 'bg-white text-ink shadow-sm' : 'text-ink-soft hover:bg-[#D9E0EC]'}`}>{t}</NavLink>

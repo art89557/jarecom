@@ -10,7 +10,7 @@ export default function Help() {
   const { setTour } = useApp()
   const nav = useNavigate()
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-4">
+    <div className="flex max-w-2xl flex-col gap-4">
       <Back to="/profil">Profil</Back>
       <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Bantuan</h1>
       <p className="text-base leading-relaxed text-[#33415A]">Enam langkah singkat cara memakai Jar’ecom. Isinya sama dengan tur panduan, jadi kamu tetap bisa membacanya kalau tur dilewati.</p>

@@ -1,8 +1,10 @@
 // Kerangka halaman setelah login: menu samping (desktop), menu bawah (ponsel), dan area isi.
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../state'
-import { Logo } from './ui'
+import { LevelPill, Logo, XpBadge } from './ui'
+import { Icon as Ic } from './icons'
+import { levelLabel } from '../lib/engine'
 import Tour from './Tour'
 
 // Menu utama. `tour` = penanda untuk tur panduan (atribut data-tour); `icon` = gambar SVG.
@@ -11,19 +13,20 @@ const items = [
   { to: '/materi', tour: 'nav-materi', label: 'Materi', icon: <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7" /> },
   { to: '/kuis', tour: 'nav-kuis', label: 'Kuis', icon: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" /></> },
   { to: '/lab', tour: 'nav-lab', label: 'Lab', icon: <><circle cx="12" cy="5" r="2.5" /><circle cx="5" cy="19" r="2.5" /><circle cx="19" cy="19" r="2.5" /><path d="M12 7.5v5M12 12.5 6.5 17M12 12.5l5.5 4.5" /></> },
+  { to: '/simulasi', tour: 'nav-simulasi', label: 'Simulasi', icon: <path d="M3 4h18v12H3zM8 20h8M12 16v4M10 7.5l4.5 2.5-4.5 2.5z" /> },
   { to: '/progres', tour: 'nav-progres', label: 'Progres', icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> },
-  { to: '/kredit', tour: 'nav-kredit', label: 'Kredit', icon: <path d="M12 3l2.7 5.8 6.3.7-4.7 4.3 1.3 6.2L12 16.8 6.4 20l1.3-6.2L3 9.5l6.3-.7z" /> }
+  { to: '/kredit', tour: 'nav-kredit', label: 'Kredit', icon: <path d="M16 21v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-1a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /> }
 ]
 
-// Menu ponsel sama dengan menu utama ditambah Profil, tanpa Kredit (di ponsel Kredit dibuka dari Profil). Di desktop Profil ada di bawah menu samping.
-const mobileItems = [...items.filter((i) => i.to !== '/kredit'), { to: '/profil', tour: 'nav-profil', label: 'Profil', icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></> }]
+// Menu ponsel sama dengan menu utama ditambah Profil, tanpa Kredit (dibuka dari Profil) dan tanpa Simulasi (tab di halaman Lab). Di desktop Profil ada di bawah menu samping.
+const mobileItems = [...items.filter((i) => i.to !== '/kredit' && i.to !== '/simulasi'), { to: '/profil', tour: 'nav-profil', label: 'Profil', icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></> }]
 
 // Judul tab browser per alamat. Urutan penting: pola yang lebih spesifik ditaruh lebih dulu.
 const TITLES: [RegExp, string][] = [
   [/^\/beranda/, 'Beranda'], [/^\/materi\/\d+\/selesai/, 'Materi selesai'], [/^\/materi\/\d+/, 'Materi'], [/^\/materi/, 'Peta level'],
   [/^\/kuis\/\d+\/hasil/, 'Hasil kuis'], [/^\/kuis\/\d+/, 'Soal kuis'], [/^\/kuis/, 'Daftar kuis'],
   [/^\/progres\/lencana/, 'Progres: lencana'], [/^\/progres\/riwayat/, 'Progres: riwayat XP'], [/^\/progres/, 'Progres'],
-  [/^\/lab\/\d+/, 'Misi lab'], [/^\/lab/, 'Lab Topologi'], [/^\/kredit/, 'Kredit'], [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil dan pengaturan']
+  [/^\/lab\/\d+/, 'Misi lab'], [/^\/lab/, 'Lab Topologi'], [/^\/simulasi\/.+/, 'Simulasi'], [/^\/simulasi/, 'Simulasi'], [/^\/kredit/, 'Kredit'], [/^\/bantuan/, 'Bantuan'], [/^\/profil/, 'Profil dan pengaturan']
 ]
 
 /** Pembungkus ikon SVG seragam untuk menu. */
@@ -33,7 +36,8 @@ const Icon = ({ children }: { children: React.ReactNode }) => (
 
 /** Kerangka halaman terlindungi. Halaman yang cocok dengan rute tampil di <Outlet />. */
 export default function Shell() {
-  const { user, signOut, tour } = useApp()
+  const { user, signOut, tour, progress } = useApp()
+  const [stuck, setStuck] = useState(false) // judul besar halaman sudah tergulir di bawah bar atas
   const nav = useNavigate()
   const { pathname } = useLocation()
   const main = useRef<HTMLElement>(null)
@@ -45,6 +49,13 @@ export default function Shell() {
     if (first.current) { first.current = false; return }
     main.current?.focus({ preventScroll: true })
   }, [pathname])
+  // Bar atas: tampilkan judul kecil setelah judul besar (h1) halaman tergulir di bawah bar.
+  useEffect(() => {
+    const on = () => { const h = main.current?.querySelector('h1'); setStuck(h ? h.getBoundingClientRect().bottom < 64 : window.scrollY > 40) }
+    on(); addEventListener('scroll', on, { passive: true }); return () => removeEventListener('scroll', on)
+  }, [pathname])
+  const title = TITLES.find(([re]) => re.test(pathname))?.[1] ?? ''
+  const wide = /^\/lab\/\d+/.test(pathname) // area kerja lab butuh layar lebar
   // Gaya tautan menu: biru saat aktif.
   const cls = ({ isActive }: { isActive: boolean }) => (isActive ? 'bg-primary-soft text-primary' : 'text-ink hover:bg-bg')
   return (
@@ -65,11 +76,20 @@ export default function Shell() {
         <button onClick={async () => { await signOut(); nav('/masuk') }} className="min-h-[44px] rounded-xl px-4 text-left text-[15px] font-medium text-ink-soft hover:bg-bg">Keluar</button>
       </aside>
       <main id="isi" ref={main} tabIndex={-1} className="min-w-0 flex-1 px-5 pb-28 pt-8 outline-none md:px-10 md:pb-10">
-        <div className="mx-auto w-full max-w-[1180px]"><Outlet /></div>
+        <div className={`sticky top-0 z-30 -mx-5 -mt-8 mb-3 flex min-h-[60px] items-center border-b px-5 transition-colors md:-mx-10 md:px-10 ${stuck ? 'border-line bg-bg/95 backdrop-blur' : 'border-transparent bg-bg'}`}>
+          <div className={`mx-auto flex w-full items-center gap-3 ${wide ? 'max-w-[1180px]' : 'max-w-5xl'}`}>
+            <span aria-hidden={!stuck} className={`min-w-0 flex-1 truncate font-display text-[18px] font-bold transition-opacity ${stuck ? 'opacity-100' : 'opacity-0'}`}>{title}</span>
+            <div className="flex shrink-0 gap-2" aria-label="Ringkasan belajar">
+              <XpBadge><Ic name="zap" size={16} sw={2.2} fill="#F5B301" className="mr-1.5" />{progress.xp} XP</XpBadge>
+              <LevelPill><Ic name="award" size={16} sw={2.2} className="mr-1.5" />Level {levelLabel(progress)}</LevelPill>
+            </div>
+          </div>
+        </div>
+        <div className={`mx-auto w-full ${wide ? 'max-w-[1180px]' : 'max-w-5xl'}`}><Outlet /></div>
       </main>
       <nav aria-label="Menu utama" className="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
         {mobileItems.map((i) => (
-          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[64px] flex-1 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${s.isActive ? 'text-primary' : 'text-ink-soft'}`}>
+          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[64px] flex-1 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${s.isActive || (i.to === '/lab' && pathname.startsWith('/simulasi')) ? 'text-primary' : 'text-ink-soft'}`}>
             <Icon>{i.icon}</Icon>{i.label}
           </NavLink>
         ))}

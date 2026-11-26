@@ -2,11 +2,11 @@
 import { useState, type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { LEVELS, type LevelContent } from '../content'
-import { badgeState, isUnlocked, latestBadge, levelLabel, levelPctLive, nextLevel, nodeState, quizAvailable, type Progress } from '../lib/engine'
+import { badgeState, isUnlocked, latestBadge, levelPctLive, nextLevel, nodeState, quizAvailable, type Progress } from '../lib/engine'
 import { getDoneSubtopics } from '../lib/position'
 import { useApp } from '../state'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
-import { LevelPill, Netty, Ring, XpBadge } from '../components/ui'
+import { Netty, Ring } from '../components/ui'
 
 /** Jenis node di jalur: selesai, aktif, berikutnya, terkunci, kuis terkunci, kuis terbuka. */
 type Kind = 'done' | 'act' | 'next' | 'lock' | 'quiz' | 'quizOpen'
@@ -116,11 +116,7 @@ function SidePanel({ current, progress, uid }: { current: number | null; progres
     ['star', 'Skor 100 di kuis', '+20 XP', '#FEF3C7', '#8A5A00']
   ]
   return (
-    <aside className="sticky top-8 hidden h-fit w-[340px] shrink-0 flex-col gap-4 lg:flex" aria-label="Ringkasan level">
-      <div className="flex justify-end gap-2.5">
-        <XpBadge><Icon name="zap" size={16} sw={2.2} fill="#F5B301" className="mr-1.5" />{progress.xp} XP</XpBadge>
-        <LevelPill><Icon name="award" size={16} sw={2.2} className="mr-1.5" />Level {levelLabel(progress)}</LevelPill>
-      </div>
+    <aside className="sticky top-20 hidden h-fit w-[340px] shrink-0 flex-col gap-4 lg:flex" aria-label="Ringkasan level">
       {lv ? (
         <section className="card flex flex-col gap-3.5 p-5">
           <h2 className="text-lg font-bold">Level {lv.level}: {lv.judul}</h2>
@@ -164,14 +160,10 @@ export default function MapPage() {
   const openLv = pick ?? current
   const toggle = (n: number) => setPick(openLv === n ? -1 : n)
   return (
-    <div className="mx-auto flex max-w-5xl gap-10">
+    <div className="flex gap-10">
       <div className="min-w-0 max-w-xl flex-1">
-        <header className="flex items-center justify-between gap-3">
+        <header>
           <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Peta level</h1>
-          <div className="flex gap-2 lg:hidden">
-            <XpBadge><Icon name="zap" size={16} sw={2.2} fill="#F5B301" className="mr-1.5" />{progress.xp}</XpBadge>
-            <LevelPill><Icon name="award" size={16} sw={2.2} className="mr-1.5" />{levelLabel(progress)}</LevelPill>
-          </div>
         </header>
         <p className="help mt-1">Level terbuka setelah materi sebelumnya selesai dan kuisnya lulus. Ketuk banner untuk membuka jalurnya.</p>
         <div className="mt-5 flex flex-col gap-3">

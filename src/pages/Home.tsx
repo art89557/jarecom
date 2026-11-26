@@ -3,11 +3,11 @@ import { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useApp } from '../state'
 import { getLevel, LEVELS } from '../content'
-import { badgeState, latestBadge, levelLabel, levelPctLive, nextLevel, quizAvailable, type Progress } from '../lib/engine'
+import { badgeState, latestBadge, levelPctLive, nextLevel, quizAvailable, type Progress } from '../lib/engine'
 import { getDoneSubtopics } from '../lib/position'
 import { pickFakta } from '../lib/fakta'
 import { Icon, LevelBadge } from '../components/icons'
-import { LevelPill, Netty, Ring, XpBadge } from '../components/ui'
+import { Netty, Ring } from '../components/ui'
 import FaktaCard from '../components/Fakta'
 import { tourSeen } from '../lib/tour'
 
@@ -106,16 +106,10 @@ export default function Home() {
   const bd = latestBadge(progress) // level lencana terbaru
   const first = user?.name.split(' ')[0]
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-4 md:gap-5">
-      <header className="flex items-center justify-between gap-3">
-        <div>
-          <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Beranda</h1>
-          <p className="help mt-0.5 text-[15px]">{progress.xp === 0 ? 'Selamat datang' : 'Halo lagi'}, {first}. Siap lanjut belajar?</p>
-        </div>
-        <div className="flex gap-2">
-          <XpBadge><Icon name="zap" size={16} sw={2.2} fill="#F5B301" className="mr-1.5" />{progress.xp}</XpBadge>
-          <LevelPill><Icon name="award" size={16} sw={2.2} className="mr-1.5" />{levelLabel(progress)}</LevelPill>
-        </div>
+    <div className="flex flex-col gap-4 md:gap-5">
+      <header>
+        <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Beranda</h1>
+        <p className="help mt-0.5 text-[15px]">{progress.xp === 0 ? 'Selamat datang' : 'Halo lagi'}, {first}. Siap lanjut belajar?</p>
       </header>
 
       {next ? <Lanjut n={next} uid={uid} progress={progress} /> : (

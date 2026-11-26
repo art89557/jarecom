@@ -7,6 +7,7 @@ import { Icon } from '../components/icons'
 import { Back } from '../components/ui'
 import { useApp } from '../state'
 import { reduceOn } from '../lib/prefs'
+import { LabTabs } from './Simulasi'
 import {
   CABLE, GROUPS, LABEL, MISSIONS, MODEL, dev, freePort, ipPdu, ipNum, isEnd, labDone, labOpen, linkDown, linkOf, needKind, ping, portAt, setLabDone, validMask, wrongCable,
   type CableKind, type Dev, type DevType, type Link as Cable, type Mission, type Net, type Pdu
@@ -20,6 +21,7 @@ export function LabList() {
   const done = user ? labDone(user.id) : []
   return (
     <div className="flex flex-col gap-6">
+      <LabTabs />
       <header>
         <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Lab Topologi</h1>
         <p className="mt-2 max-w-2xl text-base leading-relaxed text-[#33415A]">Rakit jaringan sendiri seperti di Cisco Packet Tracer: taruh router, switch, dan PC, pilih kabel, atur alamat IP, lalu buktikan dengan Simple PDU, ping, dan tracert. Misi di tiap kelompok terbuka berurutan; misi pertama tiap kelompok langsung bisa dicoba.</p>

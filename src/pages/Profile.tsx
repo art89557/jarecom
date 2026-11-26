@@ -82,7 +82,7 @@ export default function Profile() {
   }
   const stat = (v: string, l: string) => <div className="min-w-0 flex-1 rounded-xl bg-white/[.16] px-1 py-2 text-center"><div className="font-display text-[22px] font-bold leading-tight">{v}</div><div className="text-sm">{l}</div></div>
   return (
-    <div className="mx-auto flex max-w-5xl flex-col gap-4">
+    <div className="flex flex-col gap-4">
       <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Profil dan pengaturan</h1>
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:gap-7">
         <div className="flex min-w-0 flex-col gap-4 lg:w-[520px] lg:shrink-0">
@@ -137,7 +137,7 @@ export default function Profile() {
               {chipIc('help')}<span className="flex flex-1 flex-col gap-0.5"><span className="text-base font-semibold">Lihat panduan lagi</span><span className="help leading-snug">Ulangi tur singkat cara memakai Jar’ecom</span></span><Icon name="arrow" size={20} sw={2.2} className="text-ink-soft" />
             </button>
             <Row icon="book" title="Bantuan" desc="Baca langkah-langkahnya sebagai teks" to="/bantuan" />
-            <Row icon="award" title="Kredit" desc="Tim pengembang, sumber, dan tentang Jar’ecom" to="/kredit" />
+            <Row icon="users" title="Kredit" desc="Tim pengembang, sumber, dan tentang Jar’ecom" to="/kredit" />
           </Group>
           <Group title="Akun">
             <button type="button" onClick={() => { setNote(''); setDlg('nama') }} className="flex min-h-[72px] w-full items-center gap-3.5 px-4 py-3 text-left hover:bg-bg [&+&]:border-t [&+&]:border-[#E6EAF1]">

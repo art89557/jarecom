@@ -30,7 +30,7 @@ function Kartu({ a }: { a: Anggota }) {
 /** Halaman Kredit. Isi teks diambil dari src/content/kredit.ts. */
 export default function Credit() {
   return (
-    <div className="mx-auto flex max-w-4xl flex-col gap-10">
+    <div className="flex flex-col gap-10">
       <h1 className="text-[28px] font-bold tracking-tight md:text-[34px]">Kredit</h1>
 
       <section aria-labelledby="tim">
