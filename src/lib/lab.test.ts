@@ -1,6 +1,6 @@
 // Uji mesin Lab Topologi: rute paket dan pengecekan langkah tiap misi.
 import { describe, expect, it } from 'vitest'
-import { MISSIONS, freePort, ipPing, labOpen, ping, route, validMask, type Dev, type DevType, type Link, type Net } from './lab'
+import { MISSIONS, freePort, ipPing, labOpen, missionTools, ping, route, validMask, type Dev, type DevType, type Link, type Net } from './lab'
 
 let k = 0
 const d = (type: DevType, id: string): Dev => ({ id, type, name: id, x: 0, y: 0, on: true, off: {} })
@@ -131,5 +131,14 @@ describe('lab: proyek kantor', () => {
     expect(m.steps[4].ok({ net: n, pdus: [{ ...ok, via: ['switch', 'router', 'switch'] }] })).toBe(true)
     n.devices[5].ip = '192.168.10.11' // IP kembar
     expect(m.steps[3].ok({ net: n, pdus: [] })).toBe(false)
+  })
+})
+
+describe('missionTools (progressive disclosure)', () => {
+  it('alat muncul di misi yang mengajarkannya lalu tetap ada', () => {
+    expect(missionTools(1)).toEqual({ manualCables: false, hub: false, sim: false, router: false })
+    expect(missionTools(7)).toEqual({ manualCables: true, hub: false, sim: false, router: false })
+    expect(missionTools(8)).toEqual({ manualCables: true, hub: true, sim: true, router: false })
+    expect(missionTools(12)).toEqual({ manualCables: true, hub: true, sim: true, router: true })
   })
 })

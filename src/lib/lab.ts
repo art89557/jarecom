@@ -551,3 +551,12 @@ export function labOpen(done: number[], n: number): boolean {
   return !prev || done.includes(prev.n)
 }
 
+
+/**
+ * Alat yang ditampilkan untuk satu misi (progressive disclosure): alat baru muncul di misi yang mengajarkannya,
+ * lalu tetap ada di misi sesudahnya. Kabel manual mulai misi 7, Hub dan mode Simulation mulai misi 8, Router mulai misi 10.
+ * Tombol "Semua alat" di halaman misi tetap bisa membuka semuanya kapan saja.
+ */
+export function missionTools(n: number) {
+  return { manualCables: n >= 7, hub: n >= 8, sim: n >= 8, router: n >= 10 }
+}
