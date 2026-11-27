@@ -56,6 +56,7 @@ Aplikasi dirancang untuk persona **Budi**, mahasiswa Informatika semester awal y
 | **Alamat** | [jarecom.vercel.app](https://jarecom.vercel.app) (bisa dipasang ke layar utama HP dan laptop) |
 | **Kampus** | Institut Teknologi Indonesia, Program Studi Teknik Informatika |
 | **Mata kuliah** | Interaksi Manusia dan Komputer (IMK), semester Ganjil 2026/2027 |
+| **Dosen pengampu** | Melani Indriasari, S.T., M.Kom. (NIDN 0309088101) |
 | **Bahasa** | Indonesia (istilah Packet Tracer tetap bahasa Inggris dengan keterangan Indonesia) |
 | **Cadangan** | Tag [`v1.0-backup`](../../tree/v1.0-backup) dan [`v2.0-backup`](../../tree/v2.0-backup) |
 
@@ -132,6 +133,8 @@ Level 1 selalu terbuka. Level berikutnya terbuka setelah materi level sebelumnya
     <td align="center" width="25%"><img src="public/tim/hafid.jpg" width="96" alt="Ibrahim Hafid Hatim" /><br /><b>Ibrahim Hafid Hatim</b><br /><sub>1152800006</sub><br />Designer</td>
   </tr>
 </table>
+
+**Dosen pengampu:** Melani Indriasari, S.T., M.Kom. (Interaksi Manusia dan Komputer) dan Sunarto, S.Kom, M.Kom. (Jaringan Komputer, acuan materi).
 
 Logo Jar'ecom, maskot Netty, ikon, dan suara efek dibuat oleh tim. Sumber materi dan pustaka tercantum di halaman **Kredit** pada aplikasi.
 

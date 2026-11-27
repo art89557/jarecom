@@ -1,7 +1,7 @@
 // Halaman Kredit (/kredit): tim pengembang, sumber dan referensi, serta keterangan tentang Jar’ecom.
 import { Netty } from '../components/ui'
 import { Icon } from '../components/icons'
-import { CHANGELOG, SUMBER, TIM, VERSI, type Anggota } from '../content/kredit'
+import { CHANGELOG, DOSEN, SUMBER, TIM, VERSI, type Anggota } from '../content/kredit'
 
 /** Judul bagian. */
 const Heading = ({ id, children }: { id: string; label?: string; children: string }) => (
@@ -33,6 +33,22 @@ export default function Credit() {
       <section aria-labelledby="tim">
         <Heading id="tim" label="Tim pengembang">Tim Pengembang</Heading>
         <ul className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">{TIM.map((a) => <Kartu key={a.nama} a={a} />)}</ul>
+      </section>
+
+      <section aria-labelledby="dosen">
+        <Heading id="dosen" label="Dosen pengampu">Dosen Pengampu</Heading>
+        <ul className="grid gap-3 md:grid-cols-2 md:gap-4">
+          {DOSEN.map((d) => (
+            <li key={d.nama} className="flex items-center gap-4 rounded-[18px] border-[1.5px] border-line bg-white p-4">
+              <span aria-hidden className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-primary-soft font-display text-[24px] font-bold text-[#1B46D1]">{d.nama.charAt(0)}</span>
+              <div className="min-w-0">
+                <h3 className="text-[17px] font-bold leading-snug">{d.nama}</h3>
+                <p className="mt-0.5 text-[15px] text-[#33415A]">NIDN {d.nidn}</p>
+                <p className="mt-0.5 text-[15px] text-[#33415A]">{d.peran}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section aria-labelledby="sumber">

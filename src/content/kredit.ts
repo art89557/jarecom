@@ -18,6 +18,15 @@ export const TIM: Anggota[] = [
   { nama: 'Ibrahim Hafid Hatim', nim: '1152800006', role: 'Designer', foto: '/tim/hafid.jpg' }
 ]
 
+/** Dosen yang dicantumkan di halaman Kredit. */
+export interface Dosen { nama: string; nidn: string; peran: string }
+
+/** Dosen pengampu mata kuliah terkait. */
+export const DOSEN: Dosen[] = [
+  { nama: 'Melani Indriasari, S.T., M.Kom.', nidn: '0309088101', peran: 'Dosen pengampu Interaksi Manusia dan Komputer' },
+  { nama: 'Sunarto, S.Kom, M.Kom.', nidn: '0307066502', peran: 'Dosen pengampu Jaringan Komputer (acuan materi)' }
+]
+
 /** Satu kelompok sumber: judul kecil dan daftar butir. */
 export interface Sumber { judul: string; butir: string[] }
 
@@ -59,6 +68,7 @@ export const VERSI = '1.0.0'
 
 /** Riwayat perubahan, terbaru di atas. */
 export const CHANGELOG: { tanggal: string; isi: string }[] = [
+  { tanggal: '27 Nov 2026', isi: 'Halaman Kredit kini mencantumkan dosen pengampu mata kuliah IMK dan Jaringan Komputer.' },
   { tanggal: '27 Nov 2026', isi: 'Versi 1.0.0 (rilis final IMK). Tampilan baru: Netty beranimasi, menu 5 item dengan menu akun, jalur Materi, gambar di Lab dan Simulasi, mode gelap, dan ukuran teks.' },
   { tanggal: '27 Nov 2026', isi: 'Lab lebih ramah pemula: tur Lab 5 langkah, alat muncul bertahap sesuai misi (tombol Semua alat), Undo, dan pekerjaan tersimpan otomatis. Materi dan kuis tidak kehilangan progres saat pindah menu.' },
   { tanggal: '27 Nov 2026', isi: 'Keamanan dan kelayakan: jawaban kuis dikunci di server, hapus akun, header keamanan, perbaikan kontras, dan pembaruan alat pengembangan.' },
