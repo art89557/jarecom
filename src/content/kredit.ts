@@ -55,10 +55,13 @@ export const SUMBER: Sumber[] = [
 ]
 
 /** Versi aplikasi. Samakan dengan "version" di package.json bila diubah. */
-export const VERSI = '0.1.0'
+export const VERSI = '1.0.0'
 
 /** Riwayat perubahan, terbaru di atas. */
 export const CHANGELOG: { tanggal: string; isi: string }[] = [
+  { tanggal: '27 Nov 2026', isi: 'Versi 1.0.0 (rilis final IMK). Tampilan baru: Netty beranimasi, menu 5 item dengan menu akun, jalur Materi, gambar di Lab dan Simulasi, mode gelap, dan ukuran teks.' },
+  { tanggal: '27 Nov 2026', isi: 'Lab lebih ramah pemula: tur Lab 5 langkah, alat muncul bertahap sesuai misi (tombol Semua alat), Undo, dan pekerjaan tersimpan otomatis. Materi dan kuis tidak kehilangan progres saat pindah menu.' },
+  { tanggal: '27 Nov 2026', isi: 'Keamanan dan kelayakan: jawaban kuis dikunci di server, hapus akun, header keamanan, perbaikan kontras, dan pembaruan alat pengembangan.' },
   { tanggal: '26 Nov 2026', isi: 'Lab Topologi gaya Packet Tracer: 12 misi (topologi, kabel, hub vs switch, IP dan subnet, router, troubleshooting, proyek kantor), menu Simulasi (5 gambar interaktif), bar atas yang menempel dan seragam, halaman Kredit, dan menu samping yang lebih lega.' },
   { tanggal: '25 Nov 2026', isi: 'Komentar penjelas di seluruh kode agar mudah dibaca.' },
   { tanggal: '22 Nov 2026', isi: 'Persen level di Peta ikut menghitung sub-topik yang sudah selesai.' },
