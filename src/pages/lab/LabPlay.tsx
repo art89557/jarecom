@@ -1,11 +1,13 @@
 // Halaman satu misi Lab (/lab/:n): area kerja bergaya Cisco Packet Tracer, palet perangkat, Instructions, PDU List, dan Undo.
 // Istilah alat mengikuti Packet Tracer (bahasa Inggris) dengan keterangan kecil bahasa Indonesia. Aturan langkah ada di src/lib/lab.ts.
-import { useEffect, useRef, useState, type PointerEvent as RPE } from 'react'
+import { useCallback, useEffect, useRef, useState, type PointerEvent as RPE } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../../components/icons'
 import { Back, Netty, type Pose } from '../../components/ui'
 import Confirm from '../../components/Confirm'
 import { useApp } from '../../state'
+import Tour from '../../components/Tour'
+import { LAB_TOUR_STEPS, NEW_TOOL_TIPS, labTourSeen, markLabTourSeen } from '../../lib/tour'
 import { reduceOn } from '../../lib/prefs'
 import { DeviceDialog } from './DeviceDialog'
 import { DevIcon, PaletteBtn, ToolBtn, hopText } from './parts'
@@ -52,6 +54,11 @@ export function LabPlay() {
   const drag = useRef<{ id: string; ox: number; oy: number; cx: number; cy: number; moved: boolean } | null>(null)
 
   const [mood, setMood] = useState<[Pose, string]>(['menunjuk', 'Ikuti langkah biru di bawah ya.']) // reaksi Netty
+  // Misi yang memunculkan alat baru: Netty mengenalkannya di awal misi.
+  useEffect(() => { const tip = NEW_TOOL_TIPS[m?.n ?? 0]; setMood(tip ? ['halo', tip] : ['menunjuk', 'Ikuti langkah biru di bawah ya.']) }, [m?.n])
+  // Tur Lab: muncul sekali di perangkat ini saat pertama membuka misi, bisa diulang dari tombol Tur.
+  const [labTour, setLabTour] = useState(() => !!user && !labTourSeen(user.id))
+  const endLabTour = useCallback(() => { if (user) markLabTourSeen(user.id); setLabTour(false) }, [user])
   const say = (text: string, warn = false) => { setToast({ text, warn }); if (warn) setMood(['khawatir', /salah untuk/.test(text) ? 'Kabelnya salah jenis. Lihat lampu merahnya.' : 'Ups, cek lagi ya.']) }
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t) }, [toast])
 
@@ -251,6 +258,7 @@ export function LabPlay() {
           <h1 className="font-display text-[24px] font-bold tracking-tight md:text-[28px]">Misi {m.n} · {m.title}</h1>
         </div>
         <ToolBtn on={hint} onClick={() => setHint((h) => !h)} label="Petunjuk"><Icon name="help" size={20} /></ToolBtn>
+        <ToolBtn onClick={() => setLabTour(true)} label="Tur" sub="Ulangi tur Lab"><Icon name="play" size={20} /></ToolBtn>
         <ToolBtn onClick={() => undo()} label="Undo" sub="Batalkan (Ctrl+Z)" disabled={hist.current.length === 0}><Icon name="undo" size={20} /></ToolBtn>
         <ToolBtn onClick={() => (net.devices.length || pdus.length ? setAskReset(true) : reset())} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
       </div>
@@ -259,7 +267,7 @@ export function LabPlay() {
         <div className="flex flex-col gap-4 lg:row-span-2">
         {/* Instructions: seperti jendela Activity di Packet Tracer */}
         <section aria-labelledby="ins" className="flex flex-col gap-3 rounded-[18px] border-[1.5px] border-line bg-white p-4">
-          <h2 id="ins" className="text-[18px] font-bold">Instructions <span className="text-[14px] font-medium text-ink-soft">· petunjuk misi</span></h2>
+          <h2 id="ins" data-tour="lab-ins" className="text-[18px] font-bold">Instructions <span className="text-[14px] font-medium text-ink-soft">· petunjuk misi</span></h2>
           <p className="text-[15px] leading-snug text-[#33415A]">{m.goal}</p>
           <Netty pose={mood[0]} say={mood[1]} size={64} lines={['Aku pantau kabelnya.', 'Pelan-pelan saja.']} />
           <div>
@@ -312,7 +320,7 @@ export function LabPlay() {
           <div className="flex items-center gap-2 overflow-x-auto border-b border-line p-2.5 lg:flex-wrap">
             <ToolBtn on={tool === 'select'} onClick={() => pick('select')} label="Select"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden><path d="M5 3l14 8-6 2-3 6z" /></svg></ToolBtn>
             <ToolBtn on={tool === 'delete'} onClick={() => pick('delete')} label="Delete"><Icon name="x" size={18} sw={2.6} /></ToolBtn>
-            <ToolBtn on={tool === 'pdu'} onClick={() => pick('pdu')} label="Add Simple PDU"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg></ToolBtn>
+            <span data-tour="lab-pdu" className="inline-flex shrink-0"><ToolBtn on={tool === 'pdu'} onClick={() => pick('pdu')} label="Add Simple PDU"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg></ToolBtn></span>
             {show.sim && <span className="ml-auto inline-flex shrink-0 overflow-hidden rounded-xl border border-line" role="group" aria-label="Mode">
               {(['realtime', 'sim'] as const).map((k) => (
                 <button key={k} type="button" aria-pressed={mode === k} onClick={() => { setMode(k); setAnim(null) }} className={`min-h-[44px] px-3.5 text-[14px] font-semibold ${mode === k ? 'bg-primary text-white' : 'bg-white text-ink'}`}>{k === 'realtime' ? 'Realtime' : 'Simulation'}</button>
@@ -322,7 +330,7 @@ export function LabPlay() {
           <p className="border-b border-line bg-primary-soft px-3 py-2 text-[15px] font-semibold text-[#1B46D1] lg:hidden">{step < m.steps.length ? `Langkah ${step + 1}/${m.steps.length}: ${cur.text}` : 'Semua langkah selesai'}</p>
           <p className="border-b border-line bg-bg px-3 py-2 text-[14px] text-[#33415A]" aria-live="polite">{status}</p>
 
-          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="paper lab-grid relative min-h-[52vh] w-full touch-none select-none lg:min-h-[320px]" style={{ aspectRatio: `${W} / ${H}` }}>
+          <div ref={area} data-tour="lab-area" onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="paper lab-grid relative min-h-[52vh] w-full touch-none select-none lg:min-h-[320px]" style={{ aspectRatio: `${W} / ${H}` }}>
             <button type="button" aria-label={tool === 'place' ? 'Logical Workspace: taruh perangkat' : 'Logical Workspace'} onClick={areaClick} className={`absolute inset-0 h-full w-full ${tool === 'place' ? 'cursor-crosshair' : 'cursor-default'}`} />
             {!net.devices.length && <p className="pointer-events-none absolute inset-x-4 top-[42%] text-center text-[15px] leading-relaxed text-[#475569]">Logical Workspace masih kosong.<br />Buka <b>Network Devices</b> di bawah, pilih <b>Switch 2960</b>, lalu klik di sini.</p>}
 
@@ -382,10 +390,10 @@ export function LabPlay() {
 
           {/* Palet perangkat di kiri bawah, seperti Packet Tracer. Di HP palet menempel di atas menu bawah supaya alat dan area kerja
               terlihat bersamaan (tidak perlu menggulir bolak-balik); di laptop kembali di bawah area kerja. */}
-          <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 rounded-b-[18px] border-t border-line bg-white p-2.5 shadow-[0_-6px_16px_rgba(15,27,45,.08)] lg:static lg:shadow-none">
+          <div data-tour="lab-palet" className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 rounded-b-[18px] border-t border-line bg-white p-2.5 shadow-[0_-6px_16px_rgba(15,27,45,.08)] lg:static lg:shadow-none">
             <div className="-mx-1 flex gap-2 overflow-x-auto px-1 lg:flex-wrap" role="group" aria-label="Kategori perangkat">
               {([['network', 'Network Devices'], ['end', 'End Devices'], ['conn', 'Connections']] as const).map(([k, t]) => (
-                <button key={k} type="button" aria-pressed={cat === k} onClick={() => setCat(k)} className={`min-h-[44px] shrink-0 whitespace-nowrap rounded-xl border px-3 text-[14px] font-bold ${cat === k ? 'border-ink bg-ink text-white' : 'border-line bg-white'}`}>{t}</button>
+                <button key={k} type="button" data-tour={k === 'conn' ? 'lab-kabel' : undefined} aria-pressed={cat === k} onClick={() => setCat(k)} className={`min-h-[44px] shrink-0 whitespace-nowrap rounded-xl border px-3 text-[14px] font-bold ${cat === k ? 'border-ink bg-ink text-white' : 'border-line bg-white'}`}>{t}</button>
               ))}
               <button type="button" aria-pressed={allTools} onClick={() => setAllTools((v) => !v)} title="Tampilkan semua perangkat dan kabel, bukan hanya yang dipakai misi ini"
                 className={`ml-auto min-h-[44px] shrink-0 whitespace-nowrap rounded-xl px-3 text-[14px] font-semibold ${allTools ? 'bg-primary-soft text-[#1B46D1]' : 'text-ink-soft hover:bg-bg'}`}>{allTools ? 'Alat misi ini saja' : 'Semua alat'}</button>
@@ -423,6 +431,7 @@ export function LabPlay() {
           </div>
         </div>
       )}
+      {labTour && <Tour steps={LAB_TOUR_STEPS} onClose={endLabTour} />}
     </div>
   )
 }

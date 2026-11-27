@@ -9,8 +9,10 @@ import { hasVoiceFile, probeVoiceFiles, speak, stopVoice, voiceOn, voiceSupporte
 /** Posisi dan ukuran kotak sorotan di layar (piksel). */
 interface Box { top: number; left: number; width: number; height: number }
 
-/** Tur panduan: sorotan satu elemen per langkah dengan kartu penjelasan. */
-export default function Tour() {
+/** Tur panduan: sorotan satu elemen per langkah dengan kartu penjelasan.
+ *  Tanpa props = tur aplikasi (dengan rekaman suara). Dengan `steps` dan `onClose` = tur lain, misalnya tur Lab (suara perangkat saja). */
+export default function Tour({ steps: custom, onClose }: { steps?: TourStep[]; onClose?: () => void } = {}) {
+  const all = custom ?? TOUR_STEPS
   const { user, setTour, refresh } = useApp()
   const [steps, setSteps] = useState<TourStep[]>([]) // langkah yang sasarannya terlihat di layar
   const [i, setI] = useState(0) // indeks langkah aktif
@@ -20,28 +22,30 @@ export default function Tour() {
   const [talking, setTalking] = useState(false) // suara panduan sedang berbunyi
   const [vmsg, setVmsg] = useState('')
   const [probed, setProbed] = useState(false) // pengecekan file rekaman sudah selesai
+  const [fixTop, setFixTop] = useState<number | null>(null) // posisi kartu bila perkiraan awal keluar layar
 
   // Tutup tur: hentikan suara, catat sudah dilihat (perangkat dan akun), lalu sembunyikan.
   const close = useCallback(() => {
     stopVoice()
+    if (onClose) { onClose(); return }
     if (user) markTourSeen(user.id)
     setTour(false)
     // Simpan juga di akun supaya tidak muncul lagi di perangkat lain; gagal simpan tidak mengganggu.
     if (user && !user.tourSeen) void repo.markTourSeen().then(refresh).catch(() => { /* abaikan */ })
-  }, [user, setTour, refresh])
+  }, [user, setTour, refresh, onClose])
 
   // Kartu tur berperilaku sebagai dialog: Esc menutup dan Tab berputar di dalamnya.
   useDialog(card, close, false)
 
   // Langkah yang sasarannya tidak ada di layar dilewati tanpa galat.
   useEffect(() => {
-    const ok = TOUR_STEPS.filter((s) => findTarget(s.target))
+    const ok = all.filter((s) => findTarget(s.target))
     if (ok.length === 0) close()
     else setSteps(ok)
-  }, [close])
+  }, [close, all])
 
   // Cek sekali file rekaman suara; saat tur ditutup suara dihentikan.
-  useEffect(() => { void probeVoiceFiles(TOUR_STEPS.length).then(() => setProbed(true)); return () => stopVoice() }, [])
+  useEffect(() => { if (!custom) void probeVoiceFiles(TOUR_STEPS.length).then(() => setProbed(true)); return () => stopVoice() }, [custom])
   // Pindah langkah menghentikan bacaan sebelumnya.
   useEffect(() => { stopVoice(); setTalking(false); setVmsg('') }, [i])
 
@@ -64,10 +68,20 @@ export default function Tour() {
     const el = findTarget(step.target)
     if (el) {
       const r = el.getBoundingClientRect()
-      if (r.top < 0 || r.bottom > window.innerHeight) el.scrollIntoView({ block: 'center' })
+      // Bar atas dan menu/palet bawah di HP bisa menutupi sasaran walau secara teknis masih di layar.
+      if (r.top < 72 || r.bottom > window.innerHeight - 150) el.scrollIntoView({ block: 'center' })
     }
     measure()
   }, [step, measure])
+
+  // Sasaran yang tinggi (area kerja, panel panjang) bisa membuat kartu keluar layar: geser kartu agar tetap terlihat utuh.
+  useLayoutEffect(() => { setFixTop(null) }, [box, vp])
+  useLayoutEffect(() => {
+    if (fixTop !== null || !card.current) return
+    const z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1
+    const r = card.current.getBoundingClientRect(); const top = r.top / z, h = r.height / z
+    if (top < 12 || top + h > vp.h - 12) setFixTop(Math.max(12, Math.min(top, vp.h - h - 12)))
+  })
 
   // Ukur ulang saat layar diubah ukurannya atau digulir.
   useEffect(() => {
@@ -81,12 +95,13 @@ export default function Tour() {
 
   if (!step) return null
   // Tombol suara muncul jika suara aktif dan ada rekaman atau suara bawaan perangkat.
-  const canTalk = voiceOn() && (voiceSupported() || (probed && hasVoiceFile(i)))
+  const vk = custom ? 1000 + i : i // tur lain tidak punya rekaman: nomor di luar jangkauan file
+  const canTalk = voiceOn() && (voiceSupported() || (probed && hasVoiceFile(vk)))
   // Putar atau hentikan suara untuk langkah ini; beri tahu jika suara Indonesia tidak tersedia.
   function toggleVoice() {
     if (talking) { stopVoice(); setTalking(false); return }
     setVmsg('')
-    const ok = speak(i, `${step.title}. ${step.body}`, () => setTalking(false))
+    const ok = speak(vk, `${step.title}. ${step.body}`, () => setTalking(false))
     if (ok) setTalking(true)
     else setVmsg('Suara bahasa Indonesia belum tersedia di perangkat ini. Baca teks di atas.')
   }
@@ -98,6 +113,7 @@ export default function Tour() {
   if (box && below) pos.top = Math.min(box.top + box.height + 14, vp.h - 310)
   else if (box) pos.bottom = Math.max(vp.h - box.top + 14, 20)
   else pos.top = vp.h / 2 - 120
+  if (fixTop !== null) { pos.top = fixTop; delete pos.bottom }
 
   return (
     <div className="fixed inset-0 z-50">
