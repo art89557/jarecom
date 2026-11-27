@@ -7,6 +7,7 @@ import { Back, Netty, type Pose } from '../../components/ui'
 import Confirm from '../../components/Confirm'
 import { useApp } from '../../state'
 import Tour from '../../components/Tour'
+import { loadLabDraft, saveLabDraft } from '../../lib/labDraft'
 import { LAB_TOUR_STEPS, NEW_TOOL_TIPS, labTourSeen, markLabTourSeen } from '../../lib/tour'
 import { reduceOn } from '../../lib/prefs'
 import { DeviceDialog } from './DeviceDialog'
@@ -22,8 +23,13 @@ interface Anim { path: string[]; hop: number; t: number; from: string; to: strin
 
 const W = 800, H = 520 // koordinat virtual area kerja
 
-/** Halaman satu misi lab. */
+/** Halaman satu misi lab. Diberi key nomor misi supaya pindah misi memulai keadaan baru (dan memuat simpanan misi itu). */
 export function LabPlay() {
+  const { n } = useParams()
+  return <Mission key={n} />
+}
+
+function Mission() {
   const { n } = useParams()
   const nav = useNavigate()
   const { user } = useApp()
@@ -32,11 +38,13 @@ export function LabPlay() {
   const blocked = !m || !labOpen(done, m.n)
   useEffect(() => { if (blocked) nav('/lab', { replace: true }) }, [blocked, nav])
 
-  const [net, setNet] = useState<Net>(() => m?.start?.() ?? { devices: [], links: [] })
+  // Lanjutkan pekerjaan terakhir di misi ini bila ada (pindah menu tidak menghapus area kerja).
+  const [draft] = useState(() => (user && m ? loadLabDraft(user.id, m.n) : null))
+  const [net, setNet] = useState<Net>(() => draft?.net ?? m?.start?.() ?? { devices: [], links: [] })
   const [cableKind, setCableKind] = useState<'auto' | CableKind>('auto')
-  const [pdus, setPdus] = useState<Pdu[]>([])
-  const [step, setStep] = useState(0)
-  const [since, setSince] = useState(0)
+  const [pdus, setPdus] = useState<Pdu[]>(() => draft?.pdus ?? [])
+  const [step, setStep] = useState(() => draft?.step ?? 0)
+  const [since, setSince] = useState(() => draft?.since ?? 0)
   const [tool, setTool] = useState<Tool>('select')
   const [cat, setCat] = useState<Cat>('network')
   const [allTools, setAllTools] = useState(false) // tampilkan semua alat, bukan hanya alat misi ini
@@ -48,14 +56,18 @@ export function LabPlay() {
   const [dialog, setDialog] = useState<string | null>(null)
   const [hint, setHint] = useState(true)
   const [toast, setToast] = useState<{ text: string; warn?: boolean } | null>(null)
-  const [finished, setFinished] = useState(false)
+  const [finished, setFinished] = useState(() => draft?.finished ?? false)
   const [showDone, setShowDone] = useState(false)
   const area = useRef<HTMLDivElement>(null)
   const drag = useRef<{ id: string; ox: number; oy: number; cx: number; cy: number; moved: boolean } | null>(null)
 
   const [mood, setMood] = useState<[Pose, string]>(['menunjuk', 'Ikuti langkah biru di bawah ya.']) // reaksi Netty
   // Misi yang memunculkan alat baru: Netty mengenalkannya di awal misi.
-  useEffect(() => { const tip = NEW_TOOL_TIPS[m?.n ?? 0]; setMood(tip ? ['halo', tip] : ['menunjuk', 'Ikuti langkah biru di bawah ya.']) }, [m?.n])
+  useEffect(() => {
+    const tip = NEW_TOOL_TIPS[m?.n ?? 0]
+    if (draft && !draft.finished) { setMood(['senang', 'Lanjut dari pekerjaan terakhirmu ya.']); setToast({ text: 'Melanjutkan pekerjaan terakhir. Pilih Reset Activity untuk mulai dari awal.' }) }
+    else setMood(tip ? ['halo', tip] : ['menunjuk', 'Ikuti langkah biru di bawah ya.'])
+  }, [m?.n, draft])
   // Tur Lab: muncul sekali di perangkat ini saat pertama membuka misi, bisa diulang dari tombol Tur.
   const [labTour, setLabTour] = useState(() => !!user && !labTourSeen(user.id))
   const endLabTour = useCallback(() => { if (user) markLabTourSeen(user.id); setLabTour(false) }, [user])
@@ -82,7 +94,9 @@ export function LabPlay() {
   const animRef = useRef<Anim | null>(null)
   animRef.current = anim
   const netRef = useRef(net)
-  const pdusRef = useRef<Pdu[]>([])
+  const pdusRef = useRef<Pdu[]>(draft?.pdus ?? [])
+  // Simpan otomatis setiap ada perubahan di area kerja.
+  useEffect(() => { if (user && m) saveLabDraft(user.id, m.n, { net, pdus, step, since, finished }) }, [user, m, net, pdus, step, since, finished])
   netRef.current = net
   useEffect(() => {
     if (!anim) return
@@ -425,7 +439,7 @@ export function LabPlay() {
             <p className="mt-3 text-[15px] leading-relaxed text-[#33415A]">{m.lesson}</p>
             <div className="mt-5 flex flex-col gap-2 sm:flex-row">
               <button type="button" onClick={() => setShowDone(false)} className="min-h-[52px] flex-1 rounded-2xl border-2 border-line px-4 font-semibold">Coba-coba lagi</button>
-              {next ? <button type="button" onClick={() => { setShowDone(false); reset(next); nav(`/lab/${next.n}`) }} className="btn flex-1">Lanjut: Misi {next.title.replace('Topologi ', '')}</button>
+              {next ? <button type="button" onClick={() => { setShowDone(false); nav(`/lab/${next.n}`) }} className="btn flex-1">Lanjut: Misi {next.title.replace('Topologi ', '')}</button>
                 : <Link to="/lab" className="btn flex-1">Kembali ke daftar misi</Link>}
             </div>
           </div>

@@ -13,6 +13,7 @@ import { useApp } from '../state'
 import { ErrorMsg, Netty, XpBadge } from '../components/ui'
 import { Diagram, quizDiagram } from '../components/Art'
 import Confirm from '../components/Confirm'
+import { useLeaveGuard } from '../lib/useLeaveGuard'
 
 /** Filter daftar kuis. */
 type Filter = 'semua' | 'siap' | 'lulus' | 'belum-emas'
@@ -188,6 +189,8 @@ export function QuizPlay() {
   const [busy, setBusy] = useState(false)
   const [leave, setLeave] = useState(false) // dialog konfirmasi keluar kuis
   const started = useRef(false) // penanda soal sudah diminta
+  // Kuis sudah berjalan (ada soal yang dipilih atau dijawab): pindah halaman apa pun perlu konfirmasi.
+  const guard = useLeaveGuard(!!qs && (i > 0 || sel !== null || fb !== null) && !busy)
 
   // Soal diambil dari server tanpa kunci jawaban. `started` mencegah pengambilan ganda (React StrictMode memanggil effect dua kali).
   useEffect(() => {
@@ -283,6 +286,7 @@ export function QuizPlay() {
         <button className="btn mt-2" disabled={sel === null || busy} onClick={() => void check()}>Periksa jawaban</button>
       )}
       {leave && <Confirm title="Keluar dari kuis?" body={`Jawaban soal 1 sampai ${i + 1} belum disimpan. Kalau keluar, kamu mulai lagi dari soal 1.`} ok="Ya, keluar" cancel="Lanjutkan kuis" onOk={() => nav('/kuis')} onCancel={() => setLeave(false)} />}
+      {guard.pending && <Confirm title="Keluar dari kuis?" body={`Jawaban soal 1 sampai ${i + 1} belum disimpan. Kalau pindah halaman, kamu mulai lagi dari soal 1.`} ok="Ya, keluar" cancel="Lanjutkan kuis" onOk={guard.leave} onCancel={guard.stay} />}
     </div>
   )
 }

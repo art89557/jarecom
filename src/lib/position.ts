@@ -17,3 +17,14 @@ export const mergeDoneSubtopics = (uid: string, pos: Record<string, number> | nu
     if (Number.isFinite(n) && Number(v) > getDoneSubtopics(uid, n)) setDoneSubtopics(uid, n, Number(v))
   }
 }
+
+// Sub-topik yang cek pemahamannya sudah dijawab benar tapi tombol Lanjut belum ditekan (misalnya pindah menu dulu).
+const ck = (uid: string, n: number) => `jarecom:cek:${uid}:${n}`
+/** Indeks sub-topik yang ceknya sudah benar dan belum dilanjutkan, atau -1. */
+export const getAnsweredCheck = (uid: string, n: number): number => {
+  try { const v = localStorage.getItem(ck(uid, n)); return v === null ? -1 : Number(v) } catch { return -1 }
+}
+/** Catat cek sub-topik idx sudah benar; idx = -1 menghapus catatan. */
+export const setAnsweredCheck = (uid: string, n: number, idx: number) => {
+  try { if (idx < 0) localStorage.removeItem(ck(uid, n)); else localStorage.setItem(ck(uid, n), String(idx)) } catch { /* abaikan */ }
+}
