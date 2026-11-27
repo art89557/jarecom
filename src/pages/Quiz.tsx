@@ -10,8 +10,9 @@ import { badgeState, bestScore, nextLevel, PASS_SCORE, quizAvailable, quizStatus
 import type { CheckResult, QuizQuestion, QuizResult } from '../lib/repo'
 import { play } from '../lib/sound'
 import { useApp } from '../state'
-import { Back, ErrorMsg, Netty, XpBadge } from '../components/ui'
+import { ErrorMsg, Netty, XpBadge } from '../components/ui'
 import { Diagram, quizDiagram } from '../components/Art'
+import Confirm from '../components/Confirm'
 
 /** Filter daftar kuis. */
 type Filter = 'semua' | 'siap' | 'lulus' | 'belum-emas'
@@ -157,6 +158,21 @@ export function QuizList() {
   )
 }
 
+/** Sub-topik (indeks 0) yang paling cocok dengan teks soal, dari jumlah kata yang sama. Dipakai tautan "Baca lagi". */
+function bestSub(n: number, text: string): number {
+  const lv = getLevel(n)
+  if (!lv) return 0
+  const words = (t: string) => new Set(t.toLowerCase().match(/[a-z0-9/]{4,}/g) ?? [])
+  const q = words(text)
+  let best = 0, top = -1
+  lv.subtopik.forEach((s, k) => {
+    const w = words(`${s.judul} ${s.judul} ${s.uraian} ${s.poin.join(' ')}`)
+    let c = 0; q.forEach((x) => { if (w.has(x)) c++ })
+    if (c > top) { top = c; best = k }
+  })
+  return best
+}
+
 /** Halaman mengerjakan kuis (/kuis/:n): satu soal per layar, jawaban diperiksa lewat repo, soal terakhir mengirim hasil. */
 export function QuizPlay() {
   const n = Number(useParams().n)
@@ -170,6 +186,7 @@ export function QuizPlay() {
   const [fb, setFb] = useState<CheckResult | null>(null) // umpan balik setelah diperiksa (jawaban benar + penjelasan)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
+  const [leave, setLeave] = useState(false) // dialog konfirmasi keluar kuis
   const started = useRef(false) // penanda soal sudah diminta
 
   // Soal diambil dari server tanpa kunci jawaban. `started` mencegah pengambilan ganda (React StrictMode memanggil effect dua kali).
@@ -215,7 +232,10 @@ export function QuizPlay() {
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
       <div className="flex items-center justify-between">
-        <Back to="/kuis">Keluar kuis</Back>
+        {/* Keluar di tengah kuis membuang jawaban yang sudah diisi, jadi minta konfirmasi dulu. */}
+        <button type="button" onClick={() => (i > 0 || sel !== null ? setLeave(true) : nav('/kuis'))} className="inline-flex min-h-[44px] items-center gap-1 self-start font-semibold text-primary hover:underline">
+          <Icon name="chevl" size={20} sw={2.2} />Keluar kuis
+        </button>
         <span className="text-sm font-semibold text-ink-soft">Soal {i + 1} dari {qs.length}</span>
       </div>
       <div className="flex gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={qs.length} aria-valuenow={i + 1} aria-label="Nomor soal">
@@ -251,11 +271,18 @@ export function QuizPlay() {
             </div>
           </div>
           {dg && <Diagram k={dg} compact />}
+          {!right && (() => { const sb = lv.subtopik[bestSub(n, `${q.pertanyaan} ${fb.penjelasan}`)]; return (
+            <details className="rounded-xl bg-white px-3.5 text-[15px]">
+              <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-1.5 font-semibold text-[#1B46D1]"><Icon name="book" size={18} sw={2.2} />Baca lagi: {sb.judul}</summary>
+              <p className="pb-3 leading-relaxed text-ink">{sb.uraian}</p>
+            </details>
+          ) })()}
           <button className="btn" disabled={busy} onClick={() => void next()}>{lastQ ? 'Lihat hasil' : 'Soal berikutnya'}</button>
         </div>
       ) : (
         <button className="btn mt-2" disabled={sel === null || busy} onClick={() => void check()}>Periksa jawaban</button>
       )}
+      {leave && <Confirm title="Keluar dari kuis?" body={`Jawaban soal 1 sampai ${i + 1} belum disimpan. Kalau keluar, kamu mulai lagi dari soal 1.`} ok="Ya, keluar" cancel="Lanjutkan kuis" onOk={() => nav('/kuis')} onCancel={() => setLeave(false)} />}
     </div>
   )
 }

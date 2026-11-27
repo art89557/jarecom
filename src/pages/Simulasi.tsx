@@ -73,7 +73,36 @@ export function SimPage() {
       <Back to="/simulasi">Simulasi</Back>
       <h1 className="text-[24px] font-bold tracking-tight md:text-[28px]">{s.title} <span className="ml-1 align-middle text-[14px] font-semibold text-ink-soft">{s.level}</span></h1>
       {body[s.slug]}
+      <Recap slug={s.slug} />
     </div>
+  )
+}
+
+// Penutup tiap simulasi: inti yang dipelajari dan langkah lanjutan ke Materi dan Lab.
+const RECAP: Record<string, { poin: string[]; materi: [number, string]; lab?: [number, string] }> = {
+  kabel: { poin: ['Straight dipakai untuk perangkat berbeda jenis, misalnya PC ke switch.', 'Cross-over dipakai untuk perangkat sejenis: PC ke PC, switch ke switch.', 'Straight: kedua ujung T568B. Cross: satu ujung T568A, satu T568B.'], materi: [5, ''], lab: [7, 'Kabel Straight dan Cross-Over'] },
+  osi: { poin: ['OSI punya 7 lapisan, TCP/IP punya 4.', 'Application, Presentation, dan Session OSI menjadi satu Application di TCP/IP.', 'Saat dikirim, data dibungkus header di tiap lapisan (enkapsulasi).'], materi: [4, ''] },
+  perangkat: { poin: ['Hub meneruskan paket ke semua port.', 'Switch belajar alamat MAC lalu mengirim hanya ke port tujuan.', 'Router menghubungkan jaringan yang berbeda memakai IP.'], materi: [5, ''], lab: [8, 'Hub vs Switch'] },
+  'ip-biner': { poin: ['IPv4 terdiri dari 4 oktet, tiap oktet 8 bit (0 sampai 255).', 'Nilai oktet pertama menentukan kelas IP.', '10.x, 172.16 sampai 31.x, dan 192.168.x adalah IP privat.'], materi: [2, ''], lab: [9, 'IP Address dan Subnet'] },
+  subnet: { poin: ['Prefix menentukan berapa bit untuk network.', 'Jumlah host = 2 pangkat (bit host) dikurangi 2.', 'Setiap tambahan 1 bit prefix membagi jaringan menjadi 2 kali lebih banyak subnet.'], materi: [7, ''], lab: [9, 'IP Address dan Subnet'] }
+}
+
+/** Kartu "Yang kamu pelajari" di akhir setiap simulasi. */
+function Recap({ slug }: { slug: string }) {
+  const r = RECAP[slug]
+  if (!r) return null
+  return (
+    <section aria-labelledby="recap" className="flex flex-col gap-3 rounded-[18px] border-[1.5px] border-[#B7E4CB] bg-pass-soft p-4 md:flex-row md:items-start md:gap-5 md:p-5">
+      <Netty pose="senang" size={88} label="Netty senang" />
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+        <h2 id="recap" className="text-[18px] font-bold">Yang kamu pelajari</h2>
+        <ul className="flex flex-col gap-1.5">{r.poin.map((p) => <li key={p} className="flex gap-2.5 text-[15px] leading-snug"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-pass" />{p}</li>)}</ul>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Link to={`/materi/${r.materi[0]}`} className="inline-flex min-h-[44px] items-center rounded-xl bg-white px-4 text-[15px] font-semibold text-[#1B46D1] hover:bg-primary-soft">Baca Materi Level {r.materi[0]}</Link>
+          {r.lab && <Link to={`/lab/${r.lab[0]}`} className="inline-flex min-h-[44px] items-center rounded-xl bg-white px-4 text-[15px] font-semibold text-pass-ink hover:bg-[#DCFCE7]">Praktik di Lab · Misi {r.lab[0]}</Link>}
+        </div>
+      </div>
+    </section>
   )
 }
 

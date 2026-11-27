@@ -6,6 +6,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/icons'
 import { Back, Netty, type Pose } from '../components/ui'
 import { LabThumb } from '../components/Art'
+import Confirm from '../components/Confirm'
 import { useApp } from '../state'
 import { reduceOn } from '../lib/prefs'
 import { LabTabs } from './Simulasi'
@@ -203,6 +204,27 @@ export function LabPlay() {
     setEvents((e) => [...e, r.ok ? `ICMP Echo Reply sampai di ${r.src}` : `Paket gagal: ${r.why}`].slice(-8))
   }
 
+  // Undo: simpan keadaan area kerja sebelum setiap aksi pengguna (taruh, sambung, hapus, geser). Paling banyak 30 langkah.
+  const hist = useRef<Net[]>([])
+  const [, setHistLen] = useState(0)
+  const snap = () => { hist.current = [...hist.current.slice(-29), netRef.current]; setHistLen(hist.current.length) }
+  function undo() {
+    const prev = hist.current.pop(); setHistLen(hist.current.length)
+    if (!prev) return
+    setNet(prev); setFirst(null); say('Aksi terakhir dibatalkan.')
+  }
+  const [askReset, setAskReset] = useState(false) // dialog konfirmasi Reset Activity
+  // Ctrl+Z / Cmd+Z membatalkan aksi terakhir (kecuali sedang mengetik di kolom isian atau dialog perangkat terbuka).
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z' || e.shiftKey || dialog) return
+      const t = e.target as HTMLElement
+      if (t.closest('input, textarea, [contenteditable="true"]')) return
+      e.preventDefault(); undo()
+    }
+    addEventListener('keydown', k); return () => removeEventListener('keydown', k)
+  })
+
   /** Pilih alat di toolbar. */
   const pick = (t: Tool, type: DevType | null = null) => { setTool(t); setPlaceType(type); setFirst(null) }
 
@@ -212,6 +234,7 @@ export function LabPlay() {
     let c = 0
     while (net.devices.some((x) => x.name === `${LABEL[placeType]}${c}`)) c++
     const d: Dev = { id: `d${Date.now()}${c}`, type: placeType, name: `${LABEL[placeType]}${c}`, x, y, on: true, off: {} }
+    snap()
     setNet((p) => ({ ...p, devices: [...p.devices, d] }))
   }
   function areaClick(e: React.MouseEvent<HTMLButtonElement>) {
@@ -224,6 +247,7 @@ export function LabPlay() {
   function devClick(id: string) {
     const d = dev(net, id)!
     if (tool === 'delete') {
+      snap()
       setNet((p) => ({ devices: p.devices.filter((x) => x.id !== id), links: p.links.filter((l) => l.a !== id && l.b !== id) }))
       return say(`${d.name} dihapus beserta kabelnya.`)
     }
@@ -237,6 +261,7 @@ export function LabPlay() {
       const need = needKind(a.type, d.type)
       const kind = cableKind === 'auto' ? need : cableKind
       const l: Cable = { id: `l${Date.now()}`, a: a.id, b: d.id, pa, pb, ready: false, kind, manual: cableKind !== 'auto' }
+      snap()
       setNet((p) => ({ ...p, links: [...p.links, l] }))
       setFirst(null)
       if (kind !== need) return say(`Kabel ${CABLE[kind]} salah untuk ${a.name}–${d.name}: lampu merah. Yang benar ${CABLE[need]}.`, true)
@@ -268,6 +293,7 @@ export function LabPlay() {
     const r = area.current!.getBoundingClientRect()
     const dx = ((e.clientX - g.cx) * W) / r.width, dy = ((e.clientY - g.cy) * H) / r.height
     if (!g.moved && Math.hypot(dx, dy) < 6) return
+    if (!g.moved) snap() // satu langkah undo per geseran
     g.moved = true
     const x = Math.max(48, Math.min(W - 48, g.ox + dx)), y = Math.max(48, Math.min(H - 70, g.oy + dy))
     setNet((p) => ({ ...p, devices: p.devices.map((d) => (d.id === g.id ? { ...d, x, y } : d)) }))
@@ -277,11 +303,13 @@ export function LabPlay() {
 
   function cableClick(l: Cable) {
     if (tool !== 'delete') return say('Untuk mencabut kabel, pilih alat Delete lalu klik kabelnya.')
+    snap()
     setNet((p) => ({ ...p, links: p.links.filter((x) => x.id !== l.id) }))
     say(`Kabel ${dev(net, l.a)?.name}–${dev(net, l.b)?.name} dicabut.`)
   }
 
   function reset(mm: Mission | undefined = m) {
+    hist.current = []; setHistLen(0)
     setMood(['menunjuk', 'Mulai lagi dari awal. Semangat!']); setNet(mm?.start?.() ?? { devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
     setFinished(false); setShowDone(false); pick('select'); say('Activity di-reset. Mulai dari langkah 1.')
   }
@@ -302,7 +330,8 @@ export function LabPlay() {
           <h1 className="font-display text-[24px] font-bold tracking-tight md:text-[28px]">Misi {m.n} · {m.title}</h1>
         </div>
         <ToolBtn on={hint} onClick={() => setHint((h) => !h)} label="Petunjuk"><Icon name="help" size={20} /></ToolBtn>
-        <ToolBtn onClick={() => reset()} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
+        <ToolBtn onClick={() => undo()} label="Undo" sub="Batalkan (Ctrl+Z)" disabled={hist.current.length === 0}><Icon name="undo" size={20} /></ToolBtn>
+        <ToolBtn onClick={() => (net.devices.length || pdus.length ? setAskReset(true) : reset())} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -454,6 +483,7 @@ export function LabPlay() {
 
       {dialog && dev(net, dialog) && <DeviceDialog d={dev(net, dialog)!} net={net} onCmd={(src, kind, ip) => { const r = ipPdu(netRef.current, src, ip, pdusRef.current.length + 1, kind); record(r); return r }} onClose={() => setDialog(null)} onChange={(nd) => setNet((p) => ({ ...p, devices: p.devices.map((x) => (x.id === nd.id ? nd : x)) }))} />}
 
+      {askReset && <Confirm title="Reset Activity?" body="Semua perangkat, kabel, dan hasil ping di area kerja akan dihapus, dan langkah mulai lagi dari 1." ok="Ya, reset" cancel="Batal" onOk={() => { setAskReset(false); reset() }} onCancel={() => setAskReset(false)} />}
       {showDone && !dialog && (
         <div role="dialog" aria-modal="true" aria-labelledby="done" className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F172A]/50 p-4">
           <div className="pop w-full max-w-md rounded-[22px] bg-white p-6">
@@ -488,9 +518,9 @@ function hopText(n: Net, prev: string | undefined, at: string, next: string): st
 }
 
 /** Tombol alat dengan label Packet Tracer dan keterangan kecil opsional. */
-function ToolBtn({ on = false, onClick, label, sub, children }: { on?: boolean; onClick: () => void; label: string; sub?: string; children: ReactNode }) {
+function ToolBtn({ on = false, onClick, label, sub, disabled = false, children }: { on?: boolean; onClick: () => void; label: string; sub?: string; disabled?: boolean; children: ReactNode }) {
   return (
-    <button type="button" aria-pressed={on} onClick={onClick} title={sub} className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-3 text-[14px] font-semibold ${on ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink hover:bg-bg'}`}>
+    <button type="button" aria-pressed={on} onClick={onClick} title={sub} disabled={disabled} className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-45 ${on ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink hover:bg-bg'}`}>
       {children}{label}
     </button>
   )
