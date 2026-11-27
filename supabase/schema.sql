@@ -69,17 +69,17 @@ alter table public.xp_events enable row level security;
 alter table public.subtopic_progress enable row level security; -- tanpa policy: dibaca lewat get_state, ditulis lewat save_position
 
 drop policy if exists "profil sendiri" on public.profiles;
-create policy "profil sendiri" on public.profiles for select using (id = auth.uid());
+create policy "profil sendiri" on public.profiles for select using (id = (select auth.uid()));
 drop policy if exists "ubah profil sendiri" on public.profiles;
-create policy "ubah profil sendiri" on public.profiles for update using (id = auth.uid()) with check (id = auth.uid());
+create policy "ubah profil sendiri" on public.profiles for update using (id = (select auth.uid())) with check (id = (select auth.uid()));
 drop policy if exists "baca level" on public.levels;
 create policy "baca level" on public.levels for select to authenticated using (true);
 drop policy if exists "progres sendiri" on public.material_progress;
-create policy "progres sendiri" on public.material_progress for select using (user_id = auth.uid());
+create policy "progres sendiri" on public.material_progress for select using (user_id = (select auth.uid()));
 drop policy if exists "percobaan sendiri" on public.quiz_attempts;
-create policy "percobaan sendiri" on public.quiz_attempts for select using (user_id = auth.uid());
+create policy "percobaan sendiri" on public.quiz_attempts for select using (user_id = (select auth.uid()));
 drop policy if exists "xp sendiri" on public.xp_events;
-create policy "xp sendiri" on public.xp_events for select using (user_id = auth.uid());
+create policy "xp sendiri" on public.xp_events for select using (user_id = (select auth.uid()));
 
 -- Profil otomatis saat pendaftaran
 create or replace function public.handle_new_user() returns trigger
@@ -141,22 +141,37 @@ begin
     set done = greatest(subtopic_progress.done, excluded.done), updated_at = now();
 end $$;
 
--- Soal tanpa kunci jawaban; hanya jika materi level itu sudah selesai
+-- Jawaban kuis yang sedang berjalan. Jawaban pertama per soal dikunci, dan skor dihitung dari tabel ini,
+-- bukan dari kiriman klien. Tanpa policy: hanya bisa disentuh lewat fungsi di bawah.
+create table if not exists public.quiz_answers (
+  user_id uuid not null references auth.users(id) on delete cascade,
+  level int not null references public.levels(kode),
+  nomor int not null,
+  pilihan int not null,
+  dijawab_at timestamptz not null default now(),
+  primary key (user_id, level, nomor)
+);
+alter table public.quiz_answers enable row level security;
+
+-- Soal tanpa kunci jawaban; hanya jika materi level itu sudah selesai. Membuka kuis = percobaan baru:
+-- sisa jawaban percobaan sebelumnya untuk level ini dihapus.
 create or replace function public.get_quiz(p_level int) returns jsonb
-language plpgsql stable security definer set search_path = public as $$
+language plpgsql volatile security definer set search_path = public as $$
 begin
   if auth.uid() is null then raise exception 'Belum masuk'; end if;
   if not exists (select 1 from material_progress where user_id = auth.uid() and level = p_level) then
     raise exception 'Selesaikan materi dulu';
   end if;
+  delete from quiz_answers where user_id = auth.uid() and level = p_level;
   return (select coalesce(jsonb_agg(jsonb_build_object('pertanyaan', pertanyaan, 'opsi', opsi) order by nomor), '[]'::jsonb)
           from quiz_questions where level = p_level);
 end $$;
 
--- Umpan balik per soal setelah pengguna memilih (kunci baru terbuka untuk soal yang sudah dijawab)
+-- Umpan balik per soal. Jawaban pertama untuk soal itu dicatat dan dikunci; memanggil ulang dengan pilihan lain
+-- tidak mengubahnya. Kunci jawaban baru terlihat setelah jawaban terkunci, jadi tidak bisa dipakai untuk soal itu.
 create or replace function public.check_answer(p_level int, p_index int, p_choice int) returns jsonb
-language plpgsql stable security definer set search_path = public as $$
-declare r record;
+language plpgsql volatile security definer set search_path = public as $$
+declare r record; v_pick int;
 begin
   if auth.uid() is null then raise exception 'Belum masuk'; end if;
   if not exists (select 1 from material_progress where user_id = auth.uid() and level = p_level) then
@@ -164,10 +179,16 @@ begin
   end if;
   select benar, penjelasan into r from quiz_questions where level = p_level and nomor = p_index + 1;
   if not found then raise exception 'Soal tidak ada'; end if;
-  return jsonb_build_object('benar', r.benar, 'penjelasan', r.penjelasan);
+  if p_choice is null or p_choice < 0 or p_choice > 3 then raise exception 'Pilihan tidak valid'; end if;
+  insert into quiz_answers (user_id, level, nomor, pilihan) values (auth.uid(), p_level, p_index + 1, p_choice)
+    on conflict (user_id, level, nomor) do nothing;
+  select pilihan into v_pick from quiz_answers where user_id = auth.uid() and level = p_level and nomor = p_index + 1;
+  return jsonb_build_object('benar', r.benar, 'penjelasan', r.penjelasan, 'dipilih', v_pick);
 end $$;
 
--- Hitung skor di server. Lulus >= 70: +50 XP (sekali). Skor 100: +20 XP bonus (sekali).
+-- Hitung skor di server dari jawaban yang terkunci (quiz_answers), bukan dari p_answers kiriman klien.
+-- Soal yang belum diperiksa dihitung salah. Lulus >= 70: +50 XP (sekali). Skor 100: +20 XP bonus (sekali).
+-- p_answers tetap diterima supaya klien lama tidak rusak, tetapi tidak dipakai untuk menilai.
 create or replace function public.submit_quiz(p_level int, p_answers int[]) returns jsonb
 language plpgsql security definer set search_path = public as $$
 declare v_user uuid := auth.uid(); v_total int; v_correct int; v_score int; v_pass boolean; v_xp int := 0; v_new int;
@@ -179,7 +200,9 @@ begin
   select count(*) into v_total from quiz_questions where level = p_level;
   if v_total = 0 then raise exception 'Kuis belum tersedia'; end if;
   select count(*) into v_correct from quiz_questions q
-    where q.level = p_level and p_answers[q.nomor] is not null and p_answers[q.nomor] = q.benar;
+    join quiz_answers a on a.user_id = v_user and a.level = q.level and a.nomor = q.nomor
+    where q.level = p_level and a.pilihan = q.benar;
+  delete from quiz_answers where user_id = v_user and level = p_level;
   v_score := round(v_correct * 100.0 / v_total);
   v_pass := v_score >= 70;
   insert into quiz_attempts (user_id, level, skor, lulus) values (v_user, p_level, v_score, v_pass);
@@ -201,3 +224,21 @@ revoke all on function public.is_unlocked(uuid, int), public.get_state(), public
   public.check_answer(int, int, int), public.submit_quiz(int, int[]), public.save_position(int, int) from public, anon;
 grant execute on function public.get_state(), public.complete_material(int), public.get_quiz(int),
   public.check_answer(int, int, int), public.submit_quiz(int, int[]), public.save_position(int, int) to authenticated;
+
+-- Indeks untuk foreign key level (saran advisor Supabase: unindexed_foreign_keys)
+create index if not exists material_progress_level_idx on public.material_progress (level);
+create index if not exists quiz_attempts_level_idx on public.quiz_attempts (level);
+create index if not exists subtopic_progress_level_idx on public.subtopic_progress (level);
+create index if not exists xp_events_level_idx on public.xp_events (level);
+create index if not exists quiz_answers_level_idx on public.quiz_answers (level);
+
+-- Hapus akun sendiri beserta seluruh datanya. Semua tabel progres memakai "on delete cascade" ke auth.users,
+-- jadi cukup menghapus baris pengguna di auth.users. Hanya bisa menghapus akun milik pemanggil.
+create or replace function public.delete_account() returns void
+language plpgsql security definer set search_path = public as $$
+begin
+  if auth.uid() is null then raise exception 'Belum masuk'; end if;
+  delete from auth.users where id = auth.uid();
+end $$;
+revoke all on function public.delete_account() from public, anon;
+grant execute on function public.delete_account() to authenticated;

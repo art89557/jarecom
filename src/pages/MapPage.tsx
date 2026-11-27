@@ -49,7 +49,7 @@ const dxOf = (i: number) => Math.round(Math.sin(i * 1.15) * 54)
 
 /** Banner satu level (hijau selesai, biru aktif, abu terkunci). Bisa dibuka/ditutup untuk menampilkan jalurnya. */
 function Banner({ lv, state, right, onToggle, expanded }: { lv: LevelContent; state: 'done' | 'act' | 'lock'; right?: ReactNode; onToggle?: () => void; expanded?: boolean }) {
-  const bg = { done: 'bg-pass', act: 'bg-primary', lock: 'bg-[#8A95A8]' }[state]
+  const bg = { done: 'bg-pass', act: 'bg-primary', lock: 'bg-[#5B6779]' }[state]
   const tag = { done: 'SELESAI', act: 'AKTIF', lock: 'TERKUNCI' }[state]
   const ic: IconName = { done: 'check', act: 'book', lock: 'lock' }[state] as IconName
   const body = (
@@ -58,13 +58,14 @@ function Banner({ lv, state, right, onToggle, expanded }: { lv: LevelContent; st
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold tracking-wide opacity-90">LEVEL {lv.level} · {tag}</span>
         <span className="block font-display text-xl font-bold leading-tight">{lv.judul}</span>
+        {onToggle && <span className="sr-only">{expanded ? ', tutup jalur' : ', buka jalur'}</span>}
       </span>
     </>
   )
   return (
     <div className={`flex items-center gap-2 rounded-2xl text-white ${bg}`}>
       {onToggle ? (
-        <button type="button" onClick={onToggle} aria-expanded={expanded} aria-label={`Level ${lv.level}, ${lv.judul}. ${expanded ? 'Tutup jalur' : 'Buka jalur'}`} className="flex min-h-[64px] min-w-0 flex-1 items-center gap-3.5 rounded-2xl py-4 pl-4 text-left">{body}</button>
+        <button type="button" onClick={onToggle} aria-expanded={expanded} className="flex min-h-[64px] min-w-0 flex-1 items-center gap-3.5 rounded-2xl py-4 pl-4 text-left">{body}</button>
       ) : (
         <div className="flex min-w-0 flex-1 items-center gap-3.5 py-4 pl-4">{body}</div>
       )}
@@ -212,7 +213,7 @@ export default function MapPage() {
             return (
               <section key={lv.level} aria-label={`Level ${lv.level}`}>
                 <Banner lv={lv} state={isCur ? 'act' : done ? 'done' : 'act'} onToggle={() => toggle(lv.level)} expanded={expanded}
-                  right={isCur ? <Link to={`/materi/${lv.level}`} className="hidden min-h-[44px] items-center gap-1.5 rounded-xl bg-white/20 px-3.5 text-sm font-semibold text-white hover:bg-white/30 sm:inline-flex"><Icon name="book" size={18} sw={2.2} />Materi</Link>
+                  right={isCur ? <Link to={`/materi/${lv.level}`} className="hidden min-h-[44px] items-center gap-1.5 rounded-xl bg-primary-dark px-3.5 text-sm font-semibold text-white hover:bg-[#143AA8] sm:inline-flex"><Icon name="book" size={18} sw={2.2} />Materi</Link>
                     : bs !== 'off' ? <span className={`flex h-9 w-9 items-center justify-center rounded-full ${bs === 'gold' ? 'bg-[#FACC15] text-[#7A4B00]' : 'bg-white/25 text-white'}`} role="img" aria-label={bs === 'gold' ? 'Lencana emas' : 'Lencana diraih'}><Icon name="award" size={22} sw={2.4} /></span> : null} />
                 {expanded && <Path lv={lv} progress={progress} uid={user?.id ?? ''} onLock={say} />}
               </section>

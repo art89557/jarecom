@@ -250,11 +250,12 @@ export default function ProgressPage({ tab }: { tab: 'ringkasan' | 'lencana' | '
                 const st = badgeState(l.level, progress)
                 return (
                   <li key={l.level}>
-                    <button type="button" onClick={() => setBadgeSel(l.level)} aria-pressed={badgeSel === l.level} aria-label={`Level ${l.level}, ${l.judul}: ${st === 'gold' ? 'diraih dengan skor 100' : st === 'got' ? 'diraih' : 'belum diraih'}`}
+                    <button type="button" onClick={() => setBadgeSel(l.level)} aria-pressed={badgeSel === l.level}
                       className={`flex w-full flex-col items-center gap-1.5 rounded-2xl px-1 py-2 text-center transition hover:bg-[#E4E9F2] ${badgeSel === l.level ? 'bg-primary-soft' : ''}`}>
                       <LevelBadge level={l.level} state={st} size={88} />
                       <span className={`text-sm font-semibold ${st === 'off' ? 'text-ink-soft' : ''}`}>Level {l.level}</span>
                       <span className="text-sm leading-tight text-ink-soft">{SHORT[l.level - 1]}</span>
+                      <span className="sr-only">{`, ${l.judul}: ${st === 'gold' ? 'lencana diraih dengan skor 100' : st === 'got' ? 'lencana diraih' : 'lencana belum diraih'}`}</span>
                     </button>
                   </li>
                 )

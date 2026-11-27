@@ -145,7 +145,7 @@ export function QuizList() {
       <div className="flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Filter kuis">
         {filters.map(([k, t]) => (
           <button key={k} type="button" role="tab" aria-selected={filter === k} onClick={() => setFilter(k)}
-            className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border-[1.5px] px-4 text-[15px] font-semibold transition ${filter === k ? 'border-primary bg-primary text-white' : 'border-line bg-white text-[#3D4A5E] hover:border-primary hover:bg-primary-soft'}`}>{t} <span className="opacity-80">{counts[k]}</span></button>
+            className={`inline-flex min-h-[44px] shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border-[1.5px] px-4 text-[15px] font-semibold transition ${filter === k ? 'border-primary bg-primary text-white' : 'border-line bg-white text-[#3D4A5E] hover:border-primary hover:bg-primary-soft'}`}>{t} <span>{counts[k]}</span></button>
         ))}
       </div>
       {shown.length === 0 ? <p className="help py-6 text-center">Belum ada kuis di filter ini.</p> : (

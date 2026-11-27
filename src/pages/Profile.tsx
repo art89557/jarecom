@@ -12,6 +12,7 @@ import { useApp } from '../state'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
 import { LevelPill, Netty, XpBadge } from '../components/ui'
 import { NameDialog, PasswordDialog } from '../components/AccountDialogs'
+import Confirm from '../components/Confirm'
 
 /** Kotak ikon bulat untuk baris pengaturan (abu-abu jika fitur "segera hadir"). */
 const chipIc = (i: IconName, soon = false) => (
@@ -56,6 +57,13 @@ export default function Profile() {
   const [vc, setVc] = useState(voiceOn()) // suara panduan aktif
   const [red, setRed] = useState(reduceOn()) // kurangi animasi aktif
   const [quiet, setQuiet] = useState(nettyQuiet()) // Netty diam (tanpa gelembung ucapan)
+  const [askDel, setAskDel] = useState(false) // dialog konfirmasi hapus akun
+  const [delErr, setDelErr] = useState('')
+  // Hapus akun permanen (data di server atau di browser ini), lalu kembali ke halaman awal.
+  async function removeAccount() {
+    setAskDel(false); setDelErr('')
+    try { await repo.deleteAccount(); setUser(null); nav('/', { replace: true }) } catch (e) { setDelErr((e as Error).message) }
+  }
   const [ts, setTs] = useState<TextSize>(textSize()) // ukuran teks
   const [tm, setTm] = useState<Theme>(theme()) // tema terang/gelap
   const [msg, setMsg] = useState('') // pesan hasil bagikan kartu
@@ -83,7 +91,7 @@ export default function Profile() {
       setMsg(r === 'diunduh' ? 'Kartu tersimpan sebagai gambar.' : r === 'dibagikan' ? 'Kartu dibagikan.' : '')
     } catch { setMsg('Kartu belum bisa dibuat. Coba lagi.') }
   }
-  const stat = (v: string, l: string) => <div className="min-w-0 flex-1 rounded-xl bg-white/[.16] px-1 py-2 text-center"><div className="font-display text-[22px] font-bold leading-tight">{v}</div><div className="text-sm">{l}</div></div>
+  const stat = (v: string, l: string) => <div className="min-w-0 flex-1 rounded-xl bg-primary-dark px-1 py-2 text-center"><div className="font-display text-[22px] font-bold leading-tight">{v}</div><div className="text-sm">{l}</div></div>
   return (
     <div className="flex flex-col gap-4">
       <h1 className="sr-only">Profil dan pengaturan</h1>
@@ -175,8 +183,11 @@ export default function Profile() {
           {note && <p role="status" className="help">{note}</p>}
           <p className="help">Mode data: {repo.mode === 'supabase' ? 'Supabase (tersimpan di server)' : 'lokal (tersimpan di browser ini)'}</p>
           <button type="button" onClick={async () => { await signOut(); nav('/masuk') }} className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-2xl border-2 border-[#C0262D] font-semibold text-[#8E1B21] transition hover:bg-fail-soft"><Icon name="logout" size={20} sw={2.2} />Keluar</button>
+          <button type="button" onClick={() => setAskDel(true)} className="min-h-[44px] self-center rounded-xl px-3 text-[15px] font-semibold text-fail underline-offset-2 hover:underline">Hapus akun</button>
+          {delErr && <p role="alert" className="text-sm font-medium text-fail">{delErr}</p>}
         </div>
       </div>
+      {askDel && <Confirm title="Hapus akun?" body={`Akun ${user?.email ?? ''} beserta XP, lencana, dan seluruh progres akan dihapus permanen dan tidak bisa dikembalikan.`} ok="Ya, hapus akun" cancel="Batal" onOk={() => void removeAccount()} onCancel={() => setAskDel(false)} />}
       {dlg === 'nama' && <NameDialog current={name} onClose={() => setDlg(null)} onSaved={(u) => { setUser(u); setDlg(null); setNote('Nama diperbarui.') }} />}
       {dlg === 'sandi' && <PasswordDialog onClose={() => setDlg(null)} onSaved={() => { setDlg(null); setNote('Kata sandi diperbarui.') }} />}
     </div>
