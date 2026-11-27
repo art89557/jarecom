@@ -5,7 +5,7 @@ import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
 import { getLevel } from '../content'
 import { repo } from '../lib'
 import { isUnlocked, levelPct, PASS_SCORE } from '../lib/engine'
-import { getDoneSubtopics, setDoneSubtopics } from '../lib/position'
+import { getAnsweredCheck, getDoneSubtopics, setAnsweredCheck, setDoneSubtopics } from '../lib/position'
 import { play } from '../lib/sound'
 import { useApp } from '../state'
 import { Icon, type IconName } from '../components/icons'
@@ -28,8 +28,10 @@ export default function Material() {
   // Saat halaman dibuka: lanjut dari sub-topik terakhir yang lolos (atau dari awal jika materi sudah selesai).
   useEffect(() => {
     if (!user || !lv) return
-    setIdx(alreadyDone ? 0 : Math.min(getDoneSubtopics(user.id, n), total - 1))
-    setPicked(null)
+    const at = alreadyDone ? 0 : Math.min(getDoneSubtopics(user.id, n), total - 1)
+    setIdx(at)
+    // Cek di sub-topik ini sudah dijawab benar sebelum pindah menu: tampilkan lagi jawabannya, tidak perlu menjawab ulang.
+    setPicked(!alreadyDone && getAnsweredCheck(user.id, n) === at ? lv.subtopik[at].cek.benar : null)
   }, [user, n, lv, total, alreadyDone])
 
   // Nomor level tidak ada atau level masih terkunci: kembali ke peta.
@@ -48,6 +50,7 @@ export default function Material() {
     if (correct) return
     setPicked(i)
     play(i === s.cek.benar ? 'benar' : 'salah')
+    if (user && i === s.cek.benar) setAnsweredCheck(user.id, n, idx)
   }
   // Alur tombol "Lanjut":
   // - Bukan sub-topik terakhir: simpan posisi baca (di perangkat dulu, lalu server) dan pindah ke sub-topik berikutnya.

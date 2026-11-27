@@ -2,7 +2,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Icon } from '../components/icons'
 import { Back } from '../components/ui'
-import { TOUR_STEPS } from '../lib/tour'
+import { LAB_TOUR_STEPS, TOUR_STEPS } from '../lib/tour'
 import { useApp } from '../state'
 
 /** Pertanyaan yang paling sering muncul. */
@@ -31,6 +31,18 @@ export default function Help() {
         <h2 id="langkah" className="mb-2 text-[20px] font-bold">Langkah tur</h2>
         <ol className="overflow-hidden rounded-[18px] border-[1.5px] border-line bg-white">
           {TOUR_STEPS.map((s, k) => (
+            <li key={s.target} className="flex items-start gap-3.5 px-4 py-3.5 [&+&]:border-t [&+&]:border-[#E6EAF1]">
+              <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-[15px] font-bold text-[#1B46D1]">{k + 1}</span>
+              <div><h3 className="text-[17px] font-bold">{s.title}</h3><p className="mt-1 text-[15px] leading-relaxed text-[#33415A]">{s.body}</p></div>
+            </li>
+          ))}
+        </ol>
+      </section>
+      <section aria-labelledby="langkah-lab">
+        <h2 id="langkah-lab" className="mb-2 text-[20px] font-bold">Tur Lab</h2>
+        <p className="mb-2 text-[15px] text-[#33415A]">Muncul saat pertama membuka misi Lab. Ulangi kapan saja lewat tombol Tur di halaman misi.</p>
+        <ol className="overflow-hidden rounded-[18px] border-[1.5px] border-line bg-white">
+          {LAB_TOUR_STEPS.map((s, k) => (
             <li key={s.target} className="flex items-start gap-3.5 px-4 py-3.5 [&+&]:border-t [&+&]:border-[#E6EAF1]">
               <span aria-hidden className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-[15px] font-bold text-[#1B46D1]">{k + 1}</span>
               <div><h3 className="text-[17px] font-bold">{s.title}</h3><p className="mt-1 text-[15px] leading-relaxed text-[#33415A]">{s.body}</p></div>

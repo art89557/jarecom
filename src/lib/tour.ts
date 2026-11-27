@@ -35,3 +35,30 @@ export function findTarget(name: string): HTMLElement | null {
   }
   return null
 }
+
+// ===== Tur Lab =====
+/** Tur singkat halaman misi Lab: muncul sekali saat pertama membuka misi, bisa diulang dari tombol Tur. */
+export const LAB_TOUR_STEPS: TourStep[] = [
+  { target: 'lab-palet', title: 'Palet perangkat', body: 'Di sini ada perangkat dan kabel. Pilih kategori Network Devices atau End Devices, lalu pilih perangkatnya.' },
+  { target: 'lab-area', title: 'Area kerja', body: 'Setelah memilih perangkat, ketuk area kerja untuk menaruhnya. Ketuk perangkat untuk mengisi IP, seret untuk memindah.' },
+  { target: 'lab-kabel', title: 'Sambungkan kabel', body: 'Buka Connections, pilih kabel, lalu ketuk dua perangkat yang mau disambung. Kabel Automatic memilih jenis yang tepat.' },
+  { target: 'lab-pdu', title: 'Uji dengan ping', body: 'Add Simple PDU mengirim ping: ketuk PC pengirim lalu PC tujuan. Hasilnya muncul di PDU List.' },
+  { target: 'lab-ins', title: 'Ikuti Instructions', body: 'Langkah misi dan Completion ada di sini. Salah langkah? Tekan Undo atau Ctrl+Z. Tur ini bisa diulang dari tombol Tur.' }
+]
+
+const labKey = (uid: string) => `jarecom:tur-lab:${uid}`
+/** Sudah pernah melihat tur Lab di perangkat ini? */
+export const labTourSeen = (uid: string): boolean => {
+  try { return localStorage.getItem(labKey(uid)) === '1' } catch { return true }
+}
+/** Catat bahwa tur Lab sudah dilihat di perangkat ini. */
+export const markLabTourSeen = (uid: string) => {
+  try { localStorage.setItem(labKey(uid), '1') } catch { /* abaikan */ }
+}
+
+/** Pesan Netty di misi yang pertama kali memunculkan alat baru (lihat missionTools di lib/lab.ts). */
+export const NEW_TOOL_TIPS: Record<number, string> = {
+  7: 'Alat baru: kabel Copper Straight-Through dan Cross-Over. Cek di Connections ya.',
+  8: 'Alat baru: Hub, dan tombol Simulation untuk melihat paket berjalan pelan.',
+  10: 'Alat baru: Router, untuk menghubungkan dua jaringan yang berbeda.'
+}
