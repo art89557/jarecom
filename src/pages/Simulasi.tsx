@@ -3,7 +3,7 @@
 // Semua gambar SVG buatan sendiri, bisa dipakai dengan keyboard, dan animasinya ikut "Kurangi animasi".
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useNavigate, useParams } from 'react-router-dom'
-import { Back } from '../components/ui'
+import { Back, Netty } from '../components/ui'
 import { reduceOn } from '../lib/prefs'
 
 /** Animasi dimatikan? (pengaturan aplikasi atau pengaturan perangkat) */
@@ -20,9 +20,9 @@ const SIMS: { slug: string; title: string; level: string; desc: string }[] = [
 
 /** Tab Rakit / Simulasi (hanya di HP; di laptop keduanya punya menu sendiri). */
 export function LabTabs() {
-  const cls = ({ isActive }: { isActive: boolean }) => `flex min-h-[44px] flex-1 items-center justify-center rounded-xl text-[15px] font-semibold ${isActive ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`
+  const cls = ({ isActive }: { isActive: boolean }) => `flex min-h-[44px] flex-1 items-center justify-center rounded-xl px-6 text-[15px] font-semibold ${isActive ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`
   return (
-    <nav aria-label="Lab dan Simulasi" className="flex gap-1 rounded-2xl bg-[#E4E9F2] p-1 md:hidden">
+    <nav aria-label="Lab dan Simulasi" className="flex gap-1 self-start rounded-2xl bg-[#E4E9F2] p-1">
       <NavLink to="/lab" end className={cls}>Rakit</NavLink>
       <NavLink to="/simulasi" className={cls}>Simulasi</NavLink>
     </nav>
@@ -35,6 +35,9 @@ export function SimList() {
     <div className="flex flex-col gap-5">
       <LabTabs />
       <h1 className="sr-only">Simulasi: gambar interaktif untuk membandingkan konsep jaringan</h1>
+      <div className="flex items-center gap-4 rounded-[20px] bg-pass-soft px-4 py-3 md:px-5">
+        <Netty pose="berpikir" size={84} say="Bingung bedanya straight dan cross? Coba simulasi kabel dulu." lines={['Semua simulasi bisa diutak-atik, tidak ada yang rusak.', 'Kalkulator Subnet cocok untuk Level 6 dan 7.', 'Klik bit-nya, angka desimalnya ikut berubah.']} />
+      </div>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {SIMS.map((s) => (
           <li key={s.slug}>

@@ -5,7 +5,7 @@ import { Link, NavLink } from 'react-router-dom'
 import { LEVELS } from '../content'
 import { badgeState, bestScore, heatState, LEVEL_XP_MAX, levelXp, overallPct, XP_MATERIAL, type HeatState, type Progress, type XpEvent } from '../lib/engine'
 import { useApp } from '../state'
-import { Ring } from '../components/ui'
+import { Netty, Ring } from '../components/ui'
 import { Icon, LevelBadge, type IconName } from '../components/icons'
 
 // Nama pendek tiap level (urut level 1 sampai 11) untuk petak peta panas.
@@ -189,7 +189,7 @@ function Riwayat({ progress, aside }: { progress: Progress; aside?: boolean }) {
     </section>
   )
   const list = ev.length === 0 ? (
-    <div className="card text-center"><p className="font-semibold">Belum ada riwayat XP</p><p className="help mt-1">XP muncul di sini setelah kamu menyelesaikan materi atau lulus kuis.</p></div>
+    <div className="card flex flex-col items-center text-center"><Netty pose="tidur" size={110} label="Netty tidur" /><p className="mt-2 font-semibold">Belum ada riwayat XP</p><p className="help mt-1">XP muncul di sini setelah kamu menyelesaikan materi atau lulus kuis.</p></div>
   ) : (
     <div className="flex flex-col gap-4">
       {groups.map((g) => (

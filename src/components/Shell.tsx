@@ -2,8 +2,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useApp } from '../state'
-import { LevelPill, Logo, XpBadge } from './ui'
-import { Icon as Ic } from './icons'
+import { LevelPill, Logo, Netty, XpBadge } from './ui'
+import { Icon as Ic, type IconName } from './icons'
 import { levelLabel } from '../lib/engine'
 import Tour from './Tour'
 
@@ -13,13 +13,10 @@ const items = [
   { to: '/materi', tour: 'nav-materi', label: 'Materi', icon: <path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2zM4 19V5M8 7h7" /> },
   { to: '/kuis', tour: 'nav-kuis', label: 'Kuis', icon: <><circle cx="12" cy="12" r="9" /><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 .9-1 1.7M12 17h.01" /></> },
   { to: '/lab', tour: 'nav-lab', label: 'Lab', icon: <><circle cx="12" cy="5" r="2.5" /><circle cx="5" cy="19" r="2.5" /><circle cx="19" cy="19" r="2.5" /><path d="M12 7.5v5M12 12.5 6.5 17M12 12.5l5.5 4.5" /></> },
-  { to: '/simulasi', tour: 'nav-simulasi', label: 'Simulasi', icon: <path d="M3 4h18v12H3zM8 20h8M12 16v4M10 7.5l4.5 2.5-4.5 2.5z" /> },
-  { to: '/progres', tour: 'nav-progres', label: 'Progres', icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> },
-  { to: '/kredit', tour: 'nav-kredit', label: 'Kredit', icon: <path d="M16 21v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 21v-1a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" /> }
+  { to: '/progres', tour: 'nav-progres', label: 'Progres', icon: <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" /> }
 ]
 
-// Menu ponsel sama dengan menu utama ditambah Profil, tanpa Kredit (dibuka dari Profil) dan tanpa Simulasi (tab di halaman Lab). Di desktop Profil ada di bawah menu samping.
-const mobileItems = [...items.filter((i) => i.to !== '/kredit' && i.to !== '/simulasi'), { to: '/profil', tour: 'nav-profil', label: 'Profil', icon: <><circle cx="12" cy="8" r="4" /><path d="M4 21a8 8 0 0 1 16 0" /></> }]
+// Menu ponsel sama persis dengan menu samping: 5 ikon. Simulasi adalah tab di dalam Lab; Profil, Bantuan, dan Kredit ada di menu akun (avatar kanan atas).
 
 // Judul tab browser per alamat. Urutan penting: pola yang lebih spesifik ditaruh lebih dulu.
 const TITLES: [RegExp, string][] = [
@@ -33,6 +30,37 @@ const TITLES: [RegExp, string][] = [
 const Icon = ({ children }: { children: React.ReactNode }) => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
 )
+
+/** Menu akun di kanan atas: tombol avatar membuka Profil, Bantuan, Kredit, dan Keluar. Tutup dengan Escape atau klik di luar. */
+function AccountMenu({ name, level, xp, onSignOut }: { name: string; level: string | number; xp: number; onSignOut: () => void }) {
+  const [open, setOpen] = useState(false)
+  const box = useRef<HTMLDivElement>(null)
+  const nav = useNavigate()
+  useEffect(() => {
+    if (!open) return
+    const out = (e: MouseEvent) => { if (!box.current?.contains(e.target as Node)) setOpen(false) }
+    const esc = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', out); document.addEventListener('keydown', esc)
+    return () => { document.removeEventListener('mousedown', out); document.removeEventListener('keydown', esc) }
+  }, [open])
+  const go = (to: string) => { setOpen(false); nav(to) }
+  const rows: [IconName, string, string][] = [['user', 'Profil', '/profil'], ['help', 'Bantuan', '/bantuan'], ['users', 'Kredit', '/kredit']]
+  return (
+    <div ref={box} className="relative shrink-0">
+      <button type="button" onClick={() => setOpen(!open)} aria-expanded={open} aria-haspopup="menu" aria-label={`Menu akun ${name}`} data-tour="nav-profil"
+        className="flex h-11 w-11 items-center justify-center rounded-full bg-primary font-display text-base font-bold text-white transition hover:shadow-[0_0_0_4px_#E8EEFF]">{name.charAt(0).toUpperCase()}</button>
+      {open && (
+        <div role="menu" className="pop absolute right-0 top-[52px] z-40 flex w-[240px] flex-col rounded-2xl border border-line bg-white p-2 shadow-[0_12px_32px_rgba(15,27,45,.14)]">
+          <div className="mb-1.5 border-b border-line px-3 pb-3 pt-2"><div className="truncate font-bold">{name}</div><div className="help">Level {level} · {xp} XP</div></div>
+          {rows.map(([ic, t, to]) => (
+            <button key={to} type="button" role="menuitem" onClick={() => go(to)} className="flex min-h-[44px] items-center gap-3 rounded-xl px-3 text-left text-[15px] font-semibold hover:bg-bg"><Ic name={ic} size={20} />{t}</button>
+          ))}
+          <button type="button" role="menuitem" onClick={() => { setOpen(false); onSignOut() }} className="mt-1 flex min-h-[44px] items-center gap-3 rounded-xl border-t border-line px-3 pt-1 text-left text-[15px] font-semibold text-fail hover:bg-fail-soft"><Ic name="logout" size={20} />Keluar</button>
+        </div>
+      )}
+    </div>
+  )
+}
 
 /** Kerangka halaman terlindungi. Halaman yang cocok dengan rute tampil di <Outlet />. */
 export default function Shell() {
@@ -58,23 +86,20 @@ export default function Shell() {
   const title = TITLES.find(([re]) => re.test(pathname))?.[1] ?? ''
   const wide = /^\/lab\/\d+/.test(pathname) // area kerja lab butuh layar lebar
   // Gaya tautan menu: biru saat aktif.
-  const cls = ({ isActive }: { isActive: boolean }) => (isActive ? 'bg-primary-soft text-primary' : 'text-ink hover:bg-bg')
+  const on = (to: string, isActive: boolean) => isActive || (to === '/lab' && pathname.startsWith('/simulasi')) // Lab juga aktif di tab Simulasi
+  const cls = (to: string) => ({ isActive }: { isActive: boolean }) => (on(to, isActive) ? 'bg-primary-soft text-primary' : 'text-ink hover:bg-bg')
   return (
     <div className="flex min-h-screen">
       <a href="#isi" onClick={(e) => { e.preventDefault(); main.current?.focus() }} className="sr-only z-[60] rounded-xl bg-white px-4 py-3 font-semibold text-primary focus:not-sr-only focus:fixed focus:left-3 focus:top-3">Lewati ke isi halaman</a>
       <aside aria-label="Menu samping" className="sticky top-0 hidden h-screen w-[260px] shrink-0 flex-col gap-1.5 border-r border-line bg-white px-4 pb-5 pt-6 md:flex lg:w-[280px] lg:px-5">
         <div className="mb-4 px-3 py-2"><Logo size={40} /></div>
         {items.map((i) => (
-          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[52px] items-center gap-3.5 rounded-xl px-4 text-[17px] font-semibold ${cls(s)}`}>
+          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[52px] items-center gap-3.5 rounded-xl px-4 text-[17px] font-semibold ${cls(i.to)(s)}`}>
             <Icon>{i.icon}</Icon>{i.label}
           </NavLink>
         ))}
         <div className="flex-1" />
-        <button onClick={() => nav('/profil')} data-tour="nav-profil" className="flex min-h-[56px] items-center gap-3 rounded-xl px-4 text-left hover:bg-bg">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary-soft font-bold text-primary">{user?.name.charAt(0).toUpperCase()}</span>
-          <span className="truncate text-sm font-semibold">{user?.name}</span>
-        </button>
-        <button onClick={async () => { await signOut(); nav('/masuk') }} className="min-h-[44px] rounded-xl px-4 text-left text-[15px] font-medium text-ink-soft hover:bg-bg">Keluar</button>
+        <div className="flex justify-center pb-2"><Netty pose="halo" size={72} lines={[`Halo, ${user?.name.split(' ')[0] ?? 'teman'}!`, 'Aku temani belajar ya.', 'Jangan lupa istirahat sebentar.']} side="atas" /></div>
       </aside>
       <main id="isi" ref={main} tabIndex={-1} className="min-w-0 flex-1 px-5 pb-28 pt-8 outline-none md:px-10 md:pb-10">
         <div className={`sticky top-0 z-30 -mx-5 -mt-8 mb-3 flex min-h-[60px] items-center border-b px-5 transition-colors md:-mx-10 md:px-10 ${stuck ? 'border-line bg-bg/95 backdrop-blur' : 'border-transparent bg-bg'}`}>
@@ -84,13 +109,14 @@ export default function Shell() {
               <XpBadge><Ic name="zap" size={16} sw={2.2} fill="#F5B301" className="mr-1.5" />{progress.xp} XP</XpBadge>
               <LevelPill><Ic name="award" size={16} sw={2.2} className="mr-1.5" />Level {levelLabel(progress)}</LevelPill>
             </div>
+            <AccountMenu name={user?.name ?? ''} level={levelLabel(progress)} xp={progress.xp} onSignOut={async () => { await signOut(); nav('/masuk') }} />
           </div>
         </div>
         <div className={`mx-auto w-full ${wide ? 'max-w-[1180px]' : 'max-w-5xl'}`}><Outlet /></div>
       </main>
       <nav aria-label="Menu utama" className="fixed inset-x-0 bottom-0 z-20 flex border-t border-line bg-white pb-[env(safe-area-inset-bottom)] md:hidden">
-        {mobileItems.map((i) => (
-          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[64px] flex-1 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${s.isActive || (i.to === '/lab' && pathname.startsWith('/simulasi')) ? 'text-primary' : 'text-ink-soft'}`}>
+        {items.map((i) => (
+          <NavLink key={i.to} to={i.to} data-tour={i.tour} className={(s) => `flex min-h-[64px] flex-1 flex-col items-center justify-center gap-0.5 text-sm font-semibold ${on(i.to, s.isActive) ? 'text-primary' : 'text-ink-soft'}`}>
             <Icon>{i.icon}</Icon>{i.label}
           </NavLink>
         ))}

@@ -10,6 +10,7 @@ import { Icon, LevelBadge } from '../components/icons'
 import { Netty, Ring } from '../components/ui'
 import FaktaCard from '../components/Fakta'
 import { tourSeen } from '../lib/tour'
+import { MISSIONS, labDone, labOpen } from '../lib/lab'
 
 /** Garis segmen di kartu Lanjut: terisi penuh jika materi selesai, segmen berikutnya setengah terang. */
 function Segs({ total, done, kuis }: { total: number; done: number; kuis: boolean }) {
@@ -21,6 +22,9 @@ function Segs({ total, done, kuis }: { total: number; done: number; kuis: boolea
     </div>
   )
 }
+
+/** Salam sesuai jam di perangkat. */
+const sapa = () => { const h = new Date().getHours(); return h < 11 ? 'Selamat pagi' : h < 15 ? 'Selamat siang' : h < 18 ? 'Selamat sore' : 'Selamat malam' }
 
 /** Kartu besar "Lanjutkan belajar" untuk level yang sedang dikerjakan (materi atau kuis). */
 function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progress }) {
@@ -35,7 +39,7 @@ function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progre
   const pct = levelPctLive(n, progress, done, total)
   // Teks pendukung: subjudul, gelembung ucapan Netty, tujuan tautan, dan label tombol.
   const sub = kuis ? 'Materi selesai. Kuis 10 soal siap dikerjakan.' : `Sub-topik ${Math.min(done + 1, total)} dari ${total}: ${lv.subtopik[Math.min(done, total - 1)].judul}`
-  const bub = kuis ? 'Tinggal satu langkah lagi. Kuismu sudah siap!' : started ? 'Ayo lanjut, sedikit lagi beres!' : 'Halo! Yuk mulai dari Level 1.'
+  const bub = kuis ? 'Tinggal satu langkah lagi. Kuismu sudah siap!' : started ? `${sapa()}! Ayo lanjut, sedikit lagi beres.` : `${sapa()}! Yuk mulai dari Level 1.`
   const to = kuis ? `/kuis/${n}` : `/materi/${n}`
   const cta = kuis ? 'Mulai kuis' : started ? 'Lanjut belajar' : 'Mulai belajar'
   return (
@@ -54,9 +58,11 @@ function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progre
           <Icon name={kuis ? 'play' : 'arrow'} size={20} sw={2.4} />{cta}
         </Link>
       </div>
-      <div className="flex items-center gap-2.5 md:w-[330px] md:flex-none">
-        <Netty pose={kuis ? 'rayakan' : started ? 'senang' : 'halo'} size={88} label="Netty" bob />
-        <p className="rounded-2xl rounded-bl bg-white/20 px-3.5 py-2.5 text-[15px] font-semibold leading-snug">{bub}</p>
+      <div className="hidden justify-center md:flex md:w-[300px] md:flex-none">
+        <Netty pose={kuis ? 'menari' : 'halo'} size={120} say={bub} side="atas" lines={[`${sapa()}!`, 'Ketuk tombol putih untuk lanjut.', 'Aku suka paket data. Hehe.']} />
+      </div>
+      <div className="md:hidden">
+        <Netty pose={kuis ? 'menari' : 'halo'} size={72} say={bub} side="kanan" lines={[`${sapa()}!`, 'Ketuk tombol putih untuk lanjut.']} />
       </div>
     </section>
   )
@@ -105,15 +111,32 @@ export default function Home() {
   const siap = LEVELS.find((l) => quizAvailable(l.level, progress) && !progress.passed.includes(l.level) && l.level !== next)
   const bd = latestBadge(progress) // level lencana terbaru
   const first = user?.name.split(' ')[0]
+  // Rekomendasi: simulasi yang cocok dengan level aktif, dan misi lab berikutnya yang terbuka.
+  const sim: [string, string] | null = next === null ? null : next <= 2 ? ['ip-biner', 'IP Address dan Biner'] : next <= 4 ? ['perangkat', 'Hub vs Switch vs Router'] : next === 5 ? ['kabel', 'Kabel Straight vs Cross'] : ['subnet', 'Kalkulator Subnet']
+  const ld = uid ? labDone(uid) : []
+  const mis = MISSIONS.find((m) => !ld.includes(m.n) && labOpen(ld, m.n))
   return (
     <div className="flex flex-col gap-4 md:gap-5">
       <h1 className="sr-only">Beranda, {progress.xp === 0 ? 'selamat datang' : 'halo lagi'} {first}</h1>
 
       {next ? <Lanjut n={next} uid={uid} progress={progress} /> : (
-        <section className="card flex items-center gap-4"><Netty pose="rayakan" size={110} label="Netty merayakan" bob /><div><h2 className="text-xl font-bold">Semua level selesai</h2><p className="text-ink-soft">Kamu menamatkan 11 level. Kuis bisa diulang kapan saja untuk bintang emas.</p></div></section>
+        <section className="card flex items-center gap-4"><Netty pose="menari" size={110} label="Netty merayakan" lines={['Kamu hebat!', 'Ulangi kuis untuk bintang emas.']} /><div><h2 className="text-xl font-bold">Semua level selesai</h2><p className="text-ink-soft">Kamu menamatkan 11 level. Kuis bisa diulang kapan saja untuk bintang emas.</p></div></section>
       )}
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <h2 className="mt-1 text-[20px] font-bold">Rekomendasi untukmu</h2>
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+        {sim && (
+          <Link to={`/simulasi/${sim[0]}`} className="flex items-center gap-3 rounded-[18px] border-[1.5px] border-line bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-primary"><Icon name="sim" size={26} sw={2.2} /></span>
+            <span className="min-w-0"><span className="block font-bold">Simulasi: {sim[1]}</span><span className="help block leading-snug">Cocok untuk Level {next}. Geser dan bandingkan sendiri.</span></span>
+          </Link>
+        )}
+        {mis && (
+          <Link to={`/lab/${mis.n}`} className="flex items-center gap-3 rounded-[18px] border-[1.5px] border-line bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+            <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-pass-soft text-pass"><Icon name="share" size={26} sw={2.2} /></span>
+            <span className="min-w-0"><span className="block font-bold">Lab · Misi {mis.n}</span><span className="help block leading-snug">{mis.title}</span></span>
+          </Link>
+        )}
         {siap && (
           <Link to="/kuis" className="flex items-center gap-3 rounded-[18px] border-[1.5px] border-line bg-white p-3.5 transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
             <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-[#EFE6FA] text-quiz"><Icon name="trophy" size={26} sw={2.2} /></span>

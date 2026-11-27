@@ -2,29 +2,8 @@
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 
-// Pose maskot Netty. Tiap pose adalah file SVG di public/netty/<pose>.svg.
-export const POSES = ['default', 'halo', 'senang', 'rayakan', 'berpikir', 'sedih', 'offline'] as const
-export type Pose = (typeof POSES)[number]
-
-/**
- * Maskot Netty.
- * - pose: ekspresi (lihat POSES)
- * - size: lebar piksel; tinggi mengikuti rasio gambar 220:200
- * - label: teks alternatif untuk pembaca layar; tanpa label gambar dianggap hiasan
- * - bob: true agar bergerak naik-turun pelan (animasi CSS `bob`)
- */
-export function Netty({ pose = 'default', size = 120, label, bob = false }: { pose?: Pose; size?: number; label?: string; bob?: boolean }) {
-  return (
-    <img
-      src={`/netty/${pose}.svg`}
-      width={size}
-      height={Math.round((size * 200) / 220)}
-      alt={label ?? ''}
-      aria-hidden={label ? undefined : true}
-      className={bob ? 'bob' : undefined}
-    />
-  )
-}
+// Maskot Netty ada di Netty.tsx; diekspor ulang di sini supaya impor lama tetap jalan.
+export { Netty, POSES, type Pose } from './Netty'
 
 /** Logo aplikasi, dengan atau tanpa nama "Jar’ecom". */
 export function Logo({ size = 44, withName = true }: { size?: number; withName?: boolean }) {

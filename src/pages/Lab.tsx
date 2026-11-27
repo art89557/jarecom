@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPE, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/icons'
-import { Back } from '../components/ui'
+import { Back, Netty, type Pose } from '../components/ui'
 import { useApp } from '../state'
 import { reduceOn } from '../lib/prefs'
 import { LabTabs } from './Simulasi'
@@ -19,11 +19,30 @@ import {
 export function LabList() {
   const { user } = useApp()
   const done = user ? labDone(user.id) : []
+  const [tab, setTab] = useState<string>('semua') // filter kelompok misi
+  const nextM = MISSIONS.find((m) => !done.includes(m.n) && labOpen(done, m.n)) // misi berikutnya yang bisa dimainkan
+  // Netty berganti pose dan ucapan sesuai kelompok yang dipilih.
+  const inGroup = tab === 'semua' ? nextM : MISSIONS.find((m) => m.group === tab && !done.includes(m.n) && labOpen(done, m.n))
+  const allDone = tab !== 'semua' && MISSIONS.filter((m) => m.group === tab).every((m) => done.includes(m.n))
+  const [pose, say]: [Pose, string] = allDone ? ['menari', 'Semua misi di kelompok ini sudah selesai. Keren!']
+    : inGroup ? ['menunjuk', `Misi ${inGroup.n} siap: ${inGroup.title}.`]
+    : tab === 'semua' ? ['menari', 'Semua 12 misi selesai. Kamu jago merakit jaringan!']
+    : ['tidur', 'Misi di sini masih terkunci. Selesaikan kelompok sebelumnya dulu ya.']
+  const tabs: [string, string][] = [['semua', 'Semua'], ...GROUPS.map(([g, gt]) => [g, gt] as [string, string])]
   return (
     <div className="flex flex-col gap-6">
       <LabTabs />
       <h1 className="sr-only">Lab Topologi: rakit jaringan seperti di Cisco Packet Tracer</h1>
-      {GROUPS.map(([g, gt]) => (
+      <div className="flex items-center gap-4 rounded-[20px] bg-primary-soft px-4 py-3 md:px-5">
+        <Netty pose={pose} say={say} size={84} lines={['Di Lab tidak ada kabel yang bisa putus beneran.', 'Ingat: PC ke PC pakai kabel cross.', 'Klik misi yang terbuka untuk mulai.']} />
+      </div>
+      <div role="tablist" aria-label="Kelompok misi" className="-mx-1 flex gap-1 overflow-x-auto px-1">
+        {tabs.map(([k, t]) => (
+          <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+            className={`min-h-[44px] shrink-0 rounded-xl px-4 text-[15px] font-semibold ${tab === k ? 'bg-ink text-white' : 'bg-white text-ink-soft border border-line hover:border-primary'}`}>{t}</button>
+        ))}
+      </div>
+      {GROUPS.filter(([g]) => tab === 'semua' || g === tab).map(([g, gt]) => (
       <section key={g} aria-labelledby={`g-${g}`} className="flex flex-col gap-3">
         <h2 id={`g-${g}`} className="text-[20px] font-bold">{gt}</h2>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
@@ -41,7 +60,7 @@ export function LabList() {
               </span>
             </>
           )
-          const cls = 'flex h-full min-h-[112px] items-start gap-3.5 rounded-[18px] border-[1.5px] bg-white p-4 text-left'
+          const cls = `flex h-full min-h-[112px] items-start gap-3.5 rounded-[18px] border-[1.5px] bg-white p-4 text-left${nextM?.n === m.n ? ' ring-2 ring-primary' : ''}`
           return (
             <li key={m.n}>
               {open
@@ -107,7 +126,8 @@ export function LabPlay() {
   const area = useRef<HTMLDivElement>(null)
   const drag = useRef<{ id: string; ox: number; oy: number; cx: number; cy: number; moved: boolean } | null>(null)
 
-  const say = (text: string, warn = false) => setToast({ text, warn })
+  const [mood, setMood] = useState<[Pose, string]>(['menunjuk', 'Ikuti langkah biru di bawah ya.']) // reaksi Netty
+  const say = (text: string, warn = false) => { setToast({ text, warn }); if (warn) setMood(['khawatir', /salah untuk/.test(text) ? 'Kabelnya salah jenis. Lihat lampu merahnya.' : 'Ups, cek lagi ya.']) }
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t) }, [toast])
 
   // Kabel baru menyala oranye dulu, lalu hijau setelah 1,3 detik (seperti port switch di Packet Tracer).
@@ -122,8 +142,8 @@ export function LabPlay() {
     if (!m) return
     let i = step, s = since
     while (i < m.steps.length && m.steps[i].ok({ net, pdus: pdus.slice(s) })) { i++; s = pdus.length }
-    if (i !== step) { setStep(i); setSince(s) }
-    if (i === m.steps.length && !finished) { setFinished(true); setShowDone(true); if (user) setLabDone(user.id, m.n) }
+    if (i !== step) { setStep(i); setSince(s); if (i < m.steps.length) setMood(['senang', 'Langkah selesai, lanjut!']) }
+    if (i === m.steps.length && !finished) { setFinished(true); setShowDone(true); setMood(['menari', 'Misi selesai! Keren!']); if (user) setLabDone(user.id, m.n) }
   }, [net, pdus, step, since, m, finished, user])
 
   // Gerakkan paket di mode Simulation; dengan "kurangi animasi" paket langsung sampai.
@@ -172,6 +192,7 @@ export function LabPlay() {
     pdusRef.current = [...pdusRef.current, r]
     setPdus(pdusRef.current)
     say(r.ok ? `Successful: ${r.src} ke ${r.dst}` : `Failed: ${r.why}`, !r.ok)
+    if (r.ok) setMood(['senang', 'Paketnya sampai!'])
     setEvents((e) => [...e, r.ok ? `ICMP Echo Reply sampai di ${r.src}` : `Paket gagal: ${r.why}`].slice(-8))
   }
 
@@ -254,7 +275,7 @@ export function LabPlay() {
   }
 
   function reset(mm: Mission | undefined = m) {
-    setNet(mm?.start?.() ?? { devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
+    setMood(['menunjuk', 'Mulai lagi dari awal. Semangat!']); setNet(mm?.start?.() ?? { devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
     setFinished(false); setShowDone(false); pick('select'); say('Activity di-reset. Mulai dari langkah 1.')
   }
 
@@ -283,6 +304,7 @@ export function LabPlay() {
         <section aria-labelledby="ins" className="flex flex-col gap-3 rounded-[18px] border-[1.5px] border-line bg-white p-4">
           <h2 id="ins" className="text-[18px] font-bold">Instructions <span className="text-[14px] font-medium text-ink-soft">· petunjuk misi</span></h2>
           <p className="text-[15px] leading-snug text-[#33415A]">{m.goal}</p>
+          <Netty pose={mood[0]} say={mood[1]} size={64} lines={['Aku pantau kabelnya.', 'Pelan-pelan saja.']} />
           <div>
             <p className="text-[14px] font-bold">Completion: {pct}%</p>
             <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-[#E2E8F0]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Completion"><div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${pct}%` }} /></div>

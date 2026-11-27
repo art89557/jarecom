@@ -122,7 +122,7 @@ export function QuizList() {
               </>
             )}
           </div>
-          <Netty pose="senang" size={108} label="Netty bersemangat" bob />
+          <Netty pose="senang" size={108} label="Netty bersemangat" lines={['Skor 100 = bintang emas!', 'Aku temani sampai soal terakhir.']} />
         </section>
         <section className="card flex flex-col gap-3 p-4" aria-label="Bintang emas">
           <div className="flex items-center gap-3">
@@ -219,7 +219,10 @@ export function QuizPlay() {
         {qs.map((_, k) => <span key={k} className={`h-1.5 flex-1 rounded-full ${k <= i ? 'bg-quiz' : 'bg-line'}`} />)}
       </div>
       <p className="text-sm font-semibold text-quiz">Kuis Level {n} · {lv.judul}</p>
-      <h1 className="text-[26px] font-bold leading-tight tracking-tight md:text-[32px]">{q.pertanyaan}</h1>
+      <div className="flex items-start gap-3">
+        <h1 className="flex-1 text-[26px] font-bold leading-tight tracking-tight md:text-[32px]">{q.pertanyaan}</h1>
+        {!fb && <span className="shrink-0"><Netty pose={sel === null ? 'berpikir' : 'menunjuk'} size={72} label={sel === null ? 'Netty berpikir' : 'Netty menunggu'} /></span>}
+      </div>
       <div className="flex flex-col gap-2.5">
         {q.opsi.map((o, k) => {
           let c = ''
@@ -238,7 +241,7 @@ export function QuizPlay() {
       {fb ? (
         <div role="status" className={`rise flex flex-col gap-3 rounded-[18px] border-[1.5px] p-4 ${right ? 'border-pass bg-pass-soft' : 'border-fail bg-fail-soft'}`}>
           <div className="flex items-center gap-3">
-            <Netty pose={right ? 'senang' : 'sedih'} size={84} label={right ? 'Netty senang' : 'Netty sedih'} />
+            <Netty pose={right ? 'menari' : 'khawatir'} size={84} label={right ? 'Netty menari' : 'Netty khawatir'} />
             <div className={right ? 'text-pass-ink' : 'text-fail-ink'}>
               <div className="text-lg font-bold">{right ? 'Benar!' : 'Belum tepat'}</div>
               <div className="text-sm leading-snug">{right ? fb.penjelasan : `Jawaban yang benar adalah ${'ABCD'[fb.benar]}. ${fb.penjelasan}`}</div>
@@ -269,7 +272,8 @@ export function QuizResultPage() {
           <span className="pop -mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3.5 py-1.5 text-sm font-bold text-[#1B46D1]"><Icon name="award" size={16} sw={2.4} />Lencana Level {n} diraih</span>
           {state.score === 100 && <span className="pop mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-xp-soft px-3.5 py-1.5 text-sm font-bold text-[#8A5A00]"><Icon name="star" size={16} sw={2.2} fill="#FACC15" />Bintang emas, skor sempurna!</span>}
         </div>
-      ) : <Netty pose="sedih" size={170} label="Netty sedih" />}
+      ) : <Netty pose="khawatir" size={150} label="Netty menyemangati" say="Tidak apa-apa, coba lagi ya. Kamu pasti bisa!" side="atas" />}
+      {ok && <Netty pose="menari" size={110} label="Netty merayakan" say={state.score === 100 ? 'Sempurna! Bintang emas!' : 'Lulus! Hebat!'} side="kanan" />}
       <div className="pop flex h-32 w-32 flex-col items-center justify-center rounded-full border-[6px] bg-white" style={{ borderColor: ok ? '#0F7B55' : '#C0262D' }} aria-label={`Skor ${state.score}`}>
         <span className="font-display text-4xl font-bold">{state.score}</span><span className="help">dari 100</span>
       </div>

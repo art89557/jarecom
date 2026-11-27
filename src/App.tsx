@@ -38,7 +38,7 @@ function Offline() {
 
 /** Halaman untuk alamat yang tidak dikenal. */
 function NotFound() {
-  return <div className="mx-auto flex max-w-sm flex-col items-center gap-4 p-10 text-center"><Netty pose="sedih" size={140} label="Netty sedih" /><h1 className="text-2xl font-bold">Halaman tidak ditemukan</h1><Link to="/" className="btn">Ke beranda</Link></div>
+  return <div className="mx-auto flex max-w-sm flex-col items-center gap-4 p-10 text-center"><Netty pose="khawatir" size={140} label="Netty bingung" say="Halaman ini tidak ada. Ayo pulang ke beranda." side="atas" /><h1 className="text-2xl font-bold">Halaman tidak ditemukan</h1><Link to="/" className="btn">Ke beranda</Link></div>
 }
 
 /** Susunan rute. Alamat dalam bahasa Indonesia: /materi, /kuis, /progres, dan seterusnya. */

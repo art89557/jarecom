@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { repo } from '../lib'
 import { setSound, soundOn } from '../lib/sound'
 import { setVoice, voiceOn } from '../lib/voice'
-import { reduceOn, setReduce } from '../lib/prefs'
+import { nettyQuiet, reduceOn, setNettyQuiet, setReduce } from '../lib/prefs'
 import { shareCard } from '../lib/shareCard'
 import { badgeState, levelLabel } from '../lib/engine'
 import { LEVELS } from '../content'
@@ -55,6 +55,7 @@ export default function Profile() {
   const [snd, setSnd] = useState(soundOn()) // efek suara aktif
   const [vc, setVc] = useState(voiceOn()) // suara panduan aktif
   const [red, setRed] = useState(reduceOn()) // kurangi animasi aktif
+  const [quiet, setQuiet] = useState(nettyQuiet()) // Netty diam (tanpa gelembung ucapan)
   const [msg, setMsg] = useState('') // pesan hasil bagikan kartu
   const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null) // dialog yang terbuka
   const [note, setNote] = useState('') // pesan setelah ubah nama/kata sandi
@@ -124,6 +125,7 @@ export default function Profile() {
             <Toggle icon="volume" title="Suara efek" desc="Bunyi saat jawaban benar atau salah" on={snd} onChange={(v) => { setSnd(v); setSound(v) }} />
             <Toggle icon="volume" title="Suara panduan" desc="Tombol Dengarkan di tur panduan" on={vc} onChange={(v) => { setVc(v); setVoice(v) }} />
             <Toggle icon="motion" title="Kurangi animasi" desc="Matikan gerak Netty dan efek perayaan" on={red} onChange={(v) => { setRed(v); setReduce(v) }} />
+            <Toggle icon="chat" title="Netty diam" desc="Sembunyikan gelembung ucapan Netty" on={quiet} onChange={(v) => { setQuiet(v); setNettyQuiet(v) }} />
           </Group>
           {bip && (
             <Group title="Aplikasi">
