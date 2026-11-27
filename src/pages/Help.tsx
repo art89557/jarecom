@@ -11,6 +11,8 @@ const FAQ: [string, string][] = [
   ['Kenapa tombol Sub-topik berikutnya tidak aktif?', 'Jawab cek pemahaman di akhir sub-topik sampai benar.'],
   ['Kenapa XP tidak bertambah saat mengulang kuis?', 'XP materi, kuis lulus, dan skor 100 hanya diberikan sekali per level.'],
   ['Apa bedanya Lab dan Simulasi?', 'Di Lab kamu merakit jaringan sendiri. Di Simulasi kamu mengamati dan membandingkan konsep lewat gambar interaktif. Di HP, Simulasi ada sebagai tab di halaman Lab.'],
+  ['Kalau pindah menu, progresku hilang?', 'Tidak. Materi melanjutkan dari sub-topik terakhir, dan pekerjaan di setiap misi Lab tersimpan otomatis di perangkat ini. Kuis berbeda: kalau keluar di tengah kuis, kamu mulai lagi dari soal 1, jadi aplikasi selalu bertanya dulu.'],
+  ['Kenapa alat di Lab belum lengkap?', 'Alat muncul bertahap sesuai misi: kabel manual dari Misi 7, Hub dan mode Simulation dari Misi 8, Router dari Misi 10. Mau mencoba semuanya? Tekan Semua alat di palet.'],
   ['Di Lab, ping gagal atau lampu kabel merah?', 'Lampu merah berarti jenis kabel salah atau port mati. Kalau ping gagal, baca catatannya: biasanya IP beda subnet atau Default Gateway kosong.'],
   ['Animasi membuat pusing?', 'Nyalakan Kurangi animasi di Profil.']
 ]
