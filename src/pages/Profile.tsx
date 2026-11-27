@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { repo } from '../lib'
 import { setSound, soundOn } from '../lib/sound'
 import { setVoice, voiceOn } from '../lib/voice'
-import { nettyQuiet, reduceOn, setNettyQuiet, setReduce } from '../lib/prefs'
+import { nettyQuiet, reduceOn, setNettyQuiet, setReduce, setTextSize, TEXT_SIZES, textSize, type TextSize } from '../lib/prefs'
 import { shareCard } from '../lib/shareCard'
 import { badgeState, levelLabel } from '../lib/engine'
 import { LEVELS } from '../content'
@@ -56,6 +56,7 @@ export default function Profile() {
   const [vc, setVc] = useState(voiceOn()) // suara panduan aktif
   const [red, setRed] = useState(reduceOn()) // kurangi animasi aktif
   const [quiet, setQuiet] = useState(nettyQuiet()) // Netty diam (tanpa gelembung ucapan)
+  const [ts, setTs] = useState<TextSize>(textSize()) // ukuran teks
   const [msg, setMsg] = useState('') // pesan hasil bagikan kartu
   const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null) // dialog yang terbuka
   const [note, setNote] = useState('') // pesan setelah ubah nama/kata sandi
@@ -121,6 +122,18 @@ export default function Profile() {
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
+          <Group title="Tampilan">
+            <div className="flex flex-col gap-3 px-4 py-3.5" role="radiogroup" aria-labelledby="ts-l">
+              <span className="flex items-center gap-3.5">{chipIc('type')}<span className="flex flex-col gap-0.5"><span id="ts-l" className="text-base font-semibold">Ukuran teks</span><span className="help leading-snug">Perbesar teks, tombol, dan gambar di seluruh aplikasi</span></span></span>
+              <div className="flex gap-1 rounded-2xl bg-[#E4E9F2] p-1">
+                {TEXT_SIZES.map(([k, t], i) => (
+                  <button key={k} type="button" role="radio" aria-checked={ts === k} onClick={() => { setTs(k); setTextSize(k) }}
+                    className={`flex min-h-[48px] flex-1 items-center justify-center rounded-xl px-1.5 text-center font-semibold leading-tight ${ts === k ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`}
+                    style={{ fontSize: [14, 15, 16][i] }}>{t}</button>
+                ))}
+              </div>
+            </div>
+          </Group>
           <Group title="Suara dan gerak">
             <Toggle icon="volume" title="Suara efek" desc="Bunyi saat jawaban benar atau salah" on={snd} onChange={(v) => { setSnd(v); setSound(v) }} />
             <Toggle icon="volume" title="Suara panduan" desc="Tombol Dengarkan di tur panduan" on={vc} onChange={(v) => { setVc(v); setVoice(v) }} />

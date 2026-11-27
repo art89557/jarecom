@@ -28,3 +28,23 @@ export const setNettyQuiet = (v: boolean) => {
 }
 /** Dengarkan perubahan "Netty diam". Mengembalikan fungsi untuk berhenti mendengarkan. */
 export const onNettyQuiet = (f: (v: boolean) => void) => { qSubs.add(f); return () => { qSubs.delete(f) } }
+
+// Ukuran teks: memperbesar seluruh tampilan (teks, tombol, dan jarak ikut membesar) lewat CSS `zoom` pada <html>.
+// Dipakai zoom, bukan font-size, karena banyak ukuran teks ditulis dalam piksel.
+export type TextSize = 'normal' | 'besar' | 'sangat-besar'
+export const TEXT_SIZES: [TextSize, string, number][] = [['normal', 'Normal', 1], ['besar', 'Besar', 1.125], ['sangat-besar', 'Sangat besar', 1.25]]
+const TKEY = 'jarecom:teks'
+/** Ukuran teks yang dipilih di perangkat ini. */
+export const textSize = (): TextSize => {
+  try { const v = localStorage.getItem(TKEY); return TEXT_SIZES.some(([k]) => k === v) ? (v as TextSize) : 'normal' } catch { return 'normal' }
+}
+/** Terapkan ukuran teks ke halaman. */
+export const applyTextSize = (v: TextSize) => {
+  const z = TEXT_SIZES.find(([k]) => k === v)?.[2] ?? 1
+  document.documentElement.style.setProperty('zoom', z === 1 ? '' : String(z))
+}
+/** Simpan pilihan ukuran teks lalu langsung terapkan. */
+export const setTextSize = (v: TextSize) => {
+  try { localStorage.setItem(TKEY, v) } catch { /* abaikan */ }
+  applyTextSize(v)
+}

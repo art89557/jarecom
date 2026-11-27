@@ -48,12 +48,14 @@ export default function Tour() {
   const step = steps[i]
   // Ukur posisi sasaran langkah aktif (dengan bantalan 6 px) untuk menaruh sorotan.
   const measure = useCallback(() => {
-    setVp({ w: window.innerWidth, h: window.innerHeight })
+    // Ukuran teks memperbesar <html> lewat CSS zoom: ukuran layar dan posisi diubah ke satuan halaman yang sudah di-zoom.
+    const z = parseFloat(getComputedStyle(document.documentElement).zoom) || 1
+    setVp({ w: window.innerWidth / z, h: window.innerHeight / z })
     const el = step ? findTarget(step.target) : null
     if (!el) { setBox(null); return }
     const r = el.getBoundingClientRect()
     const pad = 6
-    setBox({ top: r.top - pad, left: r.left - pad, width: r.width + pad * 2, height: r.height + pad * 2 })
+    setBox({ top: r.top / z - pad, left: r.left / z - pad, width: r.width / z + pad * 2, height: r.height / z + pad * 2 })
   }, [step])
 
   // Saat langkah berganti: gulir sasaran ke tengah layar bila di luar jangkauan, lalu ukur.

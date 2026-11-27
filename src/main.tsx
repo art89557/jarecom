@@ -6,10 +6,11 @@ import { registerSW } from 'virtual:pwa-register'
 import App from './App'
 import { AppProvider } from './state'
 import './index.css'
-import { applyReduce, reduceOn } from './lib/prefs'
+import { applyReduce, applyTextSize, reduceOn, textSize } from './lib/prefs'
 
-// Terapkan pilihan "kurangi animasi" sebelum halaman tampil.
+// Terapkan pilihan "kurangi animasi" dan ukuran teks sebelum halaman tampil.
 applyReduce(reduceOn())
+applyTextSize(textSize())
 
 // Daftarkan service worker (PWA): aset disimpan di perangkat dan diperbarui otomatis.
 registerSW({ immediate: true })
