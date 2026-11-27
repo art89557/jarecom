@@ -11,6 +11,7 @@ import type { CheckResult, QuizQuestion, QuizResult } from '../lib/repo'
 import { play } from '../lib/sound'
 import { useApp } from '../state'
 import { Back, ErrorMsg, Netty, XpBadge } from '../components/ui'
+import { Diagram, quizDiagram } from '../components/Art'
 
 /** Filter daftar kuis. */
 type Filter = 'semua' | 'siap' | 'lulus' | 'belum-emas'
@@ -208,6 +209,8 @@ export function QuizPlay() {
     } catch (e) { setErr((e as Error).message) } finally { setBusy(false) }
   }
   const right = fb && fb.benar === sel // jawaban terpilih benar?
+  // Diagram di penjelasan hanya untuk soal yang konsepnya visual (dicocokkan dari kata kunci soal dan penjelasan).
+  const dg = fb ? quizDiagram(`${q.pertanyaan} ${fb.penjelasan}`) : null
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
@@ -247,6 +250,7 @@ export function QuizPlay() {
               <div className="text-sm leading-snug">{right ? fb.penjelasan : `Jawaban yang benar adalah ${'ABCD'[fb.benar]}. ${fb.penjelasan}`}</div>
             </div>
           </div>
+          {dg && <Diagram k={dg} compact />}
           <button className="btn" disabled={busy} onClick={() => void next()}>{lastQ ? 'Lihat hasil' : 'Soal berikutnya'}</button>
         </div>
       ) : (

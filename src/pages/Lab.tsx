@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState, type PointerEvent as RPE, type Re
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/icons'
 import { Back, Netty, type Pose } from '../components/ui'
+import { LabThumb } from '../components/Art'
 import { useApp } from '../state'
 import { reduceOn } from '../lib/prefs'
 import { LabTabs } from './Simulasi'
@@ -33,8 +34,12 @@ export function LabList() {
     <div className="flex flex-col gap-6">
       <LabTabs />
       <h1 className="sr-only">Lab Topologi: rakit jaringan seperti di Cisco Packet Tracer</h1>
-      <div className="flex items-center gap-4 rounded-[20px] bg-primary-soft px-4 py-3 md:px-5">
-        <Netty pose={pose} say={say} size={84} lines={['Di Lab tidak ada kabel yang bisa putus beneran.', 'Ingat: PC ke PC pakai kabel cross.', 'Klik misi yang terbuka untuk mulai.']} />
+      <div className="flex flex-col gap-4 rounded-[20px] bg-primary-soft px-4 py-3 sm:flex-row sm:items-center md:px-5">
+        <div className="min-w-0 flex-1"><Netty pose={pose} say={say} size={84} lines={['Di Lab tidak ada kabel yang bisa putus beneran.', 'Ingat: PC ke PC pakai kabel cross.', 'Klik misi yang terbuka untuk mulai.']} /></div>
+        <div className="flex shrink-0 flex-col gap-1.5 sm:w-[220px]">
+          <span className="text-[15px] text-[#33415A]"><b className="text-ink">{done.length} dari {MISSIONS.length}</b> misi selesai</span>
+          <span className="h-2.5 overflow-hidden rounded-full bg-white" role="progressbar" aria-valuemin={0} aria-valuemax={MISSIONS.length} aria-valuenow={done.length} aria-label="Misi lab selesai"><span className="block h-full rounded-full bg-primary" style={{ width: `${(done.length / MISSIONS.length) * 100}%` }} /></span>
+        </div>
       </div>
       <div role="tablist" aria-label="Kelompok misi" className="-mx-1 flex gap-1 overflow-x-auto px-1">
         {tabs.map(([k, t]) => (
@@ -48,24 +53,26 @@ export function LabList() {
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {MISSIONS.filter((m) => m.group === g).map((m) => {
           const ok = done.includes(m.n), open = labOpen(done, m.n)
+          const tn = ok ? 'done' : open ? 'open' : 'lock'
           const body = (
             <>
-              <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${ok ? 'bg-[#DCFCE7] text-[#15803D]' : open ? 'bg-primary-soft text-[#1B46D1]' : 'bg-[#E4E9F2] text-[#4A5568]'}`}>
-                {ok ? <Icon name="check" size={24} sw={2.6} /> : open ? <span className="font-display text-xl font-bold">{m.n}</span> : <Icon name="lock" size={22} />}
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">Misi {m.n} · {ok ? 'Selesai' : open ? 'Terbuka' : 'Terkunci'}</span>
+              <span className={`block h-[118px] w-full ${ok ? 'bg-pass-soft' : open ? 'bg-primary-soft' : 'bg-white'}`}><LabThumb n={m.n} t={tn} /></span>
+              <span className="flex flex-col gap-1 p-4">
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">Misi {m.n}</span>
+                  <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold ${ok ? 'bg-pass-soft text-pass' : open ? 'bg-primary text-white' : 'text-ink-soft'}`}>{ok ? <><Icon name="check" size={14} sw={3} />Selesai</> : open ? 'Mulai' : <><Icon name="lock" size={14} />Terkunci</>}</span>
+                </span>
                 <span className="text-[18px] font-bold">{m.title}</span>
                 <span className="text-[15px] leading-snug text-[#33415A]">{m.goal}</span>
               </span>
             </>
           )
-          const cls = `flex h-full min-h-[112px] items-start gap-3.5 rounded-[18px] border-[1.5px] bg-white p-4 text-left${nextM?.n === m.n ? ' ring-2 ring-primary' : ''}`
+          const cls = `flex h-full flex-col overflow-hidden rounded-[18px] border-[1.5px] bg-white text-left transition${nextM?.n === m.n ? ' ring-2 ring-primary' : ''}`
           return (
             <li key={m.n}>
               {open
-                ? <Link to={`/lab/${m.n}`} className={`${cls} border-line hover:border-primary`}>{body}</Link>
-                : <div aria-disabled="true" className={`${cls} border-line opacity-70`}>{body}</div>}
+                ? <Link to={`/lab/${m.n}`} className={`${cls} border-line hover:-translate-y-0.5 hover:border-primary hover:shadow-md`}>{body}</Link>
+                : <div aria-disabled="true" className={`${cls} border-dashed border-[#CBD5E1] bg-[#FAFBFD]`}>{body}</div>}
             </li>
           )
         })}

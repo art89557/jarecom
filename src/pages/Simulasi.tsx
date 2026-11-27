@@ -4,6 +4,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useNavigate, useParams } from 'react-router-dom'
 import { Back, Netty } from '../components/ui'
+import { SimThumb } from '../components/Art'
 import { reduceOn } from '../lib/prefs'
 
 /** Animasi dimatikan? (pengaturan aplikasi atau pengaturan perangkat) */
@@ -17,6 +18,9 @@ const SIMS: { slug: string; title: string; level: string; desc: string }[] = [
   { slug: 'kabel', title: 'Kabel Straight vs Cross-Over', level: 'Level 5', desc: 'Lihat susunan warna T568A/T568B dan ke mana tiap pin tersambung.' },
   { slug: 'subnet', title: 'Kalkulator Subnet', level: 'Level 6 dan 7', desc: 'Geser prefix /8 sampai /30 dan lihat network, broadcast, dan jumlah host.' }
 ]
+
+// Warna latar gambar sampul tiap simulasi.
+const SIM_BG: Record<string, string> = { kabel: 'bg-[#FFF7ED]', osi: 'bg-primary-soft', perangkat: 'bg-[#F5F3FF]', 'ip-biner': 'bg-pass-soft', subnet: 'bg-[#FEFCE8]' }
 
 /** Tab Rakit / Simulasi (hanya di HP; di laptop keduanya punya menu sendiri). */
 export function LabTabs() {
@@ -41,10 +45,13 @@ export function SimList() {
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {SIMS.map((s) => (
           <li key={s.slug}>
-            <Link to={`/simulasi/${s.slug}`} className="flex h-full min-h-[120px] flex-col gap-1.5 rounded-[18px] border-[1.5px] border-line bg-white p-4 hover:border-primary">
-              <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">{s.level}</span>
-              <span className="text-[18px] font-bold">{s.title}</span>
-              <span className="text-[15px] leading-snug text-[#33415A]">{s.desc}</span>
+            <Link to={`/simulasi/${s.slug}`} className="group flex h-full flex-col overflow-hidden rounded-[18px] border-[1.5px] border-line bg-white transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+              <span className={`block h-[130px] w-full px-4 py-3 ${SIM_BG[s.slug] ?? 'bg-primary-soft'}`}><SimThumb slug={s.slug} /></span>
+              <span className="flex flex-col gap-1.5 p-4">
+                <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">{s.level}</span>
+                <span className="text-[18px] font-bold">{s.title}</span>
+                <span className="text-[15px] leading-snug text-[#33415A]">{s.desc}</span>
+              </span>
             </Link>
           </li>
         ))}

@@ -10,6 +10,7 @@ import { play } from '../lib/sound'
 import { useApp } from '../state'
 import { Icon, type IconName } from '../components/icons'
 import { Back, ErrorMsg, Netty, Segments, XpBadge } from '../components/ui'
+import { Diagram, MATERI_DIAGRAM } from '../components/Art'
 
 /** Halaman membaca materi (/materi/:n). */
 export default function Material() {
@@ -74,6 +75,9 @@ export default function Material() {
         <Segments total={total} done={idx + 1} />
       </div>
       <p className="text-base leading-[1.7] md:text-[17px]">{s.uraian}</p>
+      {MATERI_DIAGRAM[`${n}-${s.id}`] && (
+        <Diagram k={MATERI_DIAGRAM[`${n}-${s.id}`]} simLink={(slug) => <Link to={`/simulasi/${slug}`} className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl bg-primary-soft px-3.5 text-[15px] font-semibold text-[#1B46D1] hover:bg-[#DCE5FF]"><Icon name="sim" size={18} sw={2.2} />Coba di Simulasi</Link>} />
+      )}
       <ul className="card flex flex-col gap-2.5">
         {s.poin.map((p) => (
           <li key={p} className="flex gap-3 text-[15px] leading-relaxed"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />{p}</li>
@@ -81,8 +85,10 @@ export default function Material() {
       </ul>
 
       <section className="mt-2 flex flex-col gap-3" aria-label="Cek pemahaman">
-        <h2 className="text-xl font-bold">Cek pemahaman</h2>
-        <p className="font-semibold">{s.cek.pertanyaan}</p>
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1"><h2 className="text-xl font-bold">Cek pemahaman</h2><p className="mt-1.5 font-semibold">{s.cek.pertanyaan}</p></div>
+          {picked === null && <Netty pose="berpikir" size={64} label="Netty berpikir" />}
+        </div>
         <div className="flex flex-col gap-2.5">
           {s.cek.opsi.map((o, i) => (
             <button key={o} type="button" onClick={() => pick(i)} aria-pressed={picked === i}
@@ -96,7 +102,7 @@ export default function Material() {
         </div>
         {picked !== null && (
           <div role="status" className={`rise flex items-start gap-3 rounded-xl p-3 text-sm leading-snug ${correct ? 'bg-pass-soft text-pass-ink' : 'bg-fail-soft text-fail-ink'}`}>
-            <Netty pose={correct ? 'senang' : 'sedih'} size={56} />
+            <Netty pose={correct ? 'menari' : 'khawatir'} size={64} label={correct ? 'Netty menari' : 'Netty menyemangati'} />
             <span><b>{correct ? 'Benar.' : 'Belum tepat, coba lagi.'}</b> {correct ? s.cek.penjelasan : 'Baca lagi uraian di atas, lalu pilih jawaban lain.'}</span>
           </div>
         )}
