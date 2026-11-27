@@ -9,7 +9,8 @@ import { getDoneSubtopics, setDoneSubtopics } from '../lib/position'
 import { play } from '../lib/sound'
 import { useApp } from '../state'
 import { Icon, type IconName } from '../components/icons'
-import { Back, ErrorMsg, Netty, Segments, XpBadge } from '../components/ui'
+import { Back, ErrorMsg, Netty, XpBadge } from '../components/ui'
+import { Diagram, MATERI_DIAGRAM } from '../components/Art'
 
 /** Halaman membaca materi (/materi/:n). */
 export default function Material() {
@@ -37,6 +38,10 @@ export default function Material() {
   const s = lv.subtopik[idx] // sub-topik aktif
   const correct = picked !== null && picked === s.cek.benar
   const last = idx === total - 1 // sub-topik terakhir?
+  // Sub-topik yang sudah pernah dilewati boleh dibuka lagi dan dilewati tanpa menjawab ulang cek pemahaman.
+  const reached = alreadyDone ? total : Math.min(getDoneSubtopics(user?.id ?? '', n), total)
+  const passedHere = idx < reached
+  const go = (k: number) => { setIdx(k); setPicked(null); window.scrollTo(0, 0) }
 
   // Pilih jawaban cek pemahaman; setelah benar, pilihan dikunci.
   function pick(i: number) {
@@ -71,9 +76,20 @@ export default function Material() {
       <div className="flex flex-col gap-2">
         <span className="text-sm font-semibold text-primary">Level {n} · {lv.judul} · Sub-topik {idx + 1} dari {total}</span>
         <h1 className="text-[28px] font-bold leading-tight tracking-tight md:text-[38px]">{s.judul}</h1>
-        <Segments total={total} done={idx + 1} />
+        <nav aria-label="Sub-topik" className="flex gap-1.5">
+          {lv.subtopik.map((x, k) => {
+            const open = k <= reached && k !== idx
+            const cls = `h-2.5 flex-1 rounded-full ${k <= idx ? 'bg-primary' : k < reached ? 'bg-[#93A9F5]' : 'bg-line'}`
+            return open
+              ? <button key={x.id} type="button" onClick={() => go(k)} aria-label={`Buka sub-topik ${k + 1}: ${x.judul}`} className="flex min-h-[24px] flex-1 items-center"><span className={`${cls} w-full hover:opacity-80`} /></button>
+              : <span key={x.id} aria-current={k === idx ? 'step' : undefined} className="flex min-h-[24px] flex-1 items-center"><span className={`${cls} w-full`} /></span>
+          })}
+        </nav>
       </div>
       <p className="text-base leading-[1.7] md:text-[17px]">{s.uraian}</p>
+      {MATERI_DIAGRAM[`${n}-${s.id}`] && (
+        <Diagram k={MATERI_DIAGRAM[`${n}-${s.id}`]} simLink={(slug) => <Link to={`/simulasi/${slug}`} className="inline-flex min-h-[44px] shrink-0 items-center gap-1.5 rounded-xl bg-primary-soft px-3.5 text-[15px] font-semibold text-[#1B46D1] hover:bg-[#DCE5FF]"><Icon name="sim" size={18} sw={2.2} />Coba di Simulasi</Link>} />
+      )}
       <ul className="card flex flex-col gap-2.5">
         {s.poin.map((p) => (
           <li key={p} className="flex gap-3 text-[15px] leading-relaxed"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />{p}</li>
@@ -81,8 +97,10 @@ export default function Material() {
       </ul>
 
       <section className="mt-2 flex flex-col gap-3" aria-label="Cek pemahaman">
-        <h2 className="text-xl font-bold">Cek pemahaman</h2>
-        <p className="font-semibold">{s.cek.pertanyaan}</p>
+        <div className="flex items-center gap-3">
+          <div className="min-w-0 flex-1"><h2 className="text-xl font-bold">Cek pemahaman</h2><p className="mt-1.5 font-semibold">{s.cek.pertanyaan}</p></div>
+          {picked === null && <Netty pose="berpikir" size={64} label="Netty berpikir" />}
+        </div>
         <div className="flex flex-col gap-2.5">
           {s.cek.opsi.map((o, i) => (
             <button key={o} type="button" onClick={() => pick(i)} aria-pressed={picked === i}
@@ -96,7 +114,7 @@ export default function Material() {
         </div>
         {picked !== null && (
           <div role="status" className={`rise flex items-start gap-3 rounded-xl p-3 text-sm leading-snug ${correct ? 'bg-pass-soft text-pass-ink' : 'bg-fail-soft text-fail-ink'}`}>
-            <Netty pose={correct ? 'senang' : 'sedih'} size={56} />
+            <Netty pose={correct ? 'menari' : 'khawatir'} size={64} label={correct ? 'Netty menari' : 'Netty menyemangati'} />
             <span><b>{correct ? 'Benar.' : 'Belum tepat, coba lagi.'}</b> {correct ? s.cek.penjelasan : 'Baca lagi uraian di atas, lalu pilih jawaban lain.'}</span>
           </div>
         )}
@@ -104,9 +122,12 @@ export default function Material() {
 
       <ErrorMsg>{err}</ErrorMsg>
       {last && correct && !alreadyDone && <p className="help">Semua sub-topik selesai. Tandai materi untuk mendapat <XpBadge>+20 XP</XpBadge></p>}
-      <button className="btn mt-2" disabled={!correct || busy} onClick={() => void next()}>
+      <div className="mt-2 flex gap-2.5">
+      {idx > 0 && <button type="button" className="btn2 !w-auto shrink-0 px-5" onClick={() => go(idx - 1)} aria-label="Sub-topik sebelumnya"><Icon name="chevl" size={20} sw={2.4} /><span className="hidden sm:inline">Sebelumnya</span></button>}
+      <button className="btn flex-1" disabled={!(correct || (passedHere && !last)) || busy} onClick={() => void next()}>
         {last ? (alreadyDone ? 'Selesai' : 'Tandai materi selesai') : 'Sub-topik berikutnya'}
       </button>
+      </div>
       {alreadyDone && last && correct && <Link to={`/kuis/${n}`} className="btn2">Kerjakan kuis</Link>}
     </div>
   )

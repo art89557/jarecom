@@ -4,7 +4,9 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPE, type ReactNode } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Icon } from '../components/icons'
-import { Back } from '../components/ui'
+import { Back, Netty, type Pose } from '../components/ui'
+import { LabThumb } from '../components/Art'
+import Confirm from '../components/Confirm'
 import { useApp } from '../state'
 import { reduceOn } from '../lib/prefs'
 import { LabTabs } from './Simulasi'
@@ -19,34 +21,59 @@ import {
 export function LabList() {
   const { user } = useApp()
   const done = user ? labDone(user.id) : []
+  const [tab, setTab] = useState<string>('semua') // filter kelompok misi
+  const nextM = MISSIONS.find((m) => !done.includes(m.n) && labOpen(done, m.n)) // misi berikutnya yang bisa dimainkan
+  // Netty berganti pose dan ucapan sesuai kelompok yang dipilih.
+  const inGroup = tab === 'semua' ? nextM : MISSIONS.find((m) => m.group === tab && !done.includes(m.n) && labOpen(done, m.n))
+  const allDone = tab !== 'semua' && MISSIONS.filter((m) => m.group === tab).every((m) => done.includes(m.n))
+  const [pose, say]: [Pose, string] = allDone ? ['menari', 'Semua misi di kelompok ini sudah selesai. Keren!']
+    : inGroup ? ['menunjuk', `Misi ${inGroup.n} siap: ${inGroup.title}.`]
+    : tab === 'semua' ? ['menari', 'Semua 12 misi selesai. Kamu jago merakit jaringan!']
+    : ['tidur', 'Misi di sini masih terkunci. Selesaikan kelompok sebelumnya dulu ya.']
+  const tabs: [string, string][] = [['semua', 'Semua'], ...GROUPS.map(([g, gt]) => [g, gt] as [string, string])]
   return (
     <div className="flex flex-col gap-6">
       <LabTabs />
       <h1 className="sr-only">Lab Topologi: rakit jaringan seperti di Cisco Packet Tracer</h1>
-      {GROUPS.map(([g, gt]) => (
+      <div className="flex flex-col gap-4 rounded-[20px] bg-primary-soft px-4 py-3 sm:flex-row sm:items-center md:px-5">
+        <div className="min-w-0 flex-1"><Netty pose={pose} say={say} size={84} lines={['Di Lab tidak ada kabel yang bisa putus beneran.', 'Ingat: PC ke PC pakai kabel cross.', 'Klik misi yang terbuka untuk mulai.']} /></div>
+        <div className="flex shrink-0 flex-col gap-1.5 sm:w-[220px]">
+          <span className="text-[15px] text-[#33415A]"><b className="text-ink">{done.length} dari {MISSIONS.length}</b> misi selesai</span>
+          <span className="h-2.5 overflow-hidden rounded-full bg-white" role="progressbar" aria-valuemin={0} aria-valuemax={MISSIONS.length} aria-valuenow={done.length} aria-label="Misi lab selesai"><span className="block h-full rounded-full bg-primary" style={{ width: `${(done.length / MISSIONS.length) * 100}%` }} /></span>
+        </div>
+      </div>
+      <div role="tablist" aria-label="Kelompok misi" className="-mx-1 flex gap-1 overflow-x-auto px-1">
+        {tabs.map(([k, t]) => (
+          <button key={k} type="button" role="tab" aria-selected={tab === k} onClick={() => setTab(k)}
+            className={`min-h-[44px] shrink-0 rounded-xl px-4 text-[15px] font-semibold ${tab === k ? 'bg-ink text-white' : 'bg-white text-ink-soft border border-line hover:border-primary'}`}>{t}</button>
+        ))}
+      </div>
+      {GROUPS.filter(([g]) => tab === 'semua' || g === tab).map(([g, gt]) => (
       <section key={g} aria-labelledby={`g-${g}`} className="flex flex-col gap-3">
         <h2 id={`g-${g}`} className="text-[20px] font-bold">{gt}</h2>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {MISSIONS.filter((m) => m.group === g).map((m) => {
           const ok = done.includes(m.n), open = labOpen(done, m.n)
+          const tn = ok ? 'done' : open ? 'open' : 'lock'
           const body = (
             <>
-              <span className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${ok ? 'bg-[#DCFCE7] text-[#15803D]' : open ? 'bg-primary-soft text-[#1B46D1]' : 'bg-[#E4E9F2] text-[#4A5568]'}`}>
-                {ok ? <Icon name="check" size={24} sw={2.6} /> : open ? <span className="font-display text-xl font-bold">{m.n}</span> : <Icon name="lock" size={22} />}
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col gap-1">
-                <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">Misi {m.n} · {ok ? 'Selesai' : open ? 'Terbuka' : 'Terkunci'}</span>
+              <span className={`paper block h-[118px] w-full ${ok ? 'bg-pass-soft' : open ? 'bg-primary-soft' : 'bg-white'}`}><LabThumb n={m.n} t={tn} /></span>
+              <span className="flex flex-col gap-1 p-4">
+                <span className="flex items-center justify-between gap-2">
+                  <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">Misi {m.n}</span>
+                  <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2.5 py-1 text-sm font-bold ${ok ? 'bg-pass-soft text-pass' : open ? 'bg-primary text-white' : 'text-ink-soft'}`}>{ok ? <><Icon name="check" size={14} sw={3} />Selesai</> : open ? 'Mulai' : <><Icon name="lock" size={14} />Terkunci</>}</span>
+                </span>
                 <span className="text-[18px] font-bold">{m.title}</span>
                 <span className="text-[15px] leading-snug text-[#33415A]">{m.goal}</span>
               </span>
             </>
           )
-          const cls = 'flex h-full min-h-[112px] items-start gap-3.5 rounded-[18px] border-[1.5px] bg-white p-4 text-left'
+          const cls = `flex h-full flex-col overflow-hidden rounded-[18px] border-[1.5px] bg-white text-left transition${nextM?.n === m.n ? ' ring-2 ring-primary' : ''}`
           return (
             <li key={m.n}>
               {open
-                ? <Link to={`/lab/${m.n}`} className={`${cls} border-line hover:border-primary`}>{body}</Link>
-                : <div aria-disabled="true" className={`${cls} border-line opacity-70`}>{body}</div>}
+                ? <Link to={`/lab/${m.n}`} className={`${cls} border-line hover:-translate-y-0.5 hover:border-primary hover:shadow-md`}>{body}</Link>
+                : <div aria-disabled="true" className={`${cls} border-dashed border-[#CBD5E1] bg-[#FAFBFD]`}>{body}</div>}
             </li>
           )
         })}
@@ -107,7 +134,8 @@ export function LabPlay() {
   const area = useRef<HTMLDivElement>(null)
   const drag = useRef<{ id: string; ox: number; oy: number; cx: number; cy: number; moved: boolean } | null>(null)
 
-  const say = (text: string, warn = false) => setToast({ text, warn })
+  const [mood, setMood] = useState<[Pose, string]>(['menunjuk', 'Ikuti langkah biru di bawah ya.']) // reaksi Netty
+  const say = (text: string, warn = false) => { setToast({ text, warn }); if (warn) setMood(['khawatir', /salah untuk/.test(text) ? 'Kabelnya salah jenis. Lihat lampu merahnya.' : 'Ups, cek lagi ya.']) }
   useEffect(() => { if (!toast) return; const t = setTimeout(() => setToast(null), 4000); return () => clearTimeout(t) }, [toast])
 
   // Kabel baru menyala oranye dulu, lalu hijau setelah 1,3 detik (seperti port switch di Packet Tracer).
@@ -122,8 +150,8 @@ export function LabPlay() {
     if (!m) return
     let i = step, s = since
     while (i < m.steps.length && m.steps[i].ok({ net, pdus: pdus.slice(s) })) { i++; s = pdus.length }
-    if (i !== step) { setStep(i); setSince(s) }
-    if (i === m.steps.length && !finished) { setFinished(true); setShowDone(true); if (user) setLabDone(user.id, m.n) }
+    if (i !== step) { setStep(i); setSince(s); if (i < m.steps.length) setMood(['senang', 'Langkah selesai, lanjut!']) }
+    if (i === m.steps.length && !finished) { setFinished(true); setShowDone(true); setMood(['menari', 'Misi selesai! Keren!']); if (user) setLabDone(user.id, m.n) }
   }, [net, pdus, step, since, m, finished, user])
 
   // Gerakkan paket di mode Simulation; dengan "kurangi animasi" paket langsung sampai.
@@ -172,8 +200,30 @@ export function LabPlay() {
     pdusRef.current = [...pdusRef.current, r]
     setPdus(pdusRef.current)
     say(r.ok ? `Successful: ${r.src} ke ${r.dst}` : `Failed: ${r.why}`, !r.ok)
+    if (r.ok) setMood(['senang', 'Paketnya sampai!'])
     setEvents((e) => [...e, r.ok ? `ICMP Echo Reply sampai di ${r.src}` : `Paket gagal: ${r.why}`].slice(-8))
   }
+
+  // Undo: simpan keadaan area kerja sebelum setiap aksi pengguna (taruh, sambung, hapus, geser). Paling banyak 30 langkah.
+  const hist = useRef<Net[]>([])
+  const [, setHistLen] = useState(0)
+  const snap = () => { hist.current = [...hist.current.slice(-29), netRef.current]; setHistLen(hist.current.length) }
+  function undo() {
+    const prev = hist.current.pop(); setHistLen(hist.current.length)
+    if (!prev) return
+    setNet(prev); setFirst(null); say('Aksi terakhir dibatalkan.')
+  }
+  const [askReset, setAskReset] = useState(false) // dialog konfirmasi Reset Activity
+  // Ctrl+Z / Cmd+Z membatalkan aksi terakhir (kecuali sedang mengetik di kolom isian atau dialog perangkat terbuka).
+  useEffect(() => {
+    const k = (e: KeyboardEvent) => {
+      if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'z' || e.shiftKey || dialog) return
+      const t = e.target as HTMLElement
+      if (t.closest('input, textarea, [contenteditable="true"]')) return
+      e.preventDefault(); undo()
+    }
+    addEventListener('keydown', k); return () => removeEventListener('keydown', k)
+  })
 
   /** Pilih alat di toolbar. */
   const pick = (t: Tool, type: DevType | null = null) => { setTool(t); setPlaceType(type); setFirst(null) }
@@ -184,6 +234,7 @@ export function LabPlay() {
     let c = 0
     while (net.devices.some((x) => x.name === `${LABEL[placeType]}${c}`)) c++
     const d: Dev = { id: `d${Date.now()}${c}`, type: placeType, name: `${LABEL[placeType]}${c}`, x, y, on: true, off: {} }
+    snap()
     setNet((p) => ({ ...p, devices: [...p.devices, d] }))
   }
   function areaClick(e: React.MouseEvent<HTMLButtonElement>) {
@@ -196,6 +247,7 @@ export function LabPlay() {
   function devClick(id: string) {
     const d = dev(net, id)!
     if (tool === 'delete') {
+      snap()
       setNet((p) => ({ devices: p.devices.filter((x) => x.id !== id), links: p.links.filter((l) => l.a !== id && l.b !== id) }))
       return say(`${d.name} dihapus beserta kabelnya.`)
     }
@@ -209,6 +261,7 @@ export function LabPlay() {
       const need = needKind(a.type, d.type)
       const kind = cableKind === 'auto' ? need : cableKind
       const l: Cable = { id: `l${Date.now()}`, a: a.id, b: d.id, pa, pb, ready: false, kind, manual: cableKind !== 'auto' }
+      snap()
       setNet((p) => ({ ...p, links: [...p.links, l] }))
       setFirst(null)
       if (kind !== need) return say(`Kabel ${CABLE[kind]} salah untuk ${a.name}–${d.name}: lampu merah. Yang benar ${CABLE[need]}.`, true)
@@ -240,6 +293,7 @@ export function LabPlay() {
     const r = area.current!.getBoundingClientRect()
     const dx = ((e.clientX - g.cx) * W) / r.width, dy = ((e.clientY - g.cy) * H) / r.height
     if (!g.moved && Math.hypot(dx, dy) < 6) return
+    if (!g.moved) snap() // satu langkah undo per geseran
     g.moved = true
     const x = Math.max(48, Math.min(W - 48, g.ox + dx)), y = Math.max(48, Math.min(H - 70, g.oy + dy))
     setNet((p) => ({ ...p, devices: p.devices.map((d) => (d.id === g.id ? { ...d, x, y } : d)) }))
@@ -249,12 +303,14 @@ export function LabPlay() {
 
   function cableClick(l: Cable) {
     if (tool !== 'delete') return say('Untuk mencabut kabel, pilih alat Delete lalu klik kabelnya.')
+    snap()
     setNet((p) => ({ ...p, links: p.links.filter((x) => x.id !== l.id) }))
     say(`Kabel ${dev(net, l.a)?.name}–${dev(net, l.b)?.name} dicabut.`)
   }
 
   function reset(mm: Mission | undefined = m) {
-    setNet(mm?.start?.() ?? { devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
+    hist.current = []; setHistLen(0)
+    setMood(['menunjuk', 'Mulai lagi dari awal. Semangat!']); setNet(mm?.start?.() ?? { devices: [], links: [] }); pdusRef.current = []; setPdus([]); setStep(0); setSince(0); setEvents([]); setAnim(null)
     setFinished(false); setShowDone(false); pick('select'); say('Activity di-reset. Mulai dari langkah 1.')
   }
 
@@ -274,7 +330,8 @@ export function LabPlay() {
           <h1 className="font-display text-[24px] font-bold tracking-tight md:text-[28px]">Misi {m.n} · {m.title}</h1>
         </div>
         <ToolBtn on={hint} onClick={() => setHint((h) => !h)} label="Petunjuk"><Icon name="help" size={20} /></ToolBtn>
-        <ToolBtn onClick={() => reset()} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
+        <ToolBtn onClick={() => undo()} label="Undo" sub="Batalkan (Ctrl+Z)" disabled={hist.current.length === 0}><Icon name="undo" size={20} /></ToolBtn>
+        <ToolBtn onClick={() => (net.devices.length || pdus.length ? setAskReset(true) : reset())} label="Reset Activity" sub="Ulang dari awal"><Icon name="repeat" size={20} /></ToolBtn>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -283,6 +340,7 @@ export function LabPlay() {
         <section aria-labelledby="ins" className="flex flex-col gap-3 rounded-[18px] border-[1.5px] border-line bg-white p-4">
           <h2 id="ins" className="text-[18px] font-bold">Instructions <span className="text-[14px] font-medium text-ink-soft">· petunjuk misi</span></h2>
           <p className="text-[15px] leading-snug text-[#33415A]">{m.goal}</p>
+          <Netty pose={mood[0]} say={mood[1]} size={64} lines={['Aku pantau kabelnya.', 'Pelan-pelan saja.']} />
           <div>
             <p className="text-[14px] font-bold">Completion: {pct}%</p>
             <div className="mt-1 h-2.5 overflow-hidden rounded-full bg-[#E2E8F0]" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label="Completion"><div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${pct}%` }} /></div>
@@ -343,7 +401,7 @@ export function LabPlay() {
           <p className="border-b border-line bg-primary-soft px-3 py-2 text-[15px] font-semibold text-[#1B46D1] lg:hidden">{step < m.steps.length ? `Langkah ${step + 1}/${m.steps.length}: ${cur.text}` : 'Semua langkah selesai'}</p>
           <p className="border-b border-line bg-bg px-3 py-2 text-[14px] text-[#33415A]" aria-live="polite">{status}</p>
 
-          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="lab-grid relative w-full touch-none select-none" style={{ aspectRatio: `${W} / ${H}`, minHeight: 320 }}>
+          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="paper lab-grid relative w-full touch-none select-none" style={{ aspectRatio: `${W} / ${H}`, minHeight: 320 }}>
             <button type="button" aria-label={tool === 'place' ? 'Logical Workspace: taruh perangkat' : 'Logical Workspace'} onClick={areaClick} className={`absolute inset-0 h-full w-full ${tool === 'place' ? 'cursor-crosshair' : 'cursor-default'}`} />
             {!net.devices.length && <p className="pointer-events-none absolute inset-x-4 top-[42%] text-center text-[15px] leading-relaxed text-[#475569]">Logical Workspace masih kosong.<br />Buka <b>Network Devices</b> di bawah, pilih <b>Switch 2960</b>, lalu klik di sini.</p>}
 
@@ -425,6 +483,7 @@ export function LabPlay() {
 
       {dialog && dev(net, dialog) && <DeviceDialog d={dev(net, dialog)!} net={net} onCmd={(src, kind, ip) => { const r = ipPdu(netRef.current, src, ip, pdusRef.current.length + 1, kind); record(r); return r }} onClose={() => setDialog(null)} onChange={(nd) => setNet((p) => ({ ...p, devices: p.devices.map((x) => (x.id === nd.id ? nd : x)) }))} />}
 
+      {askReset && <Confirm title="Reset Activity?" body="Semua perangkat, kabel, dan hasil ping di area kerja akan dihapus, dan langkah mulai lagi dari 1." ok="Ya, reset" cancel="Batal" onOk={() => { setAskReset(false); reset() }} onCancel={() => setAskReset(false)} />}
       {showDone && !dialog && (
         <div role="dialog" aria-modal="true" aria-labelledby="done" className="fixed inset-0 z-50 flex items-center justify-center bg-[#0F172A]/50 p-4">
           <div className="pop w-full max-w-md rounded-[22px] bg-white p-6">
@@ -459,9 +518,9 @@ function hopText(n: Net, prev: string | undefined, at: string, next: string): st
 }
 
 /** Tombol alat dengan label Packet Tracer dan keterangan kecil opsional. */
-function ToolBtn({ on = false, onClick, label, sub, children }: { on?: boolean; onClick: () => void; label: string; sub?: string; children: ReactNode }) {
+function ToolBtn({ on = false, onClick, label, sub, disabled = false, children }: { on?: boolean; onClick: () => void; label: string; sub?: string; disabled?: boolean; children: ReactNode }) {
   return (
-    <button type="button" aria-pressed={on} onClick={onClick} title={sub} className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-3 text-[14px] font-semibold ${on ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink hover:bg-bg'}`}>
+    <button type="button" aria-pressed={on} onClick={onClick} title={sub} disabled={disabled} className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-45 ${on ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink hover:bg-bg'}`}>
       {children}{label}
     </button>
   )

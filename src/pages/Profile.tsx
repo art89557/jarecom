@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { repo } from '../lib'
 import { setSound, soundOn } from '../lib/sound'
 import { setVoice, voiceOn } from '../lib/voice'
-import { reduceOn, setReduce } from '../lib/prefs'
+import { nettyQuiet, reduceOn, setNettyQuiet, setReduce, setTextSize, setTheme, TEXT_SIZES, textSize, theme, THEMES, type TextSize, type Theme } from '../lib/prefs'
 import { shareCard } from '../lib/shareCard'
 import { badgeState, levelLabel } from '../lib/engine'
 import { LEVELS } from '../content'
@@ -55,6 +55,9 @@ export default function Profile() {
   const [snd, setSnd] = useState(soundOn()) // efek suara aktif
   const [vc, setVc] = useState(voiceOn()) // suara panduan aktif
   const [red, setRed] = useState(reduceOn()) // kurangi animasi aktif
+  const [quiet, setQuiet] = useState(nettyQuiet()) // Netty diam (tanpa gelembung ucapan)
+  const [ts, setTs] = useState<TextSize>(textSize()) // ukuran teks
+  const [tm, setTm] = useState<Theme>(theme()) // tema terang/gelap
   const [msg, setMsg] = useState('') // pesan hasil bagikan kartu
   const [dlg, setDlg] = useState<'nama' | 'sandi' | null>(null) // dialog yang terbuka
   const [note, setNote] = useState('') // pesan setelah ubah nama/kata sandi
@@ -120,10 +123,32 @@ export default function Profile() {
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col gap-4">
+          <Group title="Tampilan">
+            <div className="flex flex-col gap-3 border-b border-line px-4 py-3.5" role="radiogroup" aria-labelledby="tm-l">
+              <span className="flex items-center gap-3.5">{chipIc('moon')}<span className="flex flex-col gap-0.5"><span id="tm-l" className="text-base font-semibold">Tema</span><span className="help leading-snug">Mode gelap lebih nyaman untuk belajar malam hari</span></span></span>
+              <div className="flex gap-1 rounded-2xl bg-[#E4E9F2] p-1">
+                {THEMES.map(([k, t]) => (
+                  <button key={k} type="button" role="radio" aria-checked={tm === k} onClick={() => { setTm(k); setTheme(k) }}
+                    className={`flex min-h-[48px] flex-1 items-center justify-center rounded-xl px-1.5 text-center text-[15px] font-semibold leading-tight ${tm === k ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`}>{t}</button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-3 px-4 py-3.5" role="radiogroup" aria-labelledby="ts-l">
+              <span className="flex items-center gap-3.5">{chipIc('type')}<span className="flex flex-col gap-0.5"><span id="ts-l" className="text-base font-semibold">Ukuran teks</span><span className="help leading-snug">Perbesar teks, tombol, dan gambar di seluruh aplikasi</span></span></span>
+              <div className="flex gap-1 rounded-2xl bg-[#E4E9F2] p-1">
+                {TEXT_SIZES.map(([k, t], i) => (
+                  <button key={k} type="button" role="radio" aria-checked={ts === k} onClick={() => { setTs(k); setTextSize(k) }}
+                    className={`flex min-h-[48px] flex-1 items-center justify-center rounded-xl px-1.5 text-center font-semibold leading-tight ${ts === k ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`}
+                    style={{ fontSize: [14, 15, 16][i] }}>{t}</button>
+                ))}
+              </div>
+            </div>
+          </Group>
           <Group title="Suara dan gerak">
             <Toggle icon="volume" title="Suara efek" desc="Bunyi saat jawaban benar atau salah" on={snd} onChange={(v) => { setSnd(v); setSound(v) }} />
             <Toggle icon="volume" title="Suara panduan" desc="Tombol Dengarkan di tur panduan" on={vc} onChange={(v) => { setVc(v); setVoice(v) }} />
             <Toggle icon="motion" title="Kurangi animasi" desc="Matikan gerak Netty dan efek perayaan" on={red} onChange={(v) => { setRed(v); setReduce(v) }} />
+            <Toggle icon="chat" title="Netty diam" desc="Sembunyikan gelembung ucapan Netty" on={quiet} onChange={(v) => { setQuiet(v); setNettyQuiet(v) }} />
           </Group>
           {bip && (
             <Group title="Aplikasi">

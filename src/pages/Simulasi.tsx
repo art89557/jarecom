@@ -3,7 +3,8 @@
 // Semua gambar SVG buatan sendiri, bisa dipakai dengan keyboard, dan animasinya ikut "Kurangi animasi".
 import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { Link, NavLink, useNavigate, useParams } from 'react-router-dom'
-import { Back } from '../components/ui'
+import { Back, Netty } from '../components/ui'
+import { SimThumb } from '../components/Art'
 import { reduceOn } from '../lib/prefs'
 
 /** Animasi dimatikan? (pengaturan aplikasi atau pengaturan perangkat) */
@@ -18,11 +19,14 @@ const SIMS: { slug: string; title: string; level: string; desc: string }[] = [
   { slug: 'subnet', title: 'Kalkulator Subnet', level: 'Level 6 dan 7', desc: 'Geser prefix /8 sampai /30 dan lihat network, broadcast, dan jumlah host.' }
 ]
 
+// Warna latar gambar sampul tiap simulasi.
+const SIM_BG: Record<string, string> = { kabel: 'bg-[#FFF7ED]', osi: 'bg-primary-soft', perangkat: 'bg-[#F5F3FF]', 'ip-biner': 'bg-pass-soft', subnet: 'bg-[#FEFCE8]' }
+
 /** Tab Rakit / Simulasi (hanya di HP; di laptop keduanya punya menu sendiri). */
 export function LabTabs() {
-  const cls = ({ isActive }: { isActive: boolean }) => `flex min-h-[44px] flex-1 items-center justify-center rounded-xl text-[15px] font-semibold ${isActive ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`
+  const cls = ({ isActive }: { isActive: boolean }) => `flex min-h-[44px] flex-1 items-center justify-center rounded-xl px-6 text-[15px] font-semibold ${isActive ? 'bg-white text-ink shadow-sm' : 'text-ink-soft'}`
   return (
-    <nav aria-label="Lab dan Simulasi" className="flex gap-1 rounded-2xl bg-[#E4E9F2] p-1 md:hidden">
+    <nav aria-label="Lab dan Simulasi" className="flex gap-1 self-start rounded-2xl bg-[#E4E9F2] p-1">
       <NavLink to="/lab" end className={cls}>Rakit</NavLink>
       <NavLink to="/simulasi" className={cls}>Simulasi</NavLink>
     </nav>
@@ -35,13 +39,19 @@ export function SimList() {
     <div className="flex flex-col gap-5">
       <LabTabs />
       <h1 className="sr-only">Simulasi: gambar interaktif untuk membandingkan konsep jaringan</h1>
+      <div className="flex items-center gap-4 rounded-[20px] bg-pass-soft px-4 py-3 md:px-5">
+        <Netty pose="berpikir" size={84} say="Bingung bedanya straight dan cross? Coba simulasi kabel dulu." lines={['Semua simulasi bisa diutak-atik, tidak ada yang rusak.', 'Kalkulator Subnet cocok untuk Level 6 dan 7.', 'Klik bit-nya, angka desimalnya ikut berubah.']} />
+      </div>
       <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {SIMS.map((s) => (
           <li key={s.slug}>
-            <Link to={`/simulasi/${s.slug}`} className="flex h-full min-h-[120px] flex-col gap-1.5 rounded-[18px] border-[1.5px] border-line bg-white p-4 hover:border-primary">
-              <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">{s.level}</span>
-              <span className="text-[18px] font-bold">{s.title}</span>
-              <span className="text-[15px] leading-snug text-[#33415A]">{s.desc}</span>
+            <Link to={`/simulasi/${s.slug}`} className="group flex h-full flex-col overflow-hidden rounded-[18px] border-[1.5px] border-line bg-white transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
+              <span className={`paper block h-[130px] w-full px-4 py-3 ${SIM_BG[s.slug] ?? 'bg-primary-soft'}`}><SimThumb slug={s.slug} /></span>
+              <span className="flex flex-col gap-1.5 p-4">
+                <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">{s.level}</span>
+                <span className="text-[18px] font-bold">{s.title}</span>
+                <span className="text-[15px] leading-snug text-[#33415A]">{s.desc}</span>
+              </span>
             </Link>
           </li>
         ))}
@@ -63,14 +73,43 @@ export function SimPage() {
       <Back to="/simulasi">Simulasi</Back>
       <h1 className="text-[24px] font-bold tracking-tight md:text-[28px]">{s.title} <span className="ml-1 align-middle text-[14px] font-semibold text-ink-soft">{s.level}</span></h1>
       {body[s.slug]}
+      <Recap slug={s.slug} />
     </div>
+  )
+}
+
+// Penutup tiap simulasi: inti yang dipelajari dan langkah lanjutan ke Materi dan Lab.
+const RECAP: Record<string, { poin: string[]; materi: [number, string]; lab?: [number, string] }> = {
+  kabel: { poin: ['Straight dipakai untuk perangkat berbeda jenis, misalnya PC ke switch.', 'Cross-over dipakai untuk perangkat sejenis: PC ke PC, switch ke switch.', 'Straight: kedua ujung T568B. Cross: satu ujung T568A, satu T568B.'], materi: [5, ''], lab: [7, 'Kabel Straight dan Cross-Over'] },
+  osi: { poin: ['OSI punya 7 lapisan, TCP/IP punya 4.', 'Application, Presentation, dan Session OSI menjadi satu Application di TCP/IP.', 'Saat dikirim, data dibungkus header di tiap lapisan (enkapsulasi).'], materi: [4, ''] },
+  perangkat: { poin: ['Hub meneruskan paket ke semua port.', 'Switch belajar alamat MAC lalu mengirim hanya ke port tujuan.', 'Router menghubungkan jaringan yang berbeda memakai IP.'], materi: [5, ''], lab: [8, 'Hub vs Switch'] },
+  'ip-biner': { poin: ['IPv4 terdiri dari 4 oktet, tiap oktet 8 bit (0 sampai 255).', 'Nilai oktet pertama menentukan kelas IP.', '10.x, 172.16 sampai 31.x, dan 192.168.x adalah IP privat.'], materi: [2, ''], lab: [9, 'IP Address dan Subnet'] },
+  subnet: { poin: ['Prefix menentukan berapa bit untuk network.', 'Jumlah host = 2 pangkat (bit host) dikurangi 2.', 'Setiap tambahan 1 bit prefix membagi jaringan menjadi 2 kali lebih banyak subnet.'], materi: [7, ''], lab: [9, 'IP Address dan Subnet'] }
+}
+
+/** Kartu "Yang kamu pelajari" di akhir setiap simulasi. */
+function Recap({ slug }: { slug: string }) {
+  const r = RECAP[slug]
+  if (!r) return null
+  return (
+    <section aria-labelledby="recap" className="flex flex-col gap-3 rounded-[18px] border-[1.5px] border-[#B7E4CB] bg-pass-soft p-4 md:flex-row md:items-start md:gap-5 md:p-5">
+      <Netty pose="senang" size={88} label="Netty senang" />
+      <div className="flex min-w-0 flex-1 flex-col gap-2.5">
+        <h2 id="recap" className="text-[18px] font-bold">Yang kamu pelajari</h2>
+        <ul className="flex flex-col gap-1.5">{r.poin.map((p) => <li key={p} className="flex gap-2.5 text-[15px] leading-snug"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-pass" />{p}</li>)}</ul>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <Link to={`/materi/${r.materi[0]}`} className="inline-flex min-h-[44px] items-center rounded-xl bg-white px-4 text-[15px] font-semibold text-[#1B46D1] hover:bg-primary-soft">Baca Materi Level {r.materi[0]}</Link>
+          {r.lab && <Link to={`/lab/${r.lab[0]}`} className="inline-flex min-h-[44px] items-center rounded-xl bg-white px-4 text-[15px] font-semibold text-pass-ink hover:bg-[#DCFCE7]">Praktik di Lab · Misi {r.lab[0]}</Link>}
+        </div>
+      </div>
+    </section>
   )
 }
 
 // ---------------------------------------------------------------- Bagian bersama
 
 const Card = ({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) => (
-  <section className={`rounded-[18px] border-[1.5px] border-line bg-white p-4 md:p-5 ${className}`}>
+  <section className={`paper rounded-[18px] border-[1.5px] border-line bg-white p-4 md:p-5 ${className}`}>
     {title && <h2 className="mb-3 text-[18px] font-bold">{title}</h2>}
     {children}
   </section>

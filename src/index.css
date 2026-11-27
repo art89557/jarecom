@@ -32,6 +32,44 @@
 .rise { animation: rise .3s ease-out both }
 .bob { animation: bob 2.4s ease-in-out infinite }
 
+
+/* Netty hidup: gerak diam per pose, lompat saat bereaksi, kedip, lambaian, dan efek kecil (?, z, nada). */
+@keyframes nt-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+@keyframes nt-breathe { 0%,100% { transform: scale(1,1) } 50% { transform: scale(1.03,.97) } }
+@keyframes nt-shake { 0%,100% { transform: translateX(0) } 20% { transform: translateX(-5px) } 40% { transform: translateX(5px) } 60% { transform: translateX(-3px) } 80% { transform: translateX(3px) } }
+@keyframes nt-sway { 0%,100% { transform: rotate(-7deg) translateY(0) } 50% { transform: rotate(7deg) translateY(-10px) } }
+@keyframes nt-jump { 0% { transform: translateY(0) scale(1) } 30% { transform: translateY(-22px) scale(1.04,.96) } 60% { transform: translateY(0) scale(1.07,.9) } 100% { transform: none } }
+@keyframes nt-blink { 0%,92%,100% { transform: scaleY(1) } 95% { transform: scaleY(.1) } }
+@keyframes nt-wave { 0%,100% { transform: rotate(0) } 25% { transform: rotate(-26deg) } 75% { transform: rotate(16deg) } }
+@keyframes nt-flap { 0%,100% { transform: rotate(0) } 50% { transform: rotate(-30deg) } }
+@keyframes nt-pointing { 0%,100% { transform: translateX(0) } 50% { transform: translateX(6px) } }
+@keyframes nt-float { 0% { transform: translate(0,0); opacity: 0 } 20% { opacity: 1 } 100% { transform: translate(14px,-30px); opacity: 0 } }
+@keyframes nt-in { from { transform: translateY(6px) scale(.92); opacity: 0 } to { transform: none; opacity: 1 } }
+.nt-pop { animation: nt-jump .6s ease-out }
+.nt-diam, .nt-halo, .nt-senang, .nt-menunjuk { animation: nt-bob 2.6s ease-in-out infinite }
+.nt-berpikir, .nt-sedih { animation: nt-bob 3.4s ease-in-out infinite }
+.nt-tidur { transform-origin: 50% 100%; animation: nt-breathe 3.2s ease-in-out infinite }
+.nt-khawatir { animation: nt-shake .6s ease-in-out 2 }
+.nt-menari { transform-origin: 50% 100%; animation: nt-sway 1s ease-in-out infinite }
+.nt-eye { transform-box: fill-box; transform-origin: center; animation: nt-blink 4s infinite }
+.nt-arm { transform-box: fill-box; transform-origin: 8% 55% }
+.nt-wave { animation: nt-wave .9s ease-in-out 4 }
+.nt-flap { animation: nt-flap .5s ease-in-out infinite }
+.nt-flap2 { animation: nt-flap .5s ease-in-out .25s infinite }
+.nt-point { animation: nt-pointing 1s ease-in-out infinite }
+.nt-fx { font-family: Inter, sans-serif; animation: nt-float 2.2s ease-out infinite }
+.nt-fx2 { font-family: Inter, sans-serif; animation: nt-float 2.2s ease-out 1.1s infinite }
+.nt-bubble { animation: nt-in .25s ease-out }
+
+
+/* Gambar sampul Simulasi: bergerak pelan, dan lebih hidup saat kartu disentuh. */
+@keyframes sim-packet { 0% { transform: translate(14.5px, 9.5px) } 45%, 55% { transform: translate(46.5px, 27.5px) } 100% { transform: translate(78.5px, 45.5px) } }
+@keyframes sim-up { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-2px) } }
+@keyframes sim-dash { to { stroke-dashoffset: -12 } }
+.sim-packet { animation: sim-packet 2.4s ease-in-out infinite }
+.group:hover .sim-bit, .group:focus-visible .sim-bit, .group:hover .sim-stack, .group:focus-visible .sim-stack { animation: sim-up .8s ease-in-out infinite }
+.group:hover .sim-wire, .group:focus-visible .sim-wire { stroke-dasharray: 4 2; animation: sim-dash .8s linear infinite }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -59,3 +97,98 @@
 .lab-grid { background-color: #fff; background-image: radial-gradient(#CBD5E1 1px, transparent 1px); background-size: 24px 24px; }
 @keyframes labblink { 0%,100% { opacity: 1 } 50% { opacity: .35 } }
 .lab-blink { animation: labblink .6s infinite }
+
+/* ---------------------------------------------------------------- Mode gelap
+   Kelas warna terang ditimpa lewat variabel saat <html class="dark">.
+   Elemen ber-kelas .paper (diagram, gambar sampul, area kerja Lab) tetap terang seperti kertas, supaya garis gelapnya terbaca.
+   Dibuat dari tabel warna; ubah tabelnya kalau menambah warna baru. */
+.dark { color-scheme: dark; --dm0:#141E31; --dm1:#0B1220; --dm2:#1C2840; --dm3:#E7ECF5; --dm4:#A9B4C7; --dm5:#2A3850; --dm6:#2A3850; --dm7:#1A2A52; --dm8:#8AA8FF; --dm9:#0E2E22; --dm10:#4ADE9B; --dm11:#86EFAC; --dm12:#3A1518; --dm13:#F87171; --dm14:#FCA5A5; --dm15:#3A2A08; --dm16:#FBBF24; --dm17:#C4A1F5; --dm18:#1B2538; --dm19:#C3CCDB; --dm20:#C3CCDB; --dm21:#B4BECF; --dm22:#B4BECF; --dm23:#A9B4C7; --dm24:#A9B4C7; --dm25:#A9B4C7; --dm26:#9DB5FF; --dm27:#9DB5FF; --dm28:#C7D4FB; --dm29:#FCD34D; --dm30:#FCD34D; --dm31:#FCD34D; --dm32:#FCD34D; --dm33:#FCD34D; --dm34:#FACC15; --dm35:#6EE7B7; --dm36:#86EFAC; --dm37:#FCA5A5; --dm38:#FCA5A5; --dm39:#D8B4FE; --dm40:#1E2A40; --dm41:#24324C; --dm42:#24324C; --dm43:#1A2546; --dm44:#1A2A52; --dm45:#1A2546; --dm46:#22356A; --dm47:#22356A; --dm48:#3A2A08; --dm49:#2E2408; --dm50:#3A2A08; --dm51:#2E2A0A; --dm52:#33200E; --dm53:#2E1B47; --dm54:#251C45; --dm55:#0E2E22; --dm56:#14402F; --dm57:#3A1518; --dm58:#1E2A40; --dm59:#26344D; --dm60:#111A2B; --dm61:#3A4A66; --dm62:#2A3850; --dm63:#3A4A66; --dm64:#3A4A66; --dm65:#3A4A66; --dm66:#1F5C43; --dm67:#2B4A8C; --dm68:#3A5BC0; --dm69:#6B5310; --dm70:#8A6A12; --dm71:#141E31; --dm72:#2A3850; --dm73:#E7ECF5; --dm74:#1C2A4A; --dm75:#0E2E22; --dm76:#86EFAC; --dm77:#3A1518; --dm78:#FCA5A5; --dm79:#A9B4C7; --dm80:#8AA8FF }
+.dark .paper { color-scheme: light; --dm0:#FFFFFF; --dm1:#F4F6FA; --dm2:#F4F6FA; --dm3:#0F1B2D; --dm4:#5B6779; --dm5:#DDE3EC; --dm6:#DDE3EC; --dm7:#E8EEFF; --dm8:#2457F5; --dm9:#E3F5EC; --dm10:#0F7B55; --dm11:#0A5C3F; --dm12:#FDECEC; --dm13:#C0262D; --dm14:#8E1B21; --dm15:#FEF3C7; --dm16:#B45309; --dm17:#7E22CE; --dm18:#EEF1F6; --dm19:#33415A; --dm20:#3D4A5E; --dm21:#4A5568; --dm22:#475569; --dm23:#5B6779; --dm24:#64748B; --dm25:#66738A; --dm26:#1B46D1; --dm27:#143AA8; --dm28:#1E3A8A; --dm29:#8A5A00; --dm30:#92400E; --dm31:#7A4B00; --dm32:#78350F; --dm33:#5C3A00; --dm34:#B8860B; --dm35:#15803D; --dm36:#14532D; --dm37:#B91C1C; --dm38:#7F1D1D; --dm39:#5B1A99; --dm40:#E4E9F2; --dm41:#E4E9F2; --dm42:#D9E0EC; --dm43:#EEF2FF; --dm44:#E8EEFE; --dm45:#EFF6FF; --dm46:#DBE4FF; --dm47:#DCE5FF; --dm48:#FEF3C7; --dm49:#FFFBEB; --dm50:#FFF8E1; --dm51:#FEFCE8; --dm52:#FFF7ED; --dm53:#EFE6FA; --dm54:#F5F3FF; --dm55:#DCFCE7; --dm56:#DCFCE7; --dm57:#FEE2E2; --dm58:#F1F5F9; --dm59:#E2E8F0; --dm60:#FAFBFD; --dm61:#C9D1DE; --dm62:#E6EAF1; --dm63:#B9C2D0; --dm64:#CBD5E1; --dm65:#C9D1DE; --dm66:#B7E4CB; --dm67:#BFDBFE; --dm68:#9DB4F8; --dm69:#FDE68A; --dm70:#FCD34D; --dm71:#FFFFFF; --dm72:#DDE3EC; --dm73:#0F1B2D; --dm74:#F1F5FF; --dm75:#E3F5EC; --dm76:#0A5C3F; --dm77:#FDECEC; --dm78:#8E1B21; --dm79:#5B6779; --dm80:#2457F5 }
+.dark body { background-color: #0B1220; color: #E7ECF5; }
+.dark .paper { color: #0F1B2D; }
+.dark :focus-visible { outline-color: #9DB5FF; }
+.dark .bg-white { background-color: var(--dm0) }
+.dark .bg-bg { background-color: var(--dm1) }
+.dark .hover\:bg-bg:hover { background-color: var(--dm2) }
+.dark .text-ink { color: var(--dm3) }
+.dark .text-ink-soft { color: var(--dm4) }
+.dark .border-line { border-color: var(--dm5) }
+.dark .bg-line { background-color: var(--dm6) }
+.dark .bg-primary-soft { background-color: var(--dm7) }
+.dark .text-primary { color: var(--dm8) }
+.dark .bg-pass-soft { background-color: var(--dm9) }
+.dark .text-pass { color: var(--dm10) }
+.dark .text-pass-ink { color: var(--dm11) }
+.dark .bg-fail-soft { background-color: var(--dm12) }
+.dark .text-fail { color: var(--dm13) }
+.dark .text-fail-ink { color: var(--dm14) }
+.dark .bg-xp-soft { background-color: var(--dm15) }
+.dark .text-xp { color: var(--dm16) }
+.dark .text-quiz { color: var(--dm17) }
+.dark .bg-locked { background-color: var(--dm18) }
+.dark .text-\[\#33415A\] { color: var(--dm19) }
+.dark .text-\[\#3D4A5E\] { color: var(--dm20) }
+.dark .text-\[\#4A5568\] { color: var(--dm21) }
+.dark .text-\[\#475569\] { color: var(--dm22) }
+.dark .text-\[\#5B6779\] { color: var(--dm23) }
+.dark .text-\[\#64748B\] { color: var(--dm24) }
+.dark .text-\[\#66738A\] { color: var(--dm25) }
+.dark .text-\[\#1B46D1\] { color: var(--dm26) }
+.dark .text-\[\#143AA8\] { color: var(--dm27) }
+.dark .text-\[\#1E3A8A\] { color: var(--dm28) }
+.dark .text-\[\#8A5A00\] { color: var(--dm29) }
+.dark .text-\[\#92400E\] { color: var(--dm30) }
+.dark .text-\[\#7A4B00\] { color: var(--dm31) }
+.dark .text-\[\#78350F\] { color: var(--dm32) }
+.dark .text-\[\#5C3A00\] { color: var(--dm33) }
+.dark .text-\[\#B8860B\] { color: var(--dm34) }
+.dark .text-\[\#15803D\] { color: var(--dm35) }
+.dark .text-\[\#14532D\] { color: var(--dm36) }
+.dark .text-\[\#B91C1C\] { color: var(--dm37) }
+.dark .text-\[\#7F1D1D\] { color: var(--dm38) }
+.dark .text-\[\#5B1A99\] { color: var(--dm39) }
+.dark .bg-\[\#E4E9F2\] { background-color: var(--dm40) }
+.dark .hover\:bg-\[\#E4E9F2\]:hover { background-color: var(--dm41) }
+.dark .hover\:bg-\[\#D9E0EC\]:hover { background-color: var(--dm42) }
+.dark .bg-\[\#EEF2FF\] { background-color: var(--dm43) }
+.dark .bg-\[\#E8EEFE\] { background-color: var(--dm44) }
+.dark .bg-\[\#EFF6FF\] { background-color: var(--dm45) }
+.dark .bg-\[\#DBE4FF\] { background-color: var(--dm46) }
+.dark .hover\:bg-\[\#DCE5FF\]:hover { background-color: var(--dm47) }
+.dark .bg-\[\#FEF3C7\] { background-color: var(--dm48) }
+.dark .bg-\[\#FFFBEB\] { background-color: var(--dm49) }
+.dark .hover\:bg-\[\#FFF8E1\]:hover { background-color: var(--dm50) }
+.dark .bg-\[\#FEFCE8\] { background-color: var(--dm51) }
+.dark .bg-\[\#FFF7ED\] { background-color: var(--dm52) }
+.dark .bg-\[\#EFE6FA\] { background-color: var(--dm53) }
+.dark .bg-\[\#F5F3FF\] { background-color: var(--dm54) }
+.dark .bg-\[\#DCFCE7\] { background-color: var(--dm55) }
+.dark .hover\:bg-\[\#DCFCE7\]:hover { background-color: var(--dm56) }
+.dark .bg-\[\#FEE2E2\] { background-color: var(--dm57) }
+.dark .bg-\[\#F1F5F9\] { background-color: var(--dm58) }
+.dark .bg-\[\#E2E8F0\] { background-color: var(--dm59) }
+.dark .bg-\[\#FAFBFD\] { background-color: var(--dm60) }
+.dark .bg-\[\#C9D1DE\] { background-color: var(--dm61) }
+.dark .border-\[\#E6EAF1\] { border-color: var(--dm62) }
+.dark .border-\[\#B9C2D0\] { border-color: var(--dm63) }
+.dark .border-\[\#CBD5E1\] { border-color: var(--dm64) }
+.dark .border-\[\#C9D1DE\] { border-color: var(--dm65) }
+.dark .border-\[\#B7E4CB\] { border-color: var(--dm66) }
+.dark .border-\[\#BFDBFE\] { border-color: var(--dm67) }
+.dark .border-\[\#9DB4F8\] { border-color: var(--dm68) }
+.dark .border-\[\#FDE68A\] { border-color: var(--dm69) }
+.dark .border-\[\#FCD34D\] { border-color: var(--dm70) }
+.dark .card, .dark .btn2, .dark .field, .dark .opt:not(.sel):not(.ok):not(.no) { background-color: var(--dm71) }
+.dark .card, .dark .btn2, .dark .field, .dark .opt:not(.sel):not(.ok):not(.no) { border-color: var(--dm72) }
+.dark .btn2, .dark .field { color: var(--dm73) }
+.dark .opt:not(.sel):not(.ok):not(.no):hover { background-color: var(--dm74) }
+.dark .opt.ok { background-color: var(--dm75) }
+.dark .opt.ok { color: var(--dm76) }
+.dark .opt.no { background-color: var(--dm77) }
+.dark .opt.no { color: var(--dm78) }
+.dark .help { color: var(--dm79) }
+.dark .link { color: var(--dm80) }
+.dark .bg-bg\/95 { background-color: rgb(11 18 32 / .95) }
+/* Tombol putih di atas kartu berwarna (biru/ungu) tetap putih di mode gelap. */
+.dark .on-color { background-color: #fff; }
+.dark { --ring-track: #2A3850 }

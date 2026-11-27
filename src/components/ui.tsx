@@ -2,29 +2,8 @@
 import { Link } from 'react-router-dom'
 import type { ReactNode } from 'react'
 
-// Pose maskot Netty. Tiap pose adalah file SVG di public/netty/<pose>.svg.
-export const POSES = ['default', 'halo', 'senang', 'rayakan', 'berpikir', 'sedih', 'offline'] as const
-export type Pose = (typeof POSES)[number]
-
-/**
- * Maskot Netty.
- * - pose: ekspresi (lihat POSES)
- * - size: lebar piksel; tinggi mengikuti rasio gambar 220:200
- * - label: teks alternatif untuk pembaca layar; tanpa label gambar dianggap hiasan
- * - bob: true agar bergerak naik-turun pelan (animasi CSS `bob`)
- */
-export function Netty({ pose = 'default', size = 120, label, bob = false }: { pose?: Pose; size?: number; label?: string; bob?: boolean }) {
-  return (
-    <img
-      src={`/netty/${pose}.svg`}
-      width={size}
-      height={Math.round((size * 200) / 220)}
-      alt={label ?? ''}
-      aria-hidden={label ? undefined : true}
-      className={bob ? 'bob' : undefined}
-    />
-  )
-}
+// Maskot Netty ada di Netty.tsx; diekspor ulang di sini supaya impor lama tetap jalan.
+export { Netty, POSES, type Pose } from './Netty'
 
 /** Logo aplikasi, dengan atau tanpa nama "Jar’ecom". */
 export function Logo({ size = 44, withName = true }: { size?: number; withName?: boolean }) {
@@ -78,7 +57,7 @@ export function ErrorMsg({ children }: { children?: ReactNode }) {
 }
 
 /** Cincin persen (SVG). Panjang busur = persen dari keliling lingkaran (2πr). */
-export function Ring({ pct, size = 112, stroke = 12, fg = '#2457F5', track = '#E4E9F2', text = '#0F1B2D', label }: { pct: number; size?: number; stroke?: number; fg?: string; track?: string; text?: string; label: string }) {
+export function Ring({ pct, size = 112, stroke = 12, fg = '#2457F5', track = 'var(--ring-track, #E4E9F2)', text = 'currentColor', label }: { pct: number; size?: number; stroke?: number; fg?: string; track?: string; text?: string; label: string }) {
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
   const h = size / 2

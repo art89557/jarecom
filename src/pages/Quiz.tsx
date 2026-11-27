@@ -10,7 +10,9 @@ import { badgeState, bestScore, nextLevel, PASS_SCORE, quizAvailable, quizStatus
 import type { CheckResult, QuizQuestion, QuizResult } from '../lib/repo'
 import { play } from '../lib/sound'
 import { useApp } from '../state'
-import { Back, ErrorMsg, Netty, XpBadge } from '../components/ui'
+import { ErrorMsg, Netty, XpBadge } from '../components/ui'
+import { Diagram, quizDiagram } from '../components/Art'
+import Confirm from '../components/Confirm'
 
 /** Filter daftar kuis. */
 type Filter = 'semua' | 'siap' | 'lulus' | 'belum-emas'
@@ -113,16 +115,16 @@ export function QuizList() {
               <>
                 <h2 className="font-display text-[22px] font-bold leading-tight md:text-[28px]">Level {nextQ} · {LEVELS[nextQ - 1].judul}</h2>
                 <div className="flex flex-wrap gap-2"><span className="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold">{LEVELS[nextQ - 1].kuis.length} soal</span><span className="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold">Lulus skor {PASS_SCORE}</span><span className="rounded-full bg-xp-soft px-3 py-1 text-sm font-bold text-[#8A5A00]">+50 XP</span></div>
-                <button type="button" onClick={() => setSheet(nextQ)} className="mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-primary transition hover:shadow-[0_0_0_4px_rgba(255,255,255,.35)] active:scale-[.97]"><Icon name="play" size={20} sw={2.4} />Mulai kuis</button>
+                <button type="button" onClick={() => setSheet(nextQ)} className="on-color mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-[#2457F5] transition hover:shadow-[0_0_0_4px_rgba(255,255,255,.35)] active:scale-[.97]"><Icon name="play" size={20} sw={2.4} />Mulai kuis</button>
               </>
             ) : (
               <>
                 <h2 className="font-display text-[22px] font-bold leading-tight md:text-[26px]">{waiting ? `Selesaikan materi Level ${waiting} dulu` : 'Semua kuis sudah lulus'}</h2>
-                {waiting && <Link to={`/materi/${waiting}`} className="mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-primary"><Icon name="book" size={20} sw={2.4} />Ke materi</Link>}
+                {waiting && <Link to={`/materi/${waiting}`} className="on-color mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-[#2457F5]"><Icon name="book" size={20} sw={2.4} />Ke materi</Link>}
               </>
             )}
           </div>
-          <Netty pose="senang" size={108} label="Netty bersemangat" bob />
+          <Netty pose="senang" size={108} label="Netty bersemangat" lines={['Skor 100 = bintang emas!', 'Aku temani sampai soal terakhir.']} />
         </section>
         <section className="card flex flex-col gap-3 p-4" aria-label="Bintang emas">
           <div className="flex items-center gap-3">
@@ -156,6 +158,21 @@ export function QuizList() {
   )
 }
 
+/** Sub-topik (indeks 0) yang paling cocok dengan teks soal, dari jumlah kata yang sama. Dipakai tautan "Baca lagi". */
+function bestSub(n: number, text: string): number {
+  const lv = getLevel(n)
+  if (!lv) return 0
+  const words = (t: string) => new Set(t.toLowerCase().match(/[a-z0-9/]{4,}/g) ?? [])
+  const q = words(text)
+  let best = 0, top = -1
+  lv.subtopik.forEach((s, k) => {
+    const w = words(`${s.judul} ${s.judul} ${s.uraian} ${s.poin.join(' ')}`)
+    let c = 0; q.forEach((x) => { if (w.has(x)) c++ })
+    if (c > top) { top = c; best = k }
+  })
+  return best
+}
+
 /** Halaman mengerjakan kuis (/kuis/:n): satu soal per layar, jawaban diperiksa lewat repo, soal terakhir mengirim hasil. */
 export function QuizPlay() {
   const n = Number(useParams().n)
@@ -169,6 +186,7 @@ export function QuizPlay() {
   const [fb, setFb] = useState<CheckResult | null>(null) // umpan balik setelah diperiksa (jawaban benar + penjelasan)
   const [err, setErr] = useState('')
   const [busy, setBusy] = useState(false)
+  const [leave, setLeave] = useState(false) // dialog konfirmasi keluar kuis
   const started = useRef(false) // penanda soal sudah diminta
 
   // Soal diambil dari server tanpa kunci jawaban. `started` mencegah pengambilan ganda (React StrictMode memanggil effect dua kali).
@@ -208,18 +226,26 @@ export function QuizPlay() {
     } catch (e) { setErr((e as Error).message) } finally { setBusy(false) }
   }
   const right = fb && fb.benar === sel // jawaban terpilih benar?
+  // Diagram di penjelasan hanya untuk soal yang konsepnya visual (dicocokkan dari kata kunci soal dan penjelasan).
+  const dg = fb ? quizDiagram(`${q.pertanyaan} ${fb.penjelasan}`) : null
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-4">
       <div className="flex items-center justify-between">
-        <Back to="/kuis">Keluar kuis</Back>
+        {/* Keluar di tengah kuis membuang jawaban yang sudah diisi, jadi minta konfirmasi dulu. */}
+        <button type="button" onClick={() => (i > 0 || sel !== null ? setLeave(true) : nav('/kuis'))} className="inline-flex min-h-[44px] items-center gap-1 self-start font-semibold text-primary hover:underline">
+          <Icon name="chevl" size={20} sw={2.2} />Keluar kuis
+        </button>
         <span className="text-sm font-semibold text-ink-soft">Soal {i + 1} dari {qs.length}</span>
       </div>
       <div className="flex gap-1" role="progressbar" aria-valuemin={0} aria-valuemax={qs.length} aria-valuenow={i + 1} aria-label="Nomor soal">
         {qs.map((_, k) => <span key={k} className={`h-1.5 flex-1 rounded-full ${k <= i ? 'bg-quiz' : 'bg-line'}`} />)}
       </div>
       <p className="text-sm font-semibold text-quiz">Kuis Level {n} · {lv.judul}</p>
-      <h1 className="text-[26px] font-bold leading-tight tracking-tight md:text-[32px]">{q.pertanyaan}</h1>
+      <div className="flex items-start gap-3">
+        <h1 className="flex-1 text-[26px] font-bold leading-tight tracking-tight md:text-[32px]">{q.pertanyaan}</h1>
+        {!fb && <span className="shrink-0"><Netty pose={sel === null ? 'berpikir' : 'menunjuk'} size={72} label={sel === null ? 'Netty berpikir' : 'Netty menunggu'} /></span>}
+      </div>
       <div className="flex flex-col gap-2.5">
         {q.opsi.map((o, k) => {
           let c = ''
@@ -238,17 +264,25 @@ export function QuizPlay() {
       {fb ? (
         <div role="status" className={`rise flex flex-col gap-3 rounded-[18px] border-[1.5px] p-4 ${right ? 'border-pass bg-pass-soft' : 'border-fail bg-fail-soft'}`}>
           <div className="flex items-center gap-3">
-            <Netty pose={right ? 'senang' : 'sedih'} size={84} label={right ? 'Netty senang' : 'Netty sedih'} />
+            <Netty pose={right ? 'menari' : 'khawatir'} size={84} label={right ? 'Netty menari' : 'Netty khawatir'} />
             <div className={right ? 'text-pass-ink' : 'text-fail-ink'}>
               <div className="text-lg font-bold">{right ? 'Benar!' : 'Belum tepat'}</div>
               <div className="text-sm leading-snug">{right ? fb.penjelasan : `Jawaban yang benar adalah ${'ABCD'[fb.benar]}. ${fb.penjelasan}`}</div>
             </div>
           </div>
+          {dg && <Diagram k={dg} compact />}
+          {!right && (() => { const sb = lv.subtopik[bestSub(n, `${q.pertanyaan} ${fb.penjelasan}`)]; return (
+            <details className="rounded-xl bg-white px-3.5 text-[15px]">
+              <summary className="flex min-h-[44px] cursor-pointer list-none items-center gap-1.5 font-semibold text-[#1B46D1]"><Icon name="book" size={18} sw={2.2} />Baca lagi: {sb.judul}</summary>
+              <p className="pb-3 leading-relaxed text-ink">{sb.uraian}</p>
+            </details>
+          ) })()}
           <button className="btn" disabled={busy} onClick={() => void next()}>{lastQ ? 'Lihat hasil' : 'Soal berikutnya'}</button>
         </div>
       ) : (
         <button className="btn mt-2" disabled={sel === null || busy} onClick={() => void check()}>Periksa jawaban</button>
       )}
+      {leave && <Confirm title="Keluar dari kuis?" body={`Jawaban soal 1 sampai ${i + 1} belum disimpan. Kalau keluar, kamu mulai lagi dari soal 1.`} ok="Ya, keluar" cancel="Lanjutkan kuis" onOk={() => nav('/kuis')} onCancel={() => setLeave(false)} />}
     </div>
   )
 }
@@ -269,7 +303,8 @@ export function QuizResultPage() {
           <span className="pop -mt-1 inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3.5 py-1.5 text-sm font-bold text-[#1B46D1]"><Icon name="award" size={16} sw={2.4} />Lencana Level {n} diraih</span>
           {state.score === 100 && <span className="pop mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-xp-soft px-3.5 py-1.5 text-sm font-bold text-[#8A5A00]"><Icon name="star" size={16} sw={2.2} fill="#FACC15" />Bintang emas, skor sempurna!</span>}
         </div>
-      ) : <Netty pose="sedih" size={170} label="Netty sedih" />}
+      ) : <Netty pose="khawatir" size={150} label="Netty menyemangati" say="Tidak apa-apa, coba lagi ya. Kamu pasti bisa!" side="atas" />}
+      {ok && <Netty pose="menari" size={110} label="Netty merayakan" say={state.score === 100 ? 'Sempurna! Bintang emas!' : 'Lulus! Hebat!'} side="kanan" />}
       <div className="pop flex h-32 w-32 flex-col items-center justify-center rounded-full border-[6px] bg-white" style={{ borderColor: ok ? '#0F7B55' : '#C0262D' }} aria-label={`Skor ${state.score}`}>
         <span className="font-display text-4xl font-bold">{state.score}</span><span className="help">dari 100</span>
       </div>

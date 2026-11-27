@@ -9,10 +9,9 @@ export const TOUR_STEPS: TourStep[] = [
   { target: 'peta', title: 'Peta belajar', body: 'Ada 11 level yang terbuka berurutan. Selesaikan materi dan lulus kuis untuk membuka level berikutnya.' },
   { target: 'nav-materi', title: 'Baca materinya', body: 'Di Materi kamu membaca per sub-topik, lalu menjawab cek pemahaman.' },
   { target: 'nav-kuis', title: 'Uji pemahamanmu', body: 'Setelah materi selesai, kerjakan kuis 10 soal. Skor 70 atau lebih berarti lulus.' },
-  { target: 'nav-lab', title: 'Rakit jaringan', body: 'Di Lab kamu merakit jaringan seperti di Cisco Packet Tracer: 12 misi dari topologi, kabel, sampai IP dan router.' },
-  { target: 'nav-simulasi', title: 'Bandingkan konsep', body: 'Simulasi berisi gambar interaktif: kabel straight dan cross, OSI, hub dan switch, IP, serta subnet.' },
+  { target: 'nav-lab', title: 'Rakit jaringan', body: 'Lab punya dua tab. Rakit: 12 misi seperti Cisco Packet Tracer. Simulasi: gambar interaktif kabel, OSI, hub dan switch, IP, dan subnet.' },
   { target: 'nav-progres', title: 'Pantau kemajuanmu', body: 'Lihat XP, lencana, dan peta panas 11 level.' },
-  { target: 'nav-profil', title: 'Atur akunmu', body: 'Di Profil kamu mengatur suara dan animasi, memasang aplikasi, membuka Bantuan, dan melihat Kredit.' }
+  { target: 'nav-profil', title: 'Menu akun', body: 'Ketuk lingkaran inisialmu di kanan atas untuk membuka Profil, Bantuan, Kredit, atau keluar.' }
 ]
 
 // Kunci localStorage penanda tur sudah dilihat, per pengguna.

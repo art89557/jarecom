@@ -1,5 +1,6 @@
 // Peta level: 11 banner level; level yang dibuka menampilkan jalur sub-topik dan kuis. Panel samping (desktop) berisi ringkasan.
 import { useState, type ReactNode } from 'react'
+import type { Pose } from '../components/ui'
 import { Link } from 'react-router-dom'
 import { LEVELS, type LevelContent } from '../content'
 import { badgeState, isUnlocked, latestBadge, levelPctLive, nextLevel, nodeState, quizAvailable, type Progress } from '../lib/engine'
@@ -82,24 +83,55 @@ function Path({ lv, progress, uid, onLock }: { lv: LevelContent; progress: Progr
   const passed = progress.passed.includes(n)
   // Node aktif = sub-topik pertama yang belum selesai.
   const activeIdx = lv.subtopik.findIndex((_, i) => nodeState(i, doneCount, levelDone) === 'active')
-  const lockMsg = () => onLock(`Kuis Level ${n} terbuka setelah semua sub-topik selesai.`)
-  return (
-    <ul className="flex flex-col items-center gap-9 pb-4 pt-12" aria-label={`Jalur Level ${n}`}>
-      {lv.subtopik.map((s, i) => {
-        const st = nodeState(i, doneCount, levelDone)
-        const kind: Kind = st === 'done' ? 'done' : st === 'active' ? 'act' : 'next'
-        const icon: IconName = st === 'done' ? 'check' : st === 'active' ? 'play' : 'book'
-        const dx = dxOf(i)
-        return (
-          <Node key={s.id} kind={kind} icon={icon} to={`/materi/${n}`} dx={dx} label={s.judul}
-            aria={`${s.judul}, ${st === 'done' ? 'selesai' : st === 'active' ? 'lanjutkan di sini' : 'belum dipelajari'}`}
-            extra={i === activeIdx ? <span className={`bob absolute top-1 hidden w-[84px] min-[380px]:block ${dx > 20 ? 'right-full mr-3' : 'left-full ml-3'}`}><Netty size={84} label="Netty menemani" /></span> : null} />
-        )
-      })}
-      <Node kind={passed ? 'done' : quizOk ? 'quizOpen' : 'quiz'} icon="trophy" to={`/kuis/${n}`} dx={dxOf(lv.subtopik.length)} onLock={lockMsg}
-        label={`Kuis Level ${n}`} aria={`Kuis Level ${n}, ${passed ? 'lulus' : quizOk ? 'siap dikerjakan' : 'terkunci sampai semua sub-topik selesai'}`} />
-    </ul>
+  // Netty bereaksi pada node yang diketuk. Awalnya menunjuk ke node aktif.
+  const [mood, setMood] = useState<[Pose, string]>(passed ? ['menari', 'Level ini sudah lulus!'] : quizOk ? ['menunjuk', 'Kuisnya sudah siap!'] : ['menunjuk', 'Ketuk tombol biru untuk mulai.'])
+  // Peti fakta di tengah jalur: terbuka setelah sub-topik sebelum peti selesai. Isinya kalimat pertama sub-topik yang sudah dibaca.
+  const chestAt = Math.max(1, Math.floor(lv.subtopik.length / 2))
+  const chestOpen = doneCount >= chestAt
+  const [chest, setChest] = useState(false)
+  const fakta = lv.subtopik[(chestAt - 1) % lv.subtopik.length]
+  const lockMsg = () => { onLock(`Kuis Level ${n} terbuka setelah semua sub-topik selesai.`); setMood(['khawatir', 'Kuisnya masih terkunci. Selesaikan materinya dulu ya.']) }
+  const nettyAt = activeIdx >= 0 ? activeIdx : -1
+  const netty = (dx: number) => (
+    <span className={`absolute top-0 hidden min-[380px]:block ${dx > 20 ? 'right-full mr-3' : 'left-full ml-3'}`}>
+      {/* Gelembung hanya di layar lebar; di HP cukup Netty supaya jalur tidak melebar ke samping. */}
+      <span className="hidden sm:block"><Netty pose={mood[0]} say={mood[1]} size={84} side={dx > 20 ? 'kiri' : 'kanan'} bubbleClass="w-[170px]" lines={['Ayo, kamu pasti bisa!', 'Satu sub-topik lagi, yuk.', 'Hehe, geli!']} /></span>
+      <span className="sm:hidden"><Netty pose={mood[0]} size={72} label="Netty" /></span>
+    </span>
   )
+  const items: ReactNode[] = []
+  lv.subtopik.forEach((s, i) => {
+    const st = nodeState(i, doneCount, levelDone)
+    const kind: Kind = st === 'done' ? 'done' : st === 'active' ? 'act' : 'next'
+    const icon: IconName = st === 'done' ? 'check' : st === 'active' ? 'play' : 'book'
+    const dx = dxOf(items.length)
+    items.push(
+      <Node key={s.id} kind={kind} icon={icon} to={`/materi/${n}`} dx={dx} label={s.judul}
+        aria={`${s.judul}, ${st === 'done' ? 'selesai' : st === 'active' ? 'lanjutkan di sini' : 'belum dipelajari'}`}
+        extra={i === nettyAt ? netty(dx) : null} />
+    )
+    if (i === chestAt - 1) {
+      const cdx = dxOf(items.length)
+      items.push(
+        <li key="peti" className="flex flex-col items-center gap-2" style={{ transform: `translateX(${cdx}px)` }}>
+          <button type="button" aria-expanded={chest} aria-label={chestOpen ? 'Peti fakta jaringan, ketuk untuk membuka' : `Peti fakta jaringan, terbuka setelah sub-topik ${chestAt} selesai`}
+            onClick={() => { if (chestOpen) { setChest(!chest); setMood(['menari', 'Fakta baru! Baca di bawah peti.']) } else setMood(['tidur', `Petinya terbuka setelah sub-topik ${chestAt} selesai.`]) }}
+            className={`flex h-[68px] w-[80px] items-center justify-center rounded-2xl transition duration-100 ${chestOpen ? 'bg-[#FDE68A] text-[#92400E] shadow-[0_6px_0_#D4A017] hover:-translate-y-0.5 active:translate-y-1 active:shadow-[0_2px_0_#D4A017]' : 'bg-[#FEF3C7] text-[#C9A45C] opacity-70 shadow-[0_6px_0_#EAD9A8]'}`}>
+            <Icon name="chest" size={34} sw={2.2} />
+          </button>
+          <span className="w-[150px] text-center text-sm font-semibold text-[#3D4A5E]">Peti fakta</span>
+          {chest && chestOpen && <p className="pop w-[260px] rounded-2xl border-2 border-[#FDE68A] bg-[#FFFBEB] p-3 text-[15px] leading-snug"><b className="block text-sm text-[#92400E]">FAKTA · {fakta.judul}</b>{fakta.uraian.split(/(?<=[.!?])\s/)[0]}</p>}
+        </li>
+      )
+    }
+  })
+  const qdx = dxOf(items.length)
+  items.push(
+    <Node key="kuis" kind={passed ? 'done' : quizOk ? 'quizOpen' : 'quiz'} icon="trophy" to={`/kuis/${n}`} dx={qdx} onLock={lockMsg}
+      label={`Kuis Level ${n}`} aria={`Kuis Level ${n}, ${passed ? 'lulus' : quizOk ? 'siap dikerjakan' : 'terkunci sampai semua sub-topik selesai'}`}
+      extra={nettyAt < 0 ? netty(qdx) : null} />
+  )
+  return <ul className="flex flex-col items-center gap-9 pb-4 pt-12" aria-label={`Jalur Level ${n}`}>{items}</ul>
 }
 
 /** Panel samping desktop: XP dan level, ringkasan level aktif, daftar hadiah, dan lencana terbaru. */
