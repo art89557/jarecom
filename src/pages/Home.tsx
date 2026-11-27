@@ -17,7 +17,7 @@ function Segs({ total, done, kuis }: { total: number; done: number; kuis: boolea
   return (
     <div className="flex gap-1.5" role="img" aria-label={`${done} dari ${total} sub-topik selesai`}>
       {Array.from({ length: total }, (_, i) => (
-        <span key={i} className={`h-2 flex-1 rounded-full ${kuis || i < done ? 'bg-white' : i === done ? 'bg-white/55' : 'bg-white/25'}`} />
+        <span key={i} className={`h-2 flex-1 rounded-full ${kuis || i < done ? 'on-color bg-white' : i === done ? 'bg-white/55' : 'bg-white/25'}`} />
       ))}
     </div>
   )
@@ -54,7 +54,7 @@ function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progre
           </div>
         </div>
         <Segs total={total} done={done} kuis={kuis} />
-        <Link to={to} className="inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-white px-7 text-base font-bold transition hover:shadow-[0_0_0_4px_rgba(255,255,255,.35)] active:scale-[.97] md:self-start md:min-w-[220px]" style={{ color: kuis ? '#7E22CE' : '#2457F5' }}>
+        <Link to={to} className="on-color inline-flex min-h-[52px] items-center justify-center gap-2 rounded-xl bg-white px-7 text-base font-bold transition hover:shadow-[0_0_0_4px_rgba(255,255,255,.35)] active:scale-[.97] md:self-start md:min-w-[220px]" style={{ color: kuis ? '#7E22CE' : '#2457F5' }}>
           <Icon name={kuis ? 'play' : 'arrow'} size={20} sw={2.4} />{cta}
         </Link>
       </div>

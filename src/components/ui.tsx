@@ -57,7 +57,7 @@ export function ErrorMsg({ children }: { children?: ReactNode }) {
 }
 
 /** Cincin persen (SVG). Panjang busur = persen dari keliling lingkaran (2πr). */
-export function Ring({ pct, size = 112, stroke = 12, fg = '#2457F5', track = '#E4E9F2', text = '#0F1B2D', label }: { pct: number; size?: number; stroke?: number; fg?: string; track?: string; text?: string; label: string }) {
+export function Ring({ pct, size = 112, stroke = 12, fg = '#2457F5', track = 'var(--ring-track, #E4E9F2)', text = 'currentColor', label }: { pct: number; size?: number; stroke?: number; fg?: string; track?: string; text?: string; label: string }) {
   const r = (size - stroke) / 2
   const c = 2 * Math.PI * r
   const h = size / 2

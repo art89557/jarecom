@@ -48,3 +48,26 @@ export const setTextSize = (v: TextSize) => {
   try { localStorage.setItem(TKEY, v) } catch { /* abaikan */ }
   applyTextSize(v)
 }
+
+// Tema: terang, gelap, atau ikut pengaturan perangkat. Mode gelap = kelas `dark` pada <html> (warna di index.css).
+export type Theme = 'terang' | 'gelap' | 'sistem'
+export const THEMES: [Theme, string][] = [['terang', 'Terang'], ['gelap', 'Gelap'], ['sistem', 'Ikut perangkat']]
+const MKEY = 'jarecom:tema'
+const media = () => window.matchMedia?.('(prefers-color-scheme: dark)')
+/** Tema yang dipilih di perangkat ini (bawaan: ikut perangkat). */
+export const theme = (): Theme => {
+  try { const v = localStorage.getItem(MKEY); return THEMES.some(([k]) => k === v) ? (v as Theme) : 'sistem' } catch { return 'sistem' }
+}
+/** Terapkan tema: pasang/lepas kelas `dark` dan sesuaikan warna bilah browser. */
+export const applyTheme = (v: Theme) => {
+  const dark = v === 'gelap' || (v === 'sistem' && !!media()?.matches)
+  document.documentElement.classList.toggle('dark', dark)
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', dark ? '#0B1220' : '#2457F5')
+}
+/** Simpan pilihan tema lalu langsung terapkan. */
+export const setTheme = (v: Theme) => {
+  try { localStorage.setItem(MKEY, v) } catch { /* abaikan */ }
+  applyTheme(v)
+}
+/** Saat tema "Ikut perangkat", ikuti perubahan mode gelap perangkat secara langsung. */
+export const watchSystemTheme = () => media()?.addEventListener?.('change', () => { if (theme() === 'sistem') applyTheme('sistem') })

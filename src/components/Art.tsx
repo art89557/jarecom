@@ -247,7 +247,7 @@ export function Diagram({ k, compact = false, simLink }: { k: string; compact?: 
   const d = DIAGRAMS[k]
   if (!d) return null
   return (
-    <figure className={`flex flex-col gap-2 rounded-[18px] border-[1.5px] border-line bg-white ${compact ? 'p-3' : 'p-4'}`}>
+    <figure className={`paper flex flex-col gap-2 rounded-[18px] border-[1.5px] border-line bg-white ${compact ? 'p-3' : 'p-4'}`}>
       <div role="img" aria-label={d.alt} className={`mx-auto w-full ${compact ? 'max-w-[360px]' : 'max-w-[520px]'}`}>{d.art}</div>
       <figcaption className="flex flex-wrap items-center justify-between gap-2 text-[15px] leading-snug text-[#33415A]">
         <span className="min-w-0 flex-1">{d.cap}</span>

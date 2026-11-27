@@ -57,7 +57,7 @@ export function LabList() {
           const tn = ok ? 'done' : open ? 'open' : 'lock'
           const body = (
             <>
-              <span className={`block h-[118px] w-full ${ok ? 'bg-pass-soft' : open ? 'bg-primary-soft' : 'bg-white'}`}><LabThumb n={m.n} t={tn} /></span>
+              <span className={`paper block h-[118px] w-full ${ok ? 'bg-pass-soft' : open ? 'bg-primary-soft' : 'bg-white'}`}><LabThumb n={m.n} t={tn} /></span>
               <span className="flex flex-col gap-1 p-4">
                 <span className="flex items-center justify-between gap-2">
                   <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">Misi {m.n}</span>
@@ -401,7 +401,7 @@ export function LabPlay() {
           <p className="border-b border-line bg-primary-soft px-3 py-2 text-[15px] font-semibold text-[#1B46D1] lg:hidden">{step < m.steps.length ? `Langkah ${step + 1}/${m.steps.length}: ${cur.text}` : 'Semua langkah selesai'}</p>
           <p className="border-b border-line bg-bg px-3 py-2 text-[14px] text-[#33415A]" aria-live="polite">{status}</p>
 
-          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="lab-grid relative w-full touch-none select-none" style={{ aspectRatio: `${W} / ${H}`, minHeight: 320 }}>
+          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="paper lab-grid relative w-full touch-none select-none" style={{ aspectRatio: `${W} / ${H}`, minHeight: 320 }}>
             <button type="button" aria-label={tool === 'place' ? 'Logical Workspace: taruh perangkat' : 'Logical Workspace'} onClick={areaClick} className={`absolute inset-0 h-full w-full ${tool === 'place' ? 'cursor-crosshair' : 'cursor-default'}`} />
             {!net.devices.length && <p className="pointer-events-none absolute inset-x-4 top-[42%] text-center text-[15px] leading-relaxed text-[#475569]">Logical Workspace masih kosong.<br />Buka <b>Network Devices</b> di bawah, pilih <b>Switch 2960</b>, lalu klik di sini.</p>}
 

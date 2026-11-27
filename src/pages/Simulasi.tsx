@@ -46,7 +46,7 @@ export function SimList() {
         {SIMS.map((s) => (
           <li key={s.slug}>
             <Link to={`/simulasi/${s.slug}`} className="group flex h-full flex-col overflow-hidden rounded-[18px] border-[1.5px] border-line bg-white transition hover:-translate-y-0.5 hover:border-primary hover:shadow-md">
-              <span className={`block h-[130px] w-full px-4 py-3 ${SIM_BG[s.slug] ?? 'bg-primary-soft'}`}><SimThumb slug={s.slug} /></span>
+              <span className={`paper block h-[130px] w-full px-4 py-3 ${SIM_BG[s.slug] ?? 'bg-primary-soft'}`}><SimThumb slug={s.slug} /></span>
               <span className="flex flex-col gap-1.5 p-4">
                 <span className="text-sm font-bold uppercase tracking-wider text-ink-soft">{s.level}</span>
                 <span className="text-[18px] font-bold">{s.title}</span>
@@ -109,7 +109,7 @@ function Recap({ slug }: { slug: string }) {
 // ---------------------------------------------------------------- Bagian bersama
 
 const Card = ({ title, children, className = '' }: { title?: string; children: ReactNode; className?: string }) => (
-  <section className={`rounded-[18px] border-[1.5px] border-line bg-white p-4 md:p-5 ${className}`}>
+  <section className={`paper rounded-[18px] border-[1.5px] border-line bg-white p-4 md:p-5 ${className}`}>
     {title && <h2 className="mb-3 text-[18px] font-bold">{title}</h2>}
     {children}
   </section>

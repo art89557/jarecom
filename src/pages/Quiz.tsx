@@ -115,12 +115,12 @@ export function QuizList() {
               <>
                 <h2 className="font-display text-[22px] font-bold leading-tight md:text-[28px]">Level {nextQ} · {LEVELS[nextQ - 1].judul}</h2>
                 <div className="flex flex-wrap gap-2"><span className="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold">{LEVELS[nextQ - 1].kuis.length} soal</span><span className="rounded-full bg-white/20 px-3 py-1 text-sm font-semibold">Lulus skor {PASS_SCORE}</span><span className="rounded-full bg-xp-soft px-3 py-1 text-sm font-bold text-[#8A5A00]">+50 XP</span></div>
-                <button type="button" onClick={() => setSheet(nextQ)} className="mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-primary transition hover:shadow-[0_0_0_4px_rgba(255,255,255,.35)] active:scale-[.97]"><Icon name="play" size={20} sw={2.4} />Mulai kuis</button>
+                <button type="button" onClick={() => setSheet(nextQ)} className="on-color mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-[#2457F5] transition hover:shadow-[0_0_0_4px_rgba(255,255,255,.35)] active:scale-[.97]"><Icon name="play" size={20} sw={2.4} />Mulai kuis</button>
               </>
             ) : (
               <>
                 <h2 className="font-display text-[22px] font-bold leading-tight md:text-[26px]">{waiting ? `Selesaikan materi Level ${waiting} dulu` : 'Semua kuis sudah lulus'}</h2>
-                {waiting && <Link to={`/materi/${waiting}`} className="mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-primary"><Icon name="book" size={20} sw={2.4} />Ke materi</Link>}
+                {waiting && <Link to={`/materi/${waiting}`} className="on-color mt-1.5 inline-flex min-h-[52px] items-center gap-2 self-start rounded-xl bg-white px-6 font-bold text-[#2457F5]"><Icon name="book" size={20} sw={2.4} />Ke materi</Link>}
               </>
             )}
           </div>
