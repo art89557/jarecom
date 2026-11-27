@@ -3,18 +3,22 @@ import { Link, Navigate, Route, Routes } from 'react-router-dom'
 import Shell from './components/Shell'
 import { Netty } from './components/ui'
 import { Forgot, Login, NewPassword, Register, Splash } from './pages/Auth'
-import Help from './pages/Help'
-import Credit from './pages/Credit'
-import { LabList, LabPlay } from './pages/Lab'
-import { SimList, SimPage } from './pages/Simulasi'
 import Home from './pages/Home'
 import MapPage from './pages/MapPage'
 import Material, { Done } from './pages/Material'
 import Profile from './pages/Profile'
-import ProgressPage from './pages/Progress'
 import { QuizList, QuizPlay, QuizResultPage } from './pages/Quiz'
 import { useApp } from './state'
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
+
+// Halaman besar dimuat saat dibuka saja (code splitting), supaya muatan pertama aplikasi lebih ringan.
+const Help = lazy(() => import('./pages/Help'))
+const Credit = lazy(() => import('./pages/Credit'))
+const ProgressPage = lazy(() => import('./pages/Progress'))
+const LabList = lazy(() => import('./pages/Lab').then((m) => ({ default: m.LabList })))
+const LabPlay = lazy(() => import('./pages/Lab').then((m) => ({ default: m.LabPlay })))
+const SimList = lazy(() => import('./pages/Simulasi').then((m) => ({ default: m.SimList })))
+const SimPage = lazy(() => import('./pages/Simulasi').then((m) => ({ default: m.SimPage })))
 
 /** Penjaga rute: tunggu sesi diperiksa, lalu tampilkan Shell (menu + halaman) atau arahkan ke /masuk. */
 function Protected() {
@@ -46,6 +50,7 @@ export default function App() {
   return (
     <>
       <Offline />
+      <Suspense fallback={<p role="status" className="help p-10 text-center">Memuat…</p>}>
       <Routes>
         <Route path="/" element={<Splash />} />
         <Route path="/masuk" element={<Login />} />
@@ -73,6 +78,7 @@ export default function App() {
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </>
   )
 }

@@ -72,7 +72,7 @@ function Lanjut({ n, uid, progress }: { n: number; uid: string; progress: Progre
 function MiniMap({ cur, kuis, progress }: { cur: number | null; kuis: boolean; progress: Progress }) {
   const passed = progress.passed.length
   return (
-    <Link to="/materi" aria-label="Buka peta level" data-tour="peta" className="block rounded-[18px] border-[1.5px] border-line bg-white p-4 transition hover:border-primary hover:shadow-md">
+    <Link to="/materi" data-tour="peta" className="block rounded-[18px] border-[1.5px] border-line bg-white p-4 transition hover:border-primary hover:shadow-md">
       <div className="flex items-center justify-between gap-3">
         <div><div className="font-display text-lg font-bold">Peta belajar</div><div className="help">{passed} dari 11 level lulus</div></div>
         <span className="inline-flex items-center gap-1 text-[15px] font-semibold text-primary">Buka peta<Icon name="arrow" size={18} sw={2.2} /></span>

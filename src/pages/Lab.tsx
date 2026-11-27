@@ -387,12 +387,12 @@ export function LabPlay() {
         </section>
         </div>
         {/* Area kerja */}
-        <section aria-label="Area kerja" className="order-first flex min-w-0 flex-col lg:order-none overflow-hidden rounded-[18px] border-[1.5px] border-line bg-white">
-          <div className="flex flex-wrap items-center gap-2 border-b border-line p-2.5">
+        <section aria-label="Area kerja" className="order-first flex min-w-0 flex-col rounded-[18px] border-[1.5px] border-line bg-white lg:order-none lg:overflow-hidden">
+          <div className="flex items-center gap-2 overflow-x-auto border-b border-line p-2.5 lg:flex-wrap">
             <ToolBtn on={tool === 'select'} onClick={() => pick('select')} label="Select"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" aria-hidden><path d="M5 3l14 8-6 2-3 6z" /></svg></ToolBtn>
             <ToolBtn on={tool === 'delete'} onClick={() => pick('delete')} label="Delete"><Icon name="x" size={18} sw={2.6} /></ToolBtn>
             <ToolBtn on={tool === 'pdu'} onClick={() => pick('pdu')} label="Add Simple PDU"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden><rect x="3" y="5" width="18" height="14" rx="2" /><path d="M3 7l9 6 9-6" /></svg></ToolBtn>
-            <span className="ml-auto inline-flex overflow-hidden rounded-xl border border-line" role="group" aria-label="Mode">
+            <span className="ml-auto inline-flex shrink-0 overflow-hidden rounded-xl border border-line" role="group" aria-label="Mode">
               {(['realtime', 'sim'] as const).map((k) => (
                 <button key={k} type="button" aria-pressed={mode === k} onClick={() => { setMode(k); setAnim(null) }} className={`min-h-[44px] px-3.5 text-[14px] font-semibold ${mode === k ? 'bg-primary text-white' : 'bg-white text-ink'}`}>{k === 'realtime' ? 'Realtime' : 'Simulation'}</button>
               ))}
@@ -401,7 +401,7 @@ export function LabPlay() {
           <p className="border-b border-line bg-primary-soft px-3 py-2 text-[15px] font-semibold text-[#1B46D1] lg:hidden">{step < m.steps.length ? `Langkah ${step + 1}/${m.steps.length}: ${cur.text}` : 'Semua langkah selesai'}</p>
           <p className="border-b border-line bg-bg px-3 py-2 text-[14px] text-[#33415A]" aria-live="polite">{status}</p>
 
-          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="paper lab-grid relative w-full touch-none select-none" style={{ aspectRatio: `${W} / ${H}`, minHeight: 320 }}>
+          <div ref={area} onPointerMove={move} onPointerUp={up} onPointerLeave={up} className="paper lab-grid relative min-h-[52vh] w-full touch-none select-none lg:min-h-[320px]" style={{ aspectRatio: `${W} / ${H}` }}>
             <button type="button" aria-label={tool === 'place' ? 'Logical Workspace: taruh perangkat' : 'Logical Workspace'} onClick={areaClick} className={`absolute inset-0 h-full w-full ${tool === 'place' ? 'cursor-crosshair' : 'cursor-default'}`} />
             {!net.devices.length && <p className="pointer-events-none absolute inset-x-4 top-[42%] text-center text-[15px] leading-relaxed text-[#475569]">Logical Workspace masih kosong.<br />Buka <b>Network Devices</b> di bawah, pilih <b>Switch 2960</b>, lalu klik di sini.</p>}
 
@@ -459,18 +459,19 @@ export function LabPlay() {
             {toast && <div role="status" className={`pointer-events-none absolute inset-x-3 top-3 z-[5] mx-auto max-w-xl rounded-xl border px-4 py-2.5 text-center text-[15px] font-semibold ${toast.warn ? 'border-[#FCD34D] bg-[#FFFBEB] text-[#78350F]' : 'border-[#BFDBFE] bg-[#EFF6FF] text-[#1E3A8A]'}`}>{toast.text}</div>}
           </div>
 
-          {/* Palet perangkat di kiri bawah, seperti Packet Tracer */}
-          <div className="flex flex-col gap-2 border-t border-line p-2.5">
-            <div className="flex flex-wrap gap-2" role="group" aria-label="Kategori perangkat">
+          {/* Palet perangkat di kiri bawah, seperti Packet Tracer. Di HP palet menempel di atas menu bawah supaya alat dan area kerja
+              terlihat bersamaan (tidak perlu menggulir bolak-balik); di laptop kembali di bawah area kerja. */}
+          <div className="sticky bottom-[calc(64px+env(safe-area-inset-bottom))] z-10 flex flex-col gap-2 rounded-b-[18px] border-t border-line bg-white p-2.5 shadow-[0_-6px_16px_rgba(15,27,45,.08)] lg:static lg:shadow-none">
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 lg:flex-wrap" role="group" aria-label="Kategori perangkat">
               {([['network', 'Network Devices'], ['end', 'End Devices'], ['conn', 'Connections']] as const).map(([k, t]) => (
-                <button key={k} type="button" aria-pressed={cat === k} onClick={() => setCat(k)} className={`min-h-[44px] rounded-xl border px-3 text-[14px] font-bold ${cat === k ? 'border-ink bg-ink text-white' : 'border-line bg-white'}`}>{t}</button>
+                <button key={k} type="button" aria-pressed={cat === k} onClick={() => setCat(k)} className={`min-h-[44px] shrink-0 whitespace-nowrap rounded-xl border px-3 text-[14px] font-bold ${cat === k ? 'border-ink bg-ink text-white' : 'border-line bg-white'}`}>{t}</button>
               ))}
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 lg:flex-wrap">
               {cat === 'network' && (['router', 'switch', 'hub'] as DevType[]).map((t) => <PaletteBtn key={t} on={tool === 'place' && placeType === t} onClick={() => pick('place', t)} t={t} />)}
               {cat === 'end' && (['pc', 'laptop'] as DevType[]).map((t) => <PaletteBtn key={t} on={tool === 'place' && placeType === t} onClick={() => pick('place', t)} t={t} />)}
               {cat === 'conn' && ([['auto', 'Automatic', 'Pilih jenis otomatis'], ['straight', 'Copper Straight-Through', 'Kabel lurus'], ['cross', 'Copper Cross-Over', 'Kabel silang']] as const).map(([k, t, sub]) => (
-                <button key={k} type="button" aria-pressed={tool === 'cable' && cableKind === k} onClick={() => { pick('cable'); setCableKind(k) }} className={`flex min-h-[52px] items-center gap-2 rounded-xl border-2 px-3 text-left ${tool === 'cable' && cableKind === k ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}>
+                <button key={k} type="button" aria-pressed={tool === 'cable' && cableKind === k} onClick={() => { pick('cable'); setCableKind(k) }} className={`flex min-h-[52px] shrink-0 items-center gap-2 rounded-xl border-2 px-3 text-left ${tool === 'cable' && cableKind === k ? 'border-primary bg-primary-soft' : 'border-line bg-white'}`}>
                   {k === 'auto' ? <Icon name="zap" size={22} /> : <svg width="26" height="22" viewBox="0 0 26 22" aria-hidden><path d={k === 'straight' ? 'M2 20 24 2' : 'M2 20 24 2'} stroke="#0F172A" strokeWidth="2.4" strokeDasharray={k === 'cross' ? '4 3' : undefined} /></svg>}
                   <span><span className="block text-[14px] font-bold">{t}</span><span className="block text-[14px] text-ink-soft">{sub}</span></span>
                 </button>
@@ -520,7 +521,7 @@ function hopText(n: Net, prev: string | undefined, at: string, next: string): st
 /** Tombol alat dengan label Packet Tracer dan keterangan kecil opsional. */
 function ToolBtn({ on = false, onClick, label, sub, disabled = false, children }: { on?: boolean; onClick: () => void; label: string; sub?: string; disabled?: boolean; children: ReactNode }) {
   return (
-    <button type="button" aria-pressed={on} onClick={onClick} title={sub} disabled={disabled} className={`flex min-h-[44px] items-center gap-2 rounded-xl border px-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-45 ${on ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink hover:bg-bg'}`}>
+    <button type="button" aria-pressed={on} onClick={onClick} title={sub} disabled={disabled} className={`flex min-h-[44px] shrink-0 items-center gap-2 whitespace-nowrap rounded-xl border px-3 text-[14px] font-semibold disabled:cursor-not-allowed disabled:opacity-45 ${on ? 'border-primary bg-primary text-white' : 'border-line bg-white text-ink hover:bg-bg'}`}>
       {children}{label}
     </button>
   )
@@ -529,7 +530,7 @@ function ToolBtn({ on = false, onClick, label, sub, disabled = false, children }
 /** Satu perangkat di palet. */
 function PaletteBtn({ t, on, onClick }: { t: DevType; on: boolean; onClick: () => void }) {
   return (
-    <button type="button" aria-pressed={on} onClick={onClick} className={`flex min-h-[52px] items-center gap-2 rounded-xl border-2 px-3 text-left ${on ? 'border-primary bg-primary-soft text-primary' : 'border-line bg-white'}`}>
+    <button type="button" aria-pressed={on} onClick={onClick} className={`flex min-h-[52px] shrink-0 items-center gap-2 rounded-xl border-2 px-3 text-left ${on ? 'border-primary bg-primary-soft text-primary' : 'border-line bg-white'}`}>
       <DevIcon t={t} /><span><span className="block text-[14px] font-bold text-ink">{t === 'switch' ? 'Switch 2960' : t === 'router' ? 'Router 1941' : MODEL[t]}</span><span className="block text-[14px] text-ink-soft">{LABEL[t]}</span></span>
     </button>
   )

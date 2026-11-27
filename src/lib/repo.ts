@@ -30,6 +30,8 @@ export interface Repo {
   updateName(name: string): Promise<User>
   /** Atur kata sandi baru. Jika `current` diberikan, kata sandi saat ini diperiksa dulu. */
   updatePassword(next: string, current?: string): Promise<void>
+  /** Hapus akun beserta seluruh progres secara permanen, lalu keluar. */
+  deleteAccount(): Promise<void>
 
   // --- Kemajuan belajar ---
   /** Simpan posisi baca (jumlah sub-topik yang sudah lolos cek) untuk satu level. */

@@ -192,3 +192,5 @@
 /* Tombol putih di atas kartu berwarna (biru/ungu) tetap putih di mode gelap. */
 .dark .on-color { background-color: #fff; }
 .dark { --ring-track: #2A3850 }
+.dark .text-\[\#8E1B21\] { color: #FCA5A5 }
+.dark .border-\[\#C0262D\] { border-color: #F87171 }

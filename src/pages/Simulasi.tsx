@@ -161,7 +161,7 @@ function Kabel() {
           <Seg label="Jenis kabel" value={mode} onChange={(v) => { setMode(v); setPin(0) }} options={[['straight', 'Straight-Through (B ke B)'], ['cross', 'Cross-Over (B ke A)']]} />
           <p className="text-[14px] text-ink-soft">Klik nomor pin untuk menelusuri kabelnya.</p>
         </div>
-        <div className="mt-3 overflow-x-auto"><svg viewBox="0 0 640 300" className="w-full min-w-[560px]" role="img" aria-label={`Kabel ${mode === 'straight' ? 'straight-through' : 'cross-over'}: ${T568B.map((_, i) => `pin ${i + 1} ke pin ${to(i) + 1}`).join(', ')}`}>
+        <div className="mt-3 overflow-x-auto"><svg viewBox="0 0 640 300" className="w-full min-w-[560px]" role="group" aria-label={`Kabel ${mode === 'straight' ? 'straight-through' : 'cross-over'}: ${T568B.map((_, i) => `pin ${i + 1} ke pin ${to(i) + 1}`).join(', ')}`}>
           <text x="70" y="22" textAnchor="middle" fontSize="15" fontWeight="700" fill="#0F172A">Ujung A · T568B</text>
           <text x="570" y="22" textAnchor="middle" fontSize="15" fontWeight="700" fill="#0F172A">Ujung B · {mode === 'straight' ? 'T568B' : 'T568A'}</text>
           <rect x="40" y="32" width="60" height="252" rx="8" fill="#F1F5F9" stroke="#CBD5E1" />
@@ -438,8 +438,8 @@ function IpBiner() {
                 {[128, 64, 32, 16, 8, 4, 2, 1].map((w) => {
                   const on = (x & w) !== 0
                   return (
-                    <button key={w} type="button" aria-pressed={on} aria-label={`Bit bernilai ${w}, ${on ? '1' : '0'}`} onClick={() => set(i, x ^ w)} className="flex flex-col items-center gap-0.5">
-                      <span className="text-[13px] text-ink-soft">{w}</span>
+                    <button key={w} type="button" aria-pressed={on} onClick={() => set(i, x ^ w)} className="flex flex-col items-center gap-0.5">
+                      <span className="text-[13px] text-ink-soft">{w}<span className="sr-only"> (nilai bit)</span></span>
                       <span className={`flex h-11 w-full items-center justify-center rounded-lg font-mono text-[18px] font-bold transition ${on ? 'bg-primary text-white' : 'border-2 border-line bg-white text-ink-soft'}`}>{on ? 1 : 0}</span>
                     </button>)
                 })}

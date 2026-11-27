@@ -28,6 +28,9 @@ function save(db: Db) {
 // Email disamakan (huruf kecil, tanpa spasi) agar tidak terdaftar ganda.
 const norm = (e: string) => e.trim().toLowerCase()
 
+// Jawaban kuis yang sedang berjalan: level -> (nomor soal -> pilihan pertama). Hanya di memori, hilang saat halaman dimuat ulang.
+const locked = new Map<number, Map<number, number>>()
+
 export const localRepo: Repo = {
   mode: 'local',
 
@@ -63,6 +66,17 @@ export const localRepo: Repo = {
     const db = load()
     db.session = null
     save(db)
+  },
+  // Mode demo: hapus pengguna, progres, dan posisi baca dari browser ini.
+  async deleteAccount() {
+    const db = load()
+    const u = db.session ? db.users[db.session] : null
+    if (!u || !db.session) throw new AppError('Belum masuk')
+    delete db.progress[u.id]
+    delete db.users[db.session]
+    db.session = null
+    save(db)
+    try { Object.keys(localStorage).filter((k) => k.includes(u.id)).forEach((k) => localStorage.removeItem(k)) } catch { /* abaikan */ }
   },
   async updateName(name) {
     const db = load()
@@ -107,12 +121,18 @@ export const localRepo: Repo = {
   async getQuiz(level): Promise<QuizQuestion[]> {
     const l = getLevel(level)
     if (!l) throw new AppError('Level tidak ada')
+    // Membuka kuis = percobaan baru: jawaban terkunci dari percobaan sebelumnya dihapus (sama dengan get_quiz di server).
+    locked.delete(level)
     // Hanya pertanyaan dan opsi yang diberikan, kunci jawaban tidak ikut.
     return l.kuis.map((k) => ({ pertanyaan: k.pertanyaan, opsi: k.opsi }))
   },
-  async checkAnswer(level, index): Promise<CheckResult> {
+  async checkAnswer(level, index, choice): Promise<CheckResult> {
     const k = getLevel(level)?.kuis[index]
     if (!k) throw new AppError('Soal tidak ada')
+    // Jawaban pertama per soal dikunci (sama dengan check_answer di server).
+    const m = locked.get(level) ?? new Map<number, number>()
+    if (!m.has(index)) m.set(index, choice)
+    locked.set(level, m)
     return { benar: k.benar, penjelasan: k.penjelasan }
   },
   async submitQuiz(level, answers): Promise<QuizResult> {
@@ -121,8 +141,12 @@ export const localRepo: Repo = {
     if (!u) throw new AppError('Belum masuk')
     const l = getLevel(level)
     if (!l) throw new AppError('Level tidak ada')
-    // Hitung jawaban benar, ubah ke skor, lalu catat hasilnya lewat aturan di engine.ts.
-    const correct = l.kuis.reduce((n, k, i) => n + (answers[i] === k.benar ? 1 : 0), 0)
+    // Hitung jawaban benar dari jawaban yang terkunci (bukan dari `answers` kiriman halaman), ubah ke skor,
+    // lalu catat hasilnya lewat aturan di engine.ts. Soal yang belum diperiksa dihitung salah.
+    const m = locked.get(level) ?? new Map<number, number>()
+    void answers
+    const correct = l.kuis.reduce((n, k, i) => n + (m.get(i) === k.benar ? 1 : 0), 0)
+    locked.delete(level)
     const score = computeScore(correct, l.kuis.length)
     const { next, xpGained, passed } = applyQuiz(normalizeProgress(db.progress[u.id]), level, score)
     db.progress[u.id] = next

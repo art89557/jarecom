@@ -58,6 +58,12 @@ export const supabaseRepo: Repo = {
   async signOut() {
     await client().auth.signOut()
   },
+  // Hapus akun lewat fungsi server delete_account (menghapus auth.users milik sendiri; progres ikut terhapus lewat cascade).
+  async deleteAccount() {
+    const { error } = await client().rpc('delete_account')
+    if (error) fail(error)
+    await client().auth.signOut()
+  },
   // Penanda tur disimpan di metadata akun (hanya preferensi tampilan, bukan data aturan sistem).
   async markTourSeen() {
     const { error } = await client().auth.updateUser({ data: { tour_done: true } })

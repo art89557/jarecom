@@ -127,6 +127,7 @@ export function Register() {
         <Field id="name" label="Nama" value={f.name} set={(v) => setF({ ...f, name: v })} auto="name" err={errs.name} />
         <Field id="email" label="Email" type="email" value={f.email} set={(v) => setF({ ...f, email: v })} auto="email" err={errs.email} />
         <Field id="pw" label="Kata sandi" type="password" value={f.pw} set={(v) => setF({ ...f, pw: v })} auto="new-password" err={errs.pw} hint="Minimal 8 karakter" />
+        <p className="help leading-snug">Kami hanya menyimpan nama, email, dan progres belajarmu (XP, materi, dan skor kuis) untuk menjalankan aplikasi. {repo.mode === 'supabase' ? 'Data disimpan di layanan database Supabase' : 'Data disimpan di browser ini'}, tidak dipakai untuk iklan, dan bisa kamu hapus kapan saja lewat Profil, Hapus akun.</p>
         <button className="btn" disabled={busy}>{busy ? 'Memproses…' : 'Daftar'}</button>
       </form>
       <p className="text-center text-base">Sudah punya akun? <Link to="/masuk" className="link">Masuk</Link></p>
