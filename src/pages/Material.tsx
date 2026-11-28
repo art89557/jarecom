@@ -1,4 +1,5 @@
-// Membaca materi satu level, sub-topik demi sub-topik. Tiap sub-topik berisi uraian, poin, dan satu soal cek pemahaman.
+// Membaca materi satu level, sub-topik demi sub-topik. Tiap sub-topik berisi uraian, poin, dan satu soal cek pemahaman,
+// ditambah (jika ada) penjelasan lengkap dan contoh soal bertahap yang bisa dibuka-tutup.
 // Tombol lanjut baru aktif setelah soal cek dijawab benar. Setelah sub-topik terakhir, materi ditandai selesai.
 import { useEffect, useState } from 'react'
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom'
@@ -11,6 +12,7 @@ import { useApp } from '../state'
 import { Icon, type IconName } from '../components/icons'
 import { Back, ErrorMsg, Netty, XpBadge } from '../components/ui'
 import { Diagram, MATERI_DIAGRAM } from '../components/Art'
+import { ContohSoalBertahap, PenjelasanLengkap } from '../components/Penjelasan'
 
 /** Halaman membaca materi (/materi/:n). */
 export default function Material() {
@@ -98,6 +100,9 @@ export default function Material() {
           <li key={p} className="flex gap-3 text-[15px] leading-relaxed"><span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary" />{p}</li>
         ))}
       </ul>
+      {/* Penjelasan tambahan (opsional per sub-topik). `key` membuat bagian ini tertutup lagi saat pindah sub-topik. */}
+      {s.lengkap && <PenjelasanLengkap key={`l-${idx}`} data={s.lengkap} />}
+      {s.contohSoal && <ContohSoalBertahap key={`c-${idx}`} data={s.contohSoal} />}
 
       <section className="mt-2 flex flex-col gap-3" aria-label="Cek pemahaman">
         <div className="flex items-center gap-3">

@@ -14,8 +14,21 @@ import l11 from './level-11.json'
 
 /** Satu soal pilihan ganda. `benar` = indeks opsi yang benar (mulai 0). Dipakai untuk cek sub-topik dan kuis. */
 export interface CekQ { pertanyaan: string; opsi: string[]; benar: number; penjelasan: string }
-/** Satu sub-topik materi: uraian, poin ringkas, dan satu soal cek pemahaman. */
-export interface SubTopik { id: number; judul: string; uraian: string; poin: string[]; cek: CekQ }
+/** Satu istilah penting beserta artinya, ditampilkan di "Penjelasan lengkap". */
+export interface Istilah { istilah: string; arti: string }
+/**
+ * Penjelasan lengkap satu sub-topik (opsional), dibuka lewat tombol "Penjelasan lengkap".
+ * `caraKerja` = beberapa paragraf penjelasan; `analogi` = perumpamaan sehari-hari;
+ * `contoh` = contoh di jaringan nyata; `istilah` = daftar istilah penting.
+ */
+export interface Lengkap { caraKerja: string[]; analogi?: string; contoh?: string; istilah?: Istilah[] }
+/** Contoh soal yang dikerjakan langkah demi langkah (opsional, untuk topik hitungan). */
+export interface ContohSoal { soal: string; langkah: string[]; jawaban: string }
+/**
+ * Satu sub-topik materi: uraian ringkas, poin, satu soal cek pemahaman,
+ * lalu (opsional) penjelasan lengkap dan contoh soal bertahap.
+ */
+export interface SubTopik { id: number; judul: string; uraian: string; poin: string[]; cek: CekQ; lengkap?: Lengkap; contohSoal?: ContohSoal }
 /** Isi satu level: materi per sub-topik, lalu soal kuis akhir. */
 export interface LevelContent { level: number; judul: string; sumber: string; subtopik: SubTopik[]; kuis: CekQ[] }
 

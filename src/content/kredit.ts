@@ -68,6 +68,7 @@ export const VERSI = '1.0.0'
 
 /** Riwayat perubahan, terbaru di atas. */
 export const CHANGELOG: { tanggal: string; isi: string }[] = [
+  { tanggal: '28 Nov 2026', isi: 'Materi Level 1 sampai 3 kini punya Penjelasan lengkap (cara kerja, analogi, contoh nyata, istilah penting) dan contoh soal langkah demi langkah, menindaklanjuti masukan bahwa penjelasan materi terlalu singkat.' },
   { tanggal: '27 Nov 2026', isi: 'Halaman Kredit kini mencantumkan dosen pengampu mata kuliah IMK dan Jaringan Komputer.' },
   { tanggal: '27 Nov 2026', isi: 'Versi 1.0.0 (rilis final IMK). Tampilan baru: Netty beranimasi, menu 5 item dengan menu akun, jalur Materi, gambar di Lab dan Simulasi, mode gelap, dan ukuran teks.' },
   { tanggal: '27 Nov 2026', isi: 'Lab lebih ramah pemula: tur Lab 5 langkah, alat muncul bertahap sesuai misi (tombol Semua alat), Undo, dan pekerjaan tersimpan otomatis. Materi dan kuis tidak kehilangan progres saat pindah menu.' },

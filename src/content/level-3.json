@@ -1,7 +1,7 @@
 {
  "level": 3,
  "judul": "Topologi Jaringan",
- "sumber": "P-03 TOPOLOGI JARINGAN.pptx (Drive). Slide tidak memuat teks yang bisa dibaca (hanya judul); isi disusun dari RPS (topologi kabel dan nirkabel) dan pengetahuan umum, perlu diperiksa terhadap slide asli.",
+ "sumber": "P-03 TOPOLOGI JARINGAN.pptx (Drive). Isi slide berupa gambar dan sudah dibaca (pengertian jaringan, klasifikasi, topologi bus, star, ring, mesh, tree beserta kelebihan dan kekurangannya). Topologi nirkabel, hybrid, analogi, dan contoh dilengkapi tim, perlu diperiksa dosen.",
  "subtopik": [
   {
    "id": 1,
@@ -20,6 +20,32 @@
     ],
     "benar": 0,
     "penjelasan": "Semua perangkat berbagi satu kabel backbone."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Pada topologi bus, semua komputer menempel ke satu kabel panjang (backbone) yang kedua ujungnya ditutup terminator agar sinyal tidak memantul. Data dari satu komputer menyebar di sepanjang kabel dan sampai ke semua komputer, tetapi hanya komputer tujuan yang mengambilnya. Karena kabelnya dipakai bersama, dua komputer yang mengirim bersamaan bisa bertabrakan (collision); makin banyak komputer, makin lambat. Jika kabel utama putus, seluruh jaringan berhenti dan gangguannya sulit dilacak.",
+     "Pada topologi ring, setiap komputer tersambung ke dua tetangganya sehingga membentuk lingkaran. Data berjalan berurutan dari satu komputer ke komputer berikutnya, dan setiap komputer berfungsi sebagai repeater yang memperkuat sinyal sebelum meneruskannya. Hak mengirim diatur dengan token yang beredar bergiliran, sehingga tabrakan dapat dihindari. Kelemahannya, satu komputer yang gagal bisa memutus lingkaran, dan menambah atau mengurangi komputer mengganggu jaringan."
+    ],
+    "analogi": "Bus seperti satu lorong tempat semua orang berbicara: semua mendengar, dan kalau dua orang bicara bersamaan jadi kacau. Ring seperti lari estafet: hanya pemegang tongkat (token) yang boleh mengirim, lalu tongkat diteruskan ke sebelahnya.",
+    "contoh": "Topologi bus dipakai pada jaringan kabel koaksial lama dan kini sudah jarang. Bentuk ring masih dipakai pada jaringan serat optik antarkota karena mudah dibuatkan jalur cadangan.",
+    "istilah": [
+     {
+      "istilah": "Backbone",
+      "arti": "kabel utama yang dipakai bersama"
+     },
+     {
+      "istilah": "Terminator",
+      "arti": "penutup ujung kabel bus agar sinyal tidak memantul"
+     },
+     {
+      "istilah": "Collision",
+      "arti": "tabrakan data karena dua perangkat mengirim bersamaan"
+     },
+     {
+      "istilah": "Token",
+      "arti": "tanda giliran yang menentukan siapa boleh mengirim di ring"
+     }
+    ]
    }
   },
   {
@@ -39,6 +65,33 @@
     ],
     "benar": 0,
     "penjelasan": "Semua perangkat bergantung pada switch pusat."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Pada topologi star, setiap komputer punya kabel sendiri ke satu perangkat pusat (konsentrator), yaitu hub atau switch. Semua data lewat perangkat pusat ini. Jika satu kabel atau kartu jaringan rusak, hanya komputer itu yang terputus, yang lain tetap berjalan, sehingga gangguan mudah dicari. Menambah komputer cukup dengan mencolokkan kabel baru ke port kosong, tanpa mengganggu yang lain.",
+     "Kelemahannya: jika perangkat pusat mati, seluruh jaringan ikut mati; jumlah komputer dibatasi jumlah port; dan butuh lebih banyak kabel karena semua kabel ditarik ke satu titik. Hub meneruskan data ke semua port sehingga makin banyak komputer kinerjanya turun, sedangkan switch hanya meneruskan ke port tujuan sehingga lebih efisien.",
+     "Topologi tree menggabungkan beberapa star yang dihubungkan oleh jalur utama, membentuk tingkatan seperti pohon. Jaringan di tingkat lebih tinggi dapat mengontrol jaringan di bawahnya."
+    ],
+    "analogi": "Star seperti rumah dengan satu terminal listrik pusat: setiap alat punya kabel sendiri, satu kabel putus tidak masalah, tetapi kalau terminal pusat rusak semua padam. Tree seperti struktur organisasi kampus: rektorat, fakultas, lalu program studi.",
+    "contoh": "Lab komputer biasanya berbentuk star: semua PC tersambung ke satu switch. Gedung bertingkat memakai tree: switch utama di ruang server terhubung ke switch tiap lantai, dan switch lantai melayani komputer di lantainya.",
+    "istilah": [
+     {
+      "istilah": "Hub",
+      "arti": "perangkat pusat yang meneruskan data ke semua port"
+     },
+     {
+      "istilah": "Switch",
+      "arti": "perangkat pusat yang meneruskan data hanya ke port tujuan"
+     },
+     {
+      "istilah": "Port",
+      "arti": "lubang colokan kabel jaringan"
+     },
+     {
+      "istilah": "UTP",
+      "arti": "kabel jaringan berpasangan terpilin yang umum dipakai pada star"
+     }
+    ]
    }
   },
   {
@@ -58,6 +111,38 @@
     ],
     "benar": 1,
     "penjelasan": "5 x 4 / 2 = 10 kabel."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Pada topologi mesh penuh, setiap perangkat tersambung langsung ke semua perangkat lain (dedicated link). Karena ada banyak jalur, jika satu kabel putus data tetap bisa lewat jalur lain (fault tolerance). Setiap pasangan punya jalur sendiri sehingga tidak ada tabrakan data, dan gangguan lebih mudah dilacak.",
+     "Harganya mahal: jumlah kabel naik cepat seiring jumlah perangkat, dengan rumus n(n-1)/2. Untuk 5 perangkat butuh 10 kabel, untuk 10 perangkat sudah 45 kabel, dan setiap perangkat butuh n-1 port. Pemasangan dan konfigurasi ulangnya juga rumit, sehingga mesh penuh biasanya hanya dipakai untuk menghubungkan perangkat penting seperti router inti.",
+     "Topologi hybrid menggabungkan dua atau lebih topologi, misalnya beberapa jaringan star yang router-router intinya dihubungkan secara mesh. Hampir semua jaringan besar di dunia nyata, termasuk internet, berbentuk hybrid."
+    ],
+    "analogi": "Mesh seperti grup teman yang semua saling menyimpan nomor telepon: kalau satu orang tidak bisa dihubungi, kabar tetap bisa disampaikan lewat yang lain.",
+    "istilah": [
+     {
+      "istilah": "Dedicated link",
+      "arti": "jalur khusus antara dua perangkat"
+     },
+     {
+      "istilah": "Fault tolerance",
+      "arti": "jaringan tetap berjalan walau ada bagian yang rusak"
+     },
+     {
+      "istilah": "Redundansi",
+      "arti": "adanya jalur cadangan"
+     }
+    ]
+   },
+   "contohSoal": {
+    "soal": "Berapa kabel dan port per perangkat yang dibutuhkan topologi mesh penuh untuk 6 perangkat?",
+    "langkah": [
+     "Gunakan rumus jumlah kabel mesh penuh: n(n-1)/2, dengan n = jumlah perangkat.",
+     "Masukkan n = 6: 6 x (6 - 1) = 6 x 5 = 30.",
+     "Bagi 2, karena satu kabel menghubungkan dua perangkat sekaligus: 30 / 2 = 15.",
+     "Setiap perangkat terhubung ke semua perangkat lain, jadi butuh n - 1 = 5 port."
+    ],
+    "jawaban": "15 kabel, dan setiap perangkat butuh 5 port."
    }
   },
   {
@@ -77,6 +162,30 @@
     ],
     "benar": 0,
     "penjelasan": "Perangkat nirkabel terhubung lewat access point."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Jaringan nirkabel memakai gelombang elektromagnetik (radio) sebagai media pengiriman, bukan kabel. Ada dua mode.",
+     "Mode infrastruktur: semua perangkat terhubung ke satu access point (AP), misalnya router Wi-Fi. AP berperan seperti perangkat pusat pada topologi star dan biasanya juga tersambung ke jaringan kabel atau internet. Mode ini paling umum di rumah, kampus, dan kafe.",
+     "Mode ad hoc: perangkat terhubung langsung satu sama lain tanpa AP, membentuk jaringan sementara. Cocok untuk berbagi file cepat antara dua perangkat, tetapi jangkauan dan jumlah perangkatnya terbatas.",
+     "Dibanding kabel, nirkabel lebih praktis dan mudah dipindah, tetapi kecepatannya bisa turun karena jarak, tembok, dan gangguan sinyal. Jaringan nirkabel juga perlu diamankan dengan kata sandi WPA2 atau WPA3 agar tidak dipakai orang lain."
+    ],
+    "analogi": "Mode infrastruktur seperti semua siswa bertanya lewat guru di depan kelas. Mode ad hoc seperti dua siswa yang langsung saling berbicara tanpa perantara.",
+    "contoh": "Wi-Fi kampus memakai mode infrastruktur dengan banyak AP di setiap lantai. Fitur kirim file langsung antar-HP, seperti Wi-Fi Direct, bekerja dengan prinsip yang mirip ad hoc.",
+    "istilah": [
+     {
+      "istilah": "Access point",
+      "arti": "perangkat pusat jaringan Wi-Fi"
+     },
+     {
+      "istilah": "SSID",
+      "arti": "nama jaringan Wi-Fi"
+     },
+     {
+      "istilah": "WPA2/WPA3",
+      "arti": "standar pengamanan jaringan Wi-Fi"
+     }
+    ]
    }
   }
  ],

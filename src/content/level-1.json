@@ -1,7 +1,7 @@
 {
  "level": 1,
  "judul": "Jaringan Komputer Terkini",
- "sumber": "P-01 Jaringan Komputer Terkini.pptx (Drive)",
+ "sumber": "P-01 Jaringan Komputer Terkini.pptx (Drive). Penjelasan lengkap disusun dari teks slide; analogi dan contoh sehari-hari ditambahkan tim, perlu diperiksa dosen.",
  "subtopik": [
   {
    "id": 1,
@@ -22,6 +22,29 @@
     ],
     "benar": 1,
     "penjelasan": "Wi-Fi 6 dan 6E memberi kecepatan lebih tinggi, kapasitas lebih besar untuk banyak perangkat, dan efisiensi energi lebih baik."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Jaringan masa kini dituntut memenuhi tiga hal sekaligus: cepat (bandwidth besar), responsif (latensi rendah), dan sanggup melayani sangat banyak perangkat. Teknologi di sub-topik ini lahir untuk menjawab tiga kebutuhan itu.",
+     "5G dan Wi-Fi 6/6E bekerja di sisi akses, yaitu jalur dari perangkat pengguna ke jaringan. 5G menghubungkan HP lewat menara operator, sedangkan Wi-Fi 6/6E menghubungkan perangkat lewat router di rumah atau kampus. Keduanya dirancang agar banyak perangkat bisa terhubung bersamaan tanpa saling memperlambat.",
+     "NFV bekerja di sisi pengelolaan: fungsi yang dulu butuh kotak perangkat keras khusus, seperti router dan firewall, kini dijalankan sebagai perangkat lunak di server biasa. Akibatnya jaringan lebih mudah ditambah, dipindah, atau diubah tanpa membeli perangkat baru. Quantum networking masih tahap penelitian, dengan tujuan pengiriman data yang sangat aman."
+    ],
+    "analogi": "Bayangkan jalan tol. 5G dan Wi-Fi 6 seperti menambah lajur dan gerbang tol supaya lebih banyak mobil bisa lewat bersamaan. NFV seperti mengganti pos jaga permanen dengan petugas yang bisa ditempatkan di mana saja sesuai kebutuhan.",
+    "contoh": "Di rumah, satu router Wi-Fi 6 melayani HP, laptop, smart TV, dan CCTV sekaligus. Di jalan raya, mobil otonom membutuhkan latensi rendah 5G agar bisa bereaksi seketika.",
+    "istilah": [
+     {
+      "istilah": "Latensi",
+      "arti": "jeda waktu sampai data tiba di tujuan; makin kecil makin responsif"
+     },
+     {
+      "istilah": "Bandwidth",
+      "arti": "jumlah data yang bisa lewat per detik"
+     },
+     {
+      "istilah": "IoT",
+      "arti": "Internet of Things, benda sehari-hari yang terhubung ke internet"
+     }
+    ]
    }
   },
   {
@@ -41,6 +64,29 @@
     ],
     "benar": 0,
     "penjelasan": "SDN memisahkan control plane dari data plane sehingga jaringan bisa diatur terpusat lewat software controller."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Pada jaringan tradisional, setiap router dan switch punya \"otak\" sendiri, jadi admin harus mengatur perangkat satu per satu. SDN memisahkan otak itu (control plane, yang memutuskan jalur data) dari bagian yang meneruskan data (data plane). Otaknya dipindah ke satu controller terpusat yang memberi perintah ke semua perangkat lewat perangkat lunak.",
+     "Hasilnya, satu aturan baru, misalnya memblokir situs tertentu, cukup dibuat sekali di controller lalu berlaku di seluruh jaringan. Ini mengurangi kesalahan konfigurasi manual (human error) dan memudahkan otomatisasi.",
+     "Edge computing menjawab masalah jarak. Data yang dikirim ke pusat data cloud yang jauh butuh waktu bolak-balik. Dengan edge computing, data diolah di \"tepi\" jaringan, dekat sumbernya, sehingga respons lebih cepat dan data yang perlu dikirim ke cloud lebih sedikit."
+    ],
+    "analogi": "SDN seperti satu ruang kendali yang mengatur lampu lalu lintas di semua perempatan kota sekaligus, bukan polisi yang mengatur tiap perempatan sendiri-sendiri. Edge computing seperti kasir di setiap lantai mal, jadi pembeli tidak perlu antre ke satu kasir pusat.",
+    "contoh": "Kamera CCTV pintar di pabrik mengenali kejadian langsung di perangkatnya, lalu hanya mengirim cuplikan penting ke cloud, bukan rekaman 24 jam penuh.",
+    "istilah": [
+     {
+      "istilah": "Control plane",
+      "arti": "bagian yang memutuskan jalur data"
+     },
+     {
+      "istilah": "Data plane",
+      "arti": "bagian yang benar-benar meneruskan data"
+     },
+     {
+      "istilah": "Controller",
+      "arti": "perangkat lunak pusat yang mengatur jaringan SDN"
+     }
+    ]
    }
   },
   {
@@ -61,6 +107,28 @@
     ],
     "benar": 2,
     "penjelasan": "Ekstranet menghubungkan intranet perusahaan dengan pihak eksternal tepercaya."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Ketiganya memakai teknologi yang sama: protokol TCP/IP, web (HTTP), email, dan browser seperti Chrome atau Firefox. Yang membedakan adalah siapa yang boleh masuk.",
+     "Internet terbuka untuk publik; kebanyakan situs bisa dibuka tanpa login. Intranet hanya untuk anggota organisasi, misalnya karyawan, dan biasanya hanya bisa dibuka dari jaringan kantor atau lewat VPN dengan login. Ekstranet adalah bagian intranet yang sengaja dibuka untuk pihak luar tertentu, seperti pemasok atau pelanggan bisnis, dengan akun dan hak akses terbatas."
+    ],
+    "analogi": "Internet seperti jalan raya umum. Intranet seperti jalan di dalam perumahan tertutup yang hanya untuk penghuni. Ekstranet seperti portal perumahan yang mengizinkan tamu atau mitra tertentu masuk.",
+    "contoh": "Situs berita adalah bagian internet. Portal internal perusahaan untuk pengumuman dan cuti karyawan adalah intranet. Portal pemesanan barang yang dibuka perusahaan khusus untuk para pemasoknya adalah ekstranet.",
+    "istilah": [
+     {
+      "istilah": "TCP/IP",
+      "arti": "aturan dasar komunikasi data yang dipakai internet"
+     },
+     {
+      "istilah": "Autentikasi",
+      "arti": "pemeriksaan identitas, misalnya login dengan nama pengguna dan kata sandi"
+     },
+     {
+      "istilah": "B2B",
+      "arti": "business to business, hubungan antarperusahaan"
+     }
+    ]
    }
   },
   {
@@ -80,6 +148,29 @@
     ],
     "benar": 2,
     "penjelasan": "Lebih dari 99% lalu lintas data antarbenua memakai kabel bawah laut."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Data internet antarpulau dan antarbenua sebagian besar tidak lewat satelit, melainkan lewat kabel serat optik di dasar laut. Di dalam kabel, data dikirim sebagai cahaya yang merambat lewat serat kaca setipis rambut, dibungkus lapisan pelindung agar tahan tekanan air dan gesekan.",
+     "Karena memakai cahaya, kapasitasnya sangat besar, hingga terabit per detik dengan teknik DWDM (banyak sinyal cahaya berbeda warna dikirim bersamaan di satu serat). Latensinya juga lebih rendah dari satelit karena data tidak perlu naik ke orbit lalu turun lagi.",
+     "Kabel berakhir di landing station di pantai, lalu tersambung ke jaringan darat. Di Indonesia, Palapa Ring menghubungkan wilayah barat, tengah, dan timur hingga daerah 3T; Jasuka milik Telkom menghubungkan Jawa, Sumatera, dan Kalimantan sejak 2006; SEA-ME-WE 5 menghubungkan Asia Tenggara, Timur Tengah, hingga Eropa."
+    ],
+    "analogi": "Kabel bawah laut seperti jalan tol antarpulau untuk data. Satelit seperti pesawat: bisa menjangkau ke mana saja, tetapi daya angkutnya kecil dan rutenya jauh lebih panjang.",
+    "contoh": "Saat kabel laut rusak terkena jangkar kapal atau gempa, internet di wilayah tertentu bisa melambat atau terputus sampai kabel diperbaiki kapal khusus.",
+    "istilah": [
+     {
+      "istilah": "Serat optik",
+      "arti": "kabel yang mengirim data dalam bentuk cahaya"
+     },
+     {
+      "istilah": "Landing station",
+      "arti": "stasiun di pantai tempat kabel laut tersambung ke jaringan darat"
+     },
+     {
+      "istilah": "DWDM",
+      "arti": "teknik mengirim banyak sinyal cahaya berbeda warna dalam satu serat"
+     }
+    ]
    }
   },
   {
@@ -99,6 +190,29 @@
     ],
     "benar": 0,
     "penjelasan": "NFC dirancang untuk jarak sangat dekat, kurang dari 10 cm."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "RFID dan NFC bekerja dengan gelombang radio antara pembaca (reader) dan tag. Tag berisi chip kecil dan antena. Banyak tag tidak berbaterai: tag mendapat daya dari gelombang yang dipancarkan pembaca, lalu mengirim balik datanya.",
+     "RFID dirancang untuk membaca banyak tag dari kejauhan tanpa harus diarahkan satu per satu, cocok untuk menghitung barang di gudang. Tag RFID pasif jenis UHF biasanya terbaca dari beberapa meter, sedangkan RFID aktif yang berbaterai bisa mencapai sekitar 100 meter. Komunikasinya umumnya satu arah: pembaca membaca tag.",
+     "NFC sengaja dibuat berjarak sangat pendek, kurang dari 10 cm, sehingga perangkat harus ditempelkan. Jarak sependek ini justru menjadi pengaman: sulit disadap dari jauh dan tidak terbaca tanpa sengaja. NFC juga bisa dua arah, misalnya HP membaca kartu e-money sekaligus menulis saldo baru saat isi ulang."
+    ],
+    "analogi": "RFID seperti memanggil nama banyak orang di aula dengan pengeras suara. NFC seperti berbisik kepada satu orang yang berdiri tepat di sebelah kita.",
+    "contoh": "Kartu e-money di gerbang tol dan transportasi umum memakai NFC saat ditempel. Perpustakaan memakai tag RFID di buku untuk peminjaman dan alarm pintu.",
+    "istilah": [
+     {
+      "istilah": "Reader",
+      "arti": "alat pembaca tag"
+     },
+     {
+      "istilah": "Tag",
+      "arti": "label kecil berisi chip dan antena"
+     },
+     {
+      "istilah": "13,56 MHz",
+      "arti": "frekuensi kerja NFC"
+     }
+    ]
    }
   },
   {
@@ -119,6 +233,29 @@
     ],
     "benar": 2,
     "penjelasan": "SaaS adalah aplikasi siap pakai lewat internet, seperti penyimpanan awan."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Daripada membeli dan merawat server sendiri, pengguna menyewa sumber daya komputasi milik penyedia cloud lewat internet. Penyedia mengelola pusat data berisi ribuan server; pengguna cukup memakai dan membayar sesuai pemakaian (pay-as-you-go).",
+     "Tiga model layanannya dibedakan oleh seberapa banyak yang diurus pengguna. Di IaaS, pengguna menyewa server virtual lalu mengatur sendiri sistem operasi dan aplikasinya. Di PaaS, penyedia juga mengurus sistem operasi dan lingkungan, pengguna tinggal menaruh kode aplikasinya. Di SaaS, aplikasinya sudah jadi dan tinggal dipakai lewat browser.",
+     "Manfaatnya: biaya awal kecil, kapasitas bisa ditambah atau dikurangi dengan cepat (skalabilitas), dan data bisa diakses dari mana saja selama ada internet."
+    ],
+    "analogi": "Seperti urusan makan. IaaS = menyewa dapur kosong, lalu membawa peralatan, bahan, dan memasak sendiri. PaaS = menyewa dapur yang peralatannya sudah lengkap, tinggal membawa bahan dan resep. SaaS = memesan makanan jadi di restoran.",
+    "contoh": "Jar'ecom sendiri berjalan di cloud: aplikasinya di-hosting di Vercel dan datanya disimpan di Supabase, sehingga tim tidak perlu memiliki server fisik. Google Docs adalah contoh SaaS.",
+    "istilah": [
+     {
+      "istilah": "Pay-as-you-go",
+      "arti": "membayar sesuai pemakaian"
+     },
+     {
+      "istilah": "Skalabilitas",
+      "arti": "kemampuan menambah atau mengurangi kapasitas dengan cepat"
+     },
+     {
+      "istilah": "Server virtual",
+      "arti": "server yang dijalankan sebagai perangkat lunak di atas server fisik"
+     }
+    ]
    }
   }
  ],

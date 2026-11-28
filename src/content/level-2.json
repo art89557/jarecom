@@ -1,7 +1,7 @@
 {
  "level": 2,
  "judul": "IP Address",
- "sumber": "P-02 IP ADDRESS.pptx (Drive). Slide hanya berisi teks ringkas dan dua video; bagian prefix dan subnet mask dilengkapi dari pengetahuan umum, perlu diperiksa.",
+ "sumber": "P-02 IP ADDRESS.pptx (Drive). Slide sebagian besar berupa gambar dan tangkapan video; isinya dibaca dari gambar. Beberapa angka di slide dikoreksi: kelas E dimulai 240.0.0.0, rentang privat kelas B sampai 172.31.255.255. Analogi dan contoh ditambahkan tim, perlu diperiksa dosen.",
  "subtopik": [
   {
    "id": 1,
@@ -20,6 +20,29 @@
     ],
     "benar": 1,
     "penjelasan": "IP Address menjadi identitas perangkat dan dipakai untuk mengarahkan data."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "IP Address adalah label angka yang diberikan ke setiap antarmuka jaringan (interface) pada perangkat, misalnya port kabel LAN (RJ45) atau kartu Wi-Fi. Jadi satu laptop bisa punya dua IP jika tersambung lewat kabel dan Wi-Fi sekaligus.",
+     "IP Address punya dua peran. Pertama sebagai identitas: menandai perangkat mana yang mengirim dan menerima data. Kedua sebagai alamat lokasi: menunjukkan di jaringan mana perangkat itu berada, sehingga router tahu ke arah mana data harus diteruskan.",
+     "Saat kamu membuka sebuah situs, data dipecah menjadi paket-paket kecil. Setiap paket membawa IP pengirim dan IP tujuan. Router di sepanjang jalan membaca IP tujuan untuk meneruskan paket sampai ke server, lalu jawabannya dikirim balik ke IP kamu."
+    ],
+    "analogi": "Seperti mengirim paket lewat kurir: di kardus tertulis alamat pengirim dan alamat penerima. Kurir di setiap kota tidak perlu mengenal penerimanya, cukup membaca alamat. Agar dipahami semua kurir, alamat harus punya standar dan format penulisan yang sama, begitu pula IP Address.",
+    "contoh": "Di Windows, ketik ipconfig di Command Prompt untuk melihat IP laptopmu, misalnya 192.168.1.5.",
+    "istilah": [
+     {
+      "istilah": "Interface",
+      "arti": "titik sambungan perangkat ke jaringan, misalnya port LAN atau Wi-Fi"
+     },
+     {
+      "istilah": "Paket",
+      "arti": "potongan kecil data yang dikirim lewat jaringan"
+     },
+     {
+      "istilah": "Host",
+      "arti": "perangkat yang memiliki IP, seperti komputer, HP, atau server"
+     }
+    ]
    }
   },
   {
@@ -39,6 +62,40 @@
     ],
     "benar": 1,
     "penjelasan": "IPv4 terdiri dari 32 bit."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "IPv4 panjangnya 32 bit, dibagi menjadi empat bagian 8 bit yang disebut oktet. Setiap oktet ditulis sebagai angka desimal 0 sampai 255 dan dipisahkan titik (dotted decimal). Contoh: 172.16.254.1 dalam biner adalah 10101100.00010000.11111110.00000001.",
+     "Karena hanya 32 bit, jumlah alamat IPv4 maksimal 2 pangkat 32 (2³²), sekitar 4,3 miliar. Jumlah ini sudah tidak cukup untuk semua perangkat di dunia.",
+     "IPv6 dibuat untuk mengatasi itu. Panjangnya 128 bit, ditulis sebagai delapan kelompok heksadesimal yang dipisahkan titik dua, misalnya 2001:cdba:0000:0000:0000:0000:3257:9652. Penulisannya boleh disingkat: nol di depan tiap kelompok boleh dihapus, dan satu deretan kelompok nol boleh diganti \"::\" (hanya sekali), menjadi 2001:cdba::3257:9652."
+    ],
+    "analogi": "IPv4 seperti nomor telepon yang digitnya sedikit: cepat habis ketika penduduk bertambah. IPv6 menambah digitnya sangat banyak sehingga cukup untuk setiap perangkat di bumi.",
+    "istilah": [
+     {
+      "istilah": "Bit",
+      "arti": "satuan data terkecil, bernilai 0 atau 1"
+     },
+     {
+      "istilah": "Oktet",
+      "arti": "8 bit atau 1 byte; IPv4 punya 4 oktet"
+     },
+     {
+      "istilah": "Heksadesimal",
+      "arti": "bilangan basis 16, memakai angka 0 sampai 9 dan huruf a sampai f"
+     }
+    ]
+   },
+   "contohSoal": {
+    "soal": "Ubah IP 192.168.10.5 ke bentuk biner.",
+    "langkah": [
+     "Pisahkan per oktet: 192, 168, 10, dan 5. Setiap oktet diubah menjadi 8 bit.",
+     "Siapkan nilai posisi 8 bit dari kiri: 128, 64, 32, 16, 8, 4, 2, 1. Beri angka 1 pada posisi yang dipakai, 0 pada yang tidak.",
+     "192 = 128 + 64, jadi 11000000.",
+     "168 = 128 + 32 + 8, jadi 10101000.",
+     "10 = 8 + 2, jadi 00001010.",
+     "5 = 4 + 1, jadi 00000101."
+    ],
+    "jawaban": "192.168.10.5 = 11000000.10101000.00001010.00000101"
    }
   },
   {
@@ -58,6 +115,29 @@
     ],
     "benar": 1,
     "penjelasan": "IP privat tidak dapat diakses langsung dari internet."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "IP publik unik di seluruh internet dan bisa dihubungi langsung dari mana saja. IP ini dipakai perangkat yang memang harus dijangkau umum, seperti server website, server email, dan sisi luar router Wi-Fi.",
+     "IP privat hanya berlaku di dalam jaringan lokal (LAN). Alamat yang sama boleh dipakai di banyak rumah atau kantor berbeda karena tidak pernah tampil langsung di internet. Rentang yang disediakan untuk IP privat: 10.0.0.0 sampai 10.255.255.255, 172.16.0.0 sampai 172.31.255.255, dan 192.168.0.0 sampai 192.168.255.255.",
+     "Agar perangkat ber-IP privat tetap bisa membuka internet, router memakai NAT (Network Address Translation): saat data keluar, IP privat pengirim diganti dengan IP publik milik router, lalu jawabannya dikembalikan ke perangkat yang tepat. Ada juga alamat khusus 127.0.0.1 (localhost) untuk menghubungi perangkat itu sendiri."
+    ],
+    "analogi": "IP privat seperti nomor kamar hotel: kamar 101 ada di banyak hotel. IP publik seperti alamat hotelnya. Surat dari luar dikirim ke alamat hotel, lalu resepsionis (router dengan NAT) meneruskannya ke kamar yang tepat.",
+    "contoh": "Laptopmu di kos mungkin ber-IP 192.168.1.5 (privat), tetapi situs pengecek IP akan menampilkan IP publik milik router atau ISP.",
+    "istilah": [
+     {
+      "istilah": "NAT",
+      "arti": "penerjemahan IP privat ke IP publik oleh router"
+     },
+     {
+      "istilah": "Localhost",
+      "arti": "alamat 127.0.0.1 untuk menghubungi perangkat itu sendiri"
+     },
+     {
+      "istilah": "ISP",
+      "arti": "penyedia layanan internet"
+     }
+    ]
    }
   },
   {
@@ -77,6 +157,29 @@
     ],
     "benar": 1,
     "penjelasan": "IP dinamis diberikan dan diganti secara berkala."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "IP statis diisi manual dan tidak berubah. Cocok untuk perangkat yang harus selalu ditemukan di alamat yang sama, seperti server, printer jaringan, dan router.",
+     "IP dinamis diberikan otomatis oleh server DHCP, biasanya dijalankan oleh router di rumah, kampus, atau ISP. Saat perangkat terhubung, ia \"meminjam\" satu alamat untuk jangka waktu tertentu (lease). Setelah masa pinjam habis atau perangkat lama tidak terhubung, alamatnya bisa berganti.",
+     "Di Windows, pilihannya terlihat di pengaturan IPv4: \"Obtain an IP address automatically\" berarti dinamis (DHCP), sedangkan \"Use the following IP address\" berarti statis, lalu IP address, subnet mask, dan default gateway diisi sendiri."
+    ],
+    "analogi": "IP statis seperti kursi bernama di ruang rapat yang selalu ditempati orang yang sama. IP dinamis seperti kursi kantin: siapa yang datang memakai kursi yang sedang kosong.",
+    "contoh": "Printer kantor diberi IP statis agar semua komputer selalu menemukannya, sedangkan HP pengunjung kafe mendapat IP dinamis dari DHCP router kafe.",
+    "istilah": [
+     {
+      "istilah": "DHCP",
+      "arti": "layanan yang membagikan IP secara otomatis"
+     },
+     {
+      "istilah": "Lease",
+      "arti": "masa pinjam IP dari DHCP"
+     },
+     {
+      "istilah": "Default gateway",
+      "arti": "alamat router yang menjadi pintu keluar ke jaringan lain"
+     }
+    ]
    }
   },
   {
@@ -96,6 +199,38 @@
     ],
     "benar": 1,
     "penjelasan": "24 bit pertama bernilai 1, sehingga 255.255.255.0."
+   },
+   "lengkap": {
+    "caraKerja": [
+     "Setiap IPv4 terdiri dari dua bagian: Network ID (penanda jaringan) dan Host ID (penanda perangkat di jaringan itu). Subnet mask atau netmask menunjukkan batas keduanya: bit bernilai 1 menandai bagian jaringan, bit 0 menandai bagian host.",
+     "Prefix adalah cara singkat menulis netmask, yaitu jumlah bit 1 berurutan dari kiri. 255.255.255.0 = 11111111.11111111.11111111.00000000, ada 24 bit 1, jadi ditulis /24. Begitu juga 255.255.0.0 = /16 dan 255.0.0.0 = /8.",
+     "Dari IP dan netmask bisa ditentukan tiga jenis alamat. Network address adalah IP pertama (semua bit host 0). Broadcast address adalah IP terakhir (semua bit host 1), untuk mengirim ke semua host sekaligus. Di antaranya adalah host address yang boleh dipasang ke perangkat. Contoh 192.168.0.1/24: network 192.168.0.0, broadcast 192.168.0.255, host 192.168.0.1 sampai 192.168.0.254."
+    ],
+    "analogi": "Seperti nomor polisi kendaraan B 9999 XYZ: huruf B menunjukkan wilayah (seperti Network ID), sedangkan 9999 menunjukkan kendaraannya di wilayah itu (seperti Host ID).",
+    "istilah": [
+     {
+      "istilah": "Network ID",
+      "arti": "bagian IP yang menunjukkan jaringan"
+     },
+     {
+      "istilah": "Host ID",
+      "arti": "bagian IP yang menunjukkan perangkat"
+     },
+     {
+      "istilah": "Broadcast",
+      "arti": "alamat terakhir dalam jaringan, untuk mengirim ke semua host"
+     }
+    ]
+   },
+   "contohSoal": {
+    "soal": "Ubah prefix /19 menjadi netmask.",
+    "langkah": [
+     "/19 berarti ada 19 bit bernilai 1 dari kiri; sisanya 32 - 19 = 13 bit bernilai 0.",
+     "Isi per oktet (8 bit): oktet 1 berisi 8 bit 1, oktet 2 berisi 8 bit 1, sisa 19 - 16 = 3 bit 1 masuk ke oktet 3.",
+     "Tulis dalam biner: 11111111.11111111.11100000.00000000.",
+     "Ubah tiap oktet ke desimal: 11111111 = 255, 11100000 = 128 + 64 + 32 = 224, 00000000 = 0."
+    ],
+    "jawaban": "/19 = 255.255.224.0. Coba sendiri dengan cara yang sama: /29 = 255.255.255.248."
    }
   }
  ],
